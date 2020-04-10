@@ -1,0 +1,53 @@
+<h1 id="stages">Stages</h1>
+<p>* working title</p>
+<h2 id="inspired-by-smash-games">Inspired by Smash games</h2>
+<ul>
+<li>Longboat = Final Destination</li>
+<li>Ruins = Battlefield</li>
+<li>Transistor = Yoshi&#39;s Story (no cloud or flyguys)</li>
+<li>Boombox* = Dream Land (no wind)</li>
+<li>Scales = Neutral Pokemon Stadium</li>
+<li>Fountain* = Fountain of Dreams (no movement)</li>
+<li>Trashville* = Smashville</li>
+</ul>
+<h2 id="original">Original</h2>
+<ul>
+<li>Great White* - can pass upward through the thin center of the stage</li>
+<li>Eroded - has a platform similar to cloud on Yoshi&#39;s, but doesn&#39;t move up/down and is visible at all times</li>
+</ul>
+<h2 id="prototypes">Prototypes</h2>
+<ul>
+<li>Divided* - has a lump in the middle, and two platforms per side</li>
+<li>Plane* - low top platform, side platforms stick out a bit</li>
+</ul>
+<h2 id="misc">Misc</h2>
+<ul>
+<li>Pillars - Two tall pillars with a center platform</li>
+<li>Satellite - Small main stage, big side platforms with stage piece on outer side</li>
+<li>Test Stage - Test stage for collision, etc (missing some cases)</li>
+</ul>
+<h2 id="neutral">Neutral</h2>
+<ul>
+<li>Ruins</li>
+<li>Transistor</li>
+<li>Scales</li>
+<li>Trashville</li>
+<li>Eroded</li>
+</ul>
+<h1 id="console-and-debug">Console and debug</h1>
+<p>The console can be accessed with the <code>Enter</code> key.</p>
+<p>Underlying the console, there&#39;s a basic file system structure, and a simple environment inspired by Linux. The shell and scripting language are inspired by Bash. There&#39;s a bunch of nerdy stuff for anyone who wants to poke around with it, though it isn&#39;t finished yet.</p>
+<p>Useful commands:</p>
+<ul>
+<li><code>config</code>: displays and allows setting of global config options, like audio/music. Settings might appear here before there&#39;s a UI for them.</li>
+<li><code>tas</code>: starts recording a replay one frame at a time; <code>z</code> on the keyboard advances a frame. Can also use <code>x</code> on keyboard to start a TAS. Use <code>tas</code> command again to stop. Not guaranteed to be bug-free, as it doesn&#39;t restore many things that it really should to make working, consistent replays.</li>
+<li><code>replay</code>: starts recording a replay in real time. Use <code>replay</code> command again to stop. Not guaranteed to be bug-free, either.</li>
+<li><code>play</code>: plays last-recorded tas or replay.</li>
+<li><code>pause</code>: pauses replays currently playing.</li>
+<li><code>set-dmg [n]</code>: sets damage of all characters.</li>
+<li><code>sb-dmg [n]</code>: sets damage of all sandbags.</li>
+<li><code>unstale</code>: unstales all moves.</li>
+<li><code>dbg</code>: check and set debug variables; list all with <code>dbg</code>, set with e.g. <code>dbg controllers on</code>.</li>
+<li><code>ai</code>: check and set ai variables.</li>
+<li><code>constants</code>: check and set constants, in case you&#39;ve always wanted to see what 3x knockback looks like. (<code>constant KNOCKBACK_MOD 3</code>)</li>
+</ul>
