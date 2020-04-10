@@ -1,0 +1,3 @@
+[submodule "foodguide"]
+	path = foodguide
+	url = git@github.com:bluehexagons/foodguide.git
