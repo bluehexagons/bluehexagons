@@ -142,7 +142,11 @@ a:hover {
   text-align: center;
   display: block;
 }
+#content {
+  position: relative;
+}
 #main {
+  position: relative;
   max-width: 900px;
   margin-left: auto;
   margin-right: auto;
@@ -155,10 +159,32 @@ a:hover {
 
   box-shadow: 0px 3px 45px -4px rgba(0, 0, 0, 0.75);
 }
+
+#sidebar {
+  width: 100%;
+}
+#sidebar > iframe {
+  width: 100% !important;
+}
+@media (min-width: 990px) {
+  #main.withSidebar {
+    max-width: 1200px;
+  }
+  #main.withSidebar #articles {
+    width: calc(100% - 320px);
+  }
+  #sidebar {
+    width: 300px;
+    position: absolute;
+    top: 0;
+    right: 10px;
+  }
+}
 #main p {
   text-align: justify;
   text-justify: auto;
 }
+
 /* #main p, #main ul, #main h2, #main h3, #main h4 { */
 #main article > * {
   max-width: 690px;
@@ -254,10 +280,11 @@ h4 {
 }
 
 .navbar {
-  line-height: 50px;
+  line-height: 60px;
 }
 
 .nav {
+  font-size: 22px;
   margin-left: 10px;
   white-space: nowrap;
   cursor: default;
@@ -290,7 +317,7 @@ h4 {
   border: 2px solid var(--outline);
   border-radius: 3px;
   text-decoration: none;
-  padding: 2px 5px;
+  padding: 4px 9px;
   background: var(--bg-outer);
   color: var(--dim-highlight);
   font-weight: bold;
@@ -305,13 +332,16 @@ h4 {
   color: var(--highlight);
 }
 
+.socials {
+  margin-top: -2px;
+}
 .socials > span > a {
   color: #ccc;
-  font-size: 30px;
+  font-size: 40px;
   padding: 0;
   margin: 0;
   vertical-align: middle;
-  line-height: 36px;
+  line-height: 40px;
   margin-left: 3px;
 }
 .socials > span > a:visited {
@@ -356,13 +386,13 @@ a svg:hover {
 .itch-svg {
   max-width: 1em;
   position: relative;
-  top: 5px;
+  top: 2px;
 }
 
 .b6-svg {
   max-width: 1em;
   position: relative;
-  top: 4px;
+  top: 1px;
   left: 1px;
 }
 
@@ -377,12 +407,17 @@ pre {
   border-radius: 3px;
 }
 
-code {
+kbd, code {
   color: rgb(255, 200, 140);
   background: rgb(27, 21, 15);
   border: 1px solid rgb(128, 100, 71);
   padding: 0 3px;
   border-radius: 3px;
+}
+
+kbd {
+  border-color: rgb(128, 128, 128);
+  background: rgb(21, 21, 21);
 }
 
 pre code {
