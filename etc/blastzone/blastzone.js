@@ -1,3 +1,7 @@
+/*
+    Blastzone (c) 2017 bluehexagons, all rights reserved
+*/
+
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -81,17 +85,17 @@ THE SOFTWARE. */
              * @version 2.3.2
              */
             /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-        
+
             Permission is hereby granted, free of charge, to any person obtaining a copy
             of this software and associated documentation files (the "Software"), to deal
             in the Software without restriction, including without limitation the rights
             to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
             copies of the Software, and to permit persons to whom the Software is
             furnished to do so, subject to the following conditions:
-        
+
             The above copyright notice and this permission notice shall be included in
             all copies or substantial portions of the Software.
-        
+
             THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
             IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
             FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -113,17 +117,17 @@ THE SOFTWARE. */
         /* 1 */
         /***/ function (module, exports) {
             /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-        
+
             Permission is hereby granted, free of charge, to any person obtaining a copy
             of this software and associated documentation files (the "Software"), to deal
             in the Software without restriction, including without limitation the rights
             to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
             copies of the Software, and to permit persons to whom the Software is
             furnished to do so, subject to the following conditions:
-        
+
             The above copyright notice and this permission notice shall be included in
             all copies or substantial portions of the Software.
-        
+
             THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
             IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
             FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -178,17 +182,17 @@ THE SOFTWARE. */
         /* 2 */
         /***/ function (module, exports, __webpack_require__) {
             /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-        
+
             Permission is hereby granted, free of charge, to any person obtaining a copy
             of this software and associated documentation files (the "Software"), to deal
             in the Software without restriction, including without limitation the rights
             to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
             copies of the Software, and to permit persons to whom the Software is
             furnished to do so, subject to the following conditions:
-        
+
             The above copyright notice and this permission notice shall be included in
             all copies or substantial portions of the Software.
-        
+
             THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
             IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
             FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -320,7 +324,7 @@ THE SOFTWARE. */
              * @returns {mat2} out
              */
             mat2.invert = function (out, a) {
-                var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], 
+                var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3],
                 // Calculate the determinant
                 det = a0 * a3 - a2 * a1;
                 if (!det) {
@@ -577,17 +581,17 @@ THE SOFTWARE. */
         /* 3 */
         /***/ function (module, exports, __webpack_require__) {
             /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-        
+
             Permission is hereby granted, free of charge, to any person obtaining a copy
             of this software and associated documentation files (the "Software"), to deal
             in the Software without restriction, including without limitation the rights
             to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
             copies of the Software, and to permit persons to whom the Software is
             furnished to do so, subject to the following conditions:
-        
+
             The above copyright notice and this permission notice shall be included in
             all copies or substantial portions of the Software.
-        
+
             THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
             IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
             FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -1013,17 +1017,17 @@ THE SOFTWARE. */
         /* 4 */
         /***/ function (module, exports, __webpack_require__) {
             /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-        
+
             Permission is hereby granted, free of charge, to any person obtaining a copy
             of this software and associated documentation files (the "Software"), to deal
             in the Software without restriction, including without limitation the rights
             to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
             copies of the Software, and to permit persons to whom the Software is
             furnished to do so, subject to the following conditions:
-        
+
             The above copyright notice and this permission notice shall be included in
             all copies or substantial portions of the Software.
-        
+
             THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
             IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
             FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -1223,7 +1227,7 @@ THE SOFTWARE. */
              * @returns {mat3} out
              */
             mat3.invert = function (out, a) {
-                var a00 = a[0], a01 = a[1], a02 = a[2], a10 = a[3], a11 = a[4], a12 = a[5], a20 = a[6], a21 = a[7], a22 = a[8], b01 = a22 * a11 - a12 * a21, b11 = -a22 * a10 + a12 * a20, b21 = a21 * a10 - a11 * a20, 
+                var a00 = a[0], a01 = a[1], a02 = a[2], a10 = a[3], a11 = a[4], a12 = a[5], a20 = a[6], a21 = a[7], a22 = a[8], b01 = a22 * a11 - a12 * a21, b11 = -a22 * a10 + a12 * a20, b21 = a21 * a10 - a11 * a20,
                 // Calculate the determinant
                 det = a00 * b01 + a01 * b11 + a02 * b21;
                 if (!det) {
@@ -1479,7 +1483,7 @@ THE SOFTWARE. */
             * @returns {mat3} out
             */
             mat3.normalFromMat4 = function (out, a) {
-                var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3], a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7], a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11], a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15], b00 = a00 * a11 - a01 * a10, b01 = a00 * a12 - a02 * a10, b02 = a00 * a13 - a03 * a10, b03 = a01 * a12 - a02 * a11, b04 = a01 * a13 - a03 * a11, b05 = a02 * a13 - a03 * a12, b06 = a20 * a31 - a21 * a30, b07 = a20 * a32 - a22 * a30, b08 = a20 * a33 - a23 * a30, b09 = a21 * a32 - a22 * a31, b10 = a21 * a33 - a23 * a31, b11 = a22 * a33 - a23 * a32, 
+                var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3], a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7], a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11], a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15], b00 = a00 * a11 - a01 * a10, b01 = a00 * a12 - a02 * a10, b02 = a00 * a13 - a03 * a10, b03 = a01 * a12 - a02 * a11, b04 = a01 * a13 - a03 * a11, b05 = a02 * a13 - a03 * a12, b06 = a20 * a31 - a21 * a30, b07 = a20 * a32 - a22 * a30, b08 = a20 * a33 - a23 * a30, b09 = a21 * a32 - a22 * a31, b10 = a21 * a33 - a23 * a31, b11 = a22 * a33 - a23 * a32,
                 // Calculate the determinant
                 det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
                 if (!det) {
@@ -1640,17 +1644,17 @@ THE SOFTWARE. */
         /* 5 */
         /***/ function (module, exports, __webpack_require__) {
             /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-        
+
             Permission is hereby granted, free of charge, to any person obtaining a copy
             of this software and associated documentation files (the "Software"), to deal
             in the Software without restriction, including without limitation the rights
             to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
             copies of the Software, and to permit persons to whom the Software is
             furnished to do so, subject to the following conditions:
-        
+
             The above copyright notice and this permission notice shall be included in
             all copies or substantial portions of the Software.
-        
+
             THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
             IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
             FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -1938,7 +1942,7 @@ THE SOFTWARE. */
              * @returns {mat4} out
              */
             mat4.scalar.invert = function (out, a) {
-                var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3], a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7], a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11], a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15], b00 = a00 * a11 - a01 * a10, b01 = a00 * a12 - a02 * a10, b02 = a00 * a13 - a03 * a10, b03 = a01 * a12 - a02 * a11, b04 = a01 * a13 - a03 * a11, b05 = a02 * a13 - a03 * a12, b06 = a20 * a31 - a21 * a30, b07 = a20 * a32 - a22 * a30, b08 = a20 * a33 - a23 * a30, b09 = a21 * a32 - a22 * a31, b10 = a21 * a33 - a23 * a31, b11 = a22 * a33 - a23 * a32, 
+                var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3], a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7], a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11], a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15], b00 = a00 * a11 - a01 * a10, b01 = a00 * a12 - a02 * a10, b02 = a00 * a13 - a03 * a10, b03 = a01 * a12 - a02 * a11, b04 = a01 * a13 - a03 * a11, b05 = a02 * a13 - a03 * a12, b06 = a20 * a31 - a21 * a30, b07 = a20 * a32 - a22 * a30, b08 = a20 * a33 - a23 * a30, b09 = a21 * a32 - a22 * a31, b10 = a21 * a33 - a23 * a31, b11 = a22 * a33 - a23 * a32,
                 // Calculate the determinant
                 det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
                 if (!det) {
@@ -3447,17 +3451,17 @@ THE SOFTWARE. */
         /* 6 */
         /***/ function (module, exports, __webpack_require__) {
             /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-        
+
             Permission is hereby granted, free of charge, to any person obtaining a copy
             of this software and associated documentation files (the "Software"), to deal
             in the Software without restriction, including without limitation the rights
             to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
             copies of the Software, and to permit persons to whom the Software is
             furnished to do so, subject to the following conditions:
-        
+
             The above copyright notice and this permission notice shall be included in
             all copies or substantial portions of the Software.
-        
+
             THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
             IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
             FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -3816,7 +3820,7 @@ THE SOFTWARE. */
                     scale1 = Math.sin(t * omega) / sinom;
                 }
                 else {
-                    // "from" and "to" quaternions are very close 
+                    // "from" and "to" quaternions are very close
                     //  ... so we can do a linear interpolation
                     scale0 = 1.0 - t;
                     scale1 = t;
@@ -3988,17 +3992,17 @@ THE SOFTWARE. */
         /* 7 */
         /***/ function (module, exports, __webpack_require__) {
             /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-        
+
             Permission is hereby granted, free of charge, to any person obtaining a copy
             of this software and associated documentation files (the "Software"), to deal
             in the Software without restriction, including without limitation the rights
             to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
             copies of the Software, and to permit persons to whom the Software is
             furnished to do so, subject to the following conditions:
-        
+
             The above copyright notice and this permission notice shall be included in
             all copies or substantial portions of the Software.
-        
+
             THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
             IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
             FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -4490,7 +4494,7 @@ THE SOFTWARE. */
              */
             vec3.transformQuat = function (out, a, q) {
                 // benchmarks: http://jsperf.com/quaternion-transform-vec3-implementations
-                var x = a[0], y = a[1], z = a[2], qx = q[0], qy = q[1], qz = q[2], qw = q[3], 
+                var x = a[0], y = a[1], z = a[2], qx = q[0], qy = q[1], qz = q[2], qw = q[3],
                 // calculate quat * vec
                 ix = qw * x + qy * z - qz * y, iy = qw * y + qz * x - qx * z, iz = qw * z + qx * y - qy * x, iw = -qx * x - qy * y - qz * z;
                 // calculate result * inverse quat
@@ -4668,17 +4672,17 @@ THE SOFTWARE. */
         /* 8 */
         /***/ function (module, exports, __webpack_require__) {
             /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-        
+
             Permission is hereby granted, free of charge, to any person obtaining a copy
             of this software and associated documentation files (the "Software"), to deal
             in the Software without restriction, including without limitation the rights
             to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
             copies of the Software, and to permit persons to whom the Software is
             furnished to do so, subject to the following conditions:
-        
+
             The above copyright notice and this permission notice shall be included in
             all copies or substantial portions of the Software.
-        
+
             THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
             IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
             FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -5124,7 +5128,7 @@ THE SOFTWARE. */
              * @returns {vec4} out
              */
             vec4.transformQuat = function (out, a, q) {
-                var x = a[0], y = a[1], z = a[2], qx = q[0], qy = q[1], qz = q[2], qw = q[3], 
+                var x = a[0], y = a[1], z = a[2], qx = q[0], qy = q[1], qz = q[2], qw = q[3],
                 // calculate quat * vec
                 ix = qw * x + qy * z - qz * y, iy = qw * y + qz * x - qx * z, iz = qw * z + qx * y - qy * x, iw = -qx * x - qy * y - qz * z;
                 // calculate result * inverse quat
@@ -5215,17 +5219,17 @@ THE SOFTWARE. */
         /* 9 */
         /***/ function (module, exports, __webpack_require__) {
             /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
-        
+
             Permission is hereby granted, free of charge, to any person obtaining a copy
             of this software and associated documentation files (the "Software"), to deal
             in the Software without restriction, including without limitation the rights
             to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
             copies of the Software, and to permit persons to whom the Software is
             furnished to do so, subject to the following conditions:
-        
+
             The above copyright notice and this permission notice shall be included in
             all copies or substantial portions of the Software.
-        
+
             THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
             IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
             FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25709,7 +25713,12 @@ echo numbered args $0 $1 $2 $3 $4 $5 $6 $7 $8 $9
         }
     }))();
     makeShell(dbgStdin, dbgStdout, dbgStdout, null, null, true, true, true);
-    dbg('Hi!');
+
+    dbg('Hi! Welcome to Blastzone, the former title of Antistatic.');
+    dbg('This was the last commit that could still run in a web browser, before moving to Electron');
+    dbg('and, subsequently, Node + SDL2.');
+    dbg('To play using a keyboard, press Backspace.');
+
     let oldCursorPos = -1;
     let oldPromptLength = -1;
     let promptTick = (ctx, ox, oy, width, height) => {
@@ -26987,27 +26996,27 @@ const ImportStage = (() => {
               Death Boundaries
               (-) Dead0N: (-224.00, 200.00)
               (-) Dead1N: (224.00, -108.80)
-      
+
               Camera Boundaries
               (-) CamLimit0N: (-160.00, 136.00)
               (-) CamLimit1N: (160.00, -47.20)
-      
+
               Starting Positions
               (P0) Player0: (0.00, 8.00)
               (P1) Player1: (0.00, 62.40)
               (P2) Player2: (-38.80, 35.20)
               (P3) Player3: (38.80, 35.20)
-      
+
               Respawn Points
               (R0) Rebirth0: (12.80, 80.00)
               (R1) Rebirth1: (-40.00, 80.00)
               (R2) Rebirth2: (40.00, 80.00)
               (R3) Rebirth3: (-12.00, 80.00)
-      
+
               Main Stage
               (A): (-68.4000, 0.0000)
               (B): (68.4000, 0.0000)
-      
+
               Platforms
               (1) Top: (-18.80, 54.40)
               (2) Top: (18.80, 54.40)
@@ -27082,14 +27091,14 @@ const ImportStage = (() => {
               Camera Boundaries
               (-) CamLimit0N: (-126.00, 118.30)
               (-) CamLimit1N: (125.30, -49.70)
-      
+
               Randall
               (-) Platform Width: (11.90)
               (L1) Track X-Min: (97.65)
               (L2) Track X-Max: (97.30)
               (L3) Track Y-Min: (-33.25)
               (L4) Track Y-Max: (-13.65)
-      
+
               The corners of the path he moves are slightly rounded off over about 6 frames or so where he moves diagonally before completing the turn
             */
             blastLeft: -175.70,
@@ -27181,7 +27190,7 @@ const ImportStage = (() => {
               Camera Boundaries
               (-) CamLimit0N: (-123.75, 112.50)
               (-) CamLimit1N: (123.75, -84.75)
-      
+
               Platforms
               (-) Left (Start): (-49.50, 16.125)
               (-) Left (Start): (-21.00, 16.125)
@@ -27195,7 +27204,7 @@ const ImportStage = (() => {
               (8) Right (Highest): (49.50, 27.375)
               (9) Right (Lowest): (21.00, 12.375)
               (10) Right (Lowest): (49.50, 12.375)
-      
+
               Side platforms stop within multiples of 0.250 between 12.375-27.375?
             */
             blastLeft: -198.75,
@@ -27242,7 +27251,7 @@ const ImportStage = (() => {
               Camera Boundaries
               (-) CamLimit0N: (-165.00, 190.00)
               (-) CamLimit1N: (165.00, -81.00)
-      
+
               Needs wind effect
             */
             blastLeft: -255.00,
@@ -32805,13 +32814,14 @@ const ImportRendering = (() => {
             }*/
             // render terminal emulator
             renderTick(ctx, -width / 2, -height / 2, width, height - 50);
+            drawText('Blastzone (c) 2017 bluehexagons, all rights reserved; press Backspace to connect keyboard', 2, fontSize);
             // write framerates
-            drawText(frameRate.toFixed(2) + ' (' + minRate.toString(10) + '-' + maxRate.toString(10) + ')', 2, fontSize);
-            drawText(msFramerate(stopwatch.stop()), 2, fontSize * 2);
+            drawText(frameRate.toFixed(2) + ' (' + minRate.toString(10) + '-' + maxRate.toString(10) + ')', 2, fontSize * 2);
+            drawText(msFramerate(stopwatch.stop()), 2, fontSize * 3);
             if (began !== null || countTo !== null) {
                 setFontSize(30);
-                began !== null && drawText(timeString(frame - began), width / 2, fontSize * 2);
-                countTo !== null && drawText(timeString(countTo - frame), width / 2, fontSize * 2);
+                began !== null && drawText(timeString(frame - began), width / 2, fontSize * 3);
+                countTo !== null && drawText(timeString(countTo - frame), width / 2, fontSize * 3);
             }
             if (mp & 2) {
                 mp ^= 2;
