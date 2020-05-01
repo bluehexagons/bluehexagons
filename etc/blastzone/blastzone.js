@@ -25718,6 +25718,7 @@ echo numbered args $0 $1 $2 $3 $4 $5 $6 $7 $8 $9
     dbg('This was the last commit that could still run in a web browser, before moving to Electron');
     dbg('and, subsequently, Node + SDL2.');
     dbg('To play using a keyboard, press Backspace.');
+    dbg('Also supports the browser GamePad API, so connected Xbox/etc controllers should work fine.');
 
     let oldCursorPos = -1;
     let oldPromptLength = -1;
