@@ -1,0 +1,4 @@
+Survival Shooter 2010 Classic Edition copyright (c) bluehexagons
+Source code is proprietary but may be made available on request for fun
+
+uses a ported version of a Greenfoot utility class (Vector) because this was written before I figured out how angles should work and it'd be too much effort to change - (c) Paul Henriksen and Michael Kolling under the GNU Classpath license
