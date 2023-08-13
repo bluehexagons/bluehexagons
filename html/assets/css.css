@@ -29,6 +29,7 @@ body {
   --antistatic: rgb(255, 110, 0);
 
   background: var(--bg-outer);
+  background: center repeat url("b6bg.png"), var(--bg-outer);
   color: #eaeaea;
   margin: 0;
   padding: 0;
