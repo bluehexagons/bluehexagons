@@ -6,7 +6,7 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "newLine": "LF",
-    "target": "es5",
+    "target": "ES6",
     "allowJs": false
   }
 }

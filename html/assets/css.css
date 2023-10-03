@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 .antistatic {
   --bg-outer: rgb(40, 34, 34);
   --bg-inner: rgb(29, 24, 24);
@@ -130,18 +134,26 @@ a:hover {
   height: auto;
 }
 #logo-div {
-  width: calc(100% - 20px);
   overflow: hidden;
-  margin: 10px 10px 20px 10px;
+  max-width: 900px;
+  padding: 10px 10px 10px 10px;
+  margin: auto;
 }
-#logo-div img {
+#logo-div #logo {
+  width: max(10%, 50px);
+  z-index: 10;
+  margin-left: 0;
+  margin-right: 0;
+  text-align: center;
+  display: inline-block;
+}
+#logo-div img:not(#logo) {
   width: 100%;
   z-index: 10;
-  max-width: 1000px;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: 0;
+  margin-right: 0;
   text-align: center;
-  display: block;
+  display: inline-block;
 }
 #content {
   position: relative;
