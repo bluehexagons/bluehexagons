@@ -511,7 +511,8 @@ pre code {
   overflow-x: auto;
   padding: 10px 0;
 }
-.imageScroller > * {
+.imageScroller > *, .imageScroller > a > img {
+  display: block;
   height: 100%;
   width: auto;
   object-fit: contain;
