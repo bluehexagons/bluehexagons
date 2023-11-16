@@ -103,8 +103,24 @@
         </p>
 
         <p>
+          Internationalization is handled using Fluent, with the language files <a href="https://github.com/bluehexagons/antistatic-translations">available on GitHub</a>.
+          (And open to pull requests!)
+        </p>
+
+        <p>
+          Antistatic's matchmaking server is very simplistic, but is built in Go to run on a Linux host.
+        </p>
+
+        <p>
+          Netcode is peer-to-peer and delay-based, and some infrastructure work has been done to move toward adding rollback in the future.
+          It runs on UDP, with higher-level messages encoded in JSON along with a binary stream of controller snapshots.
+          The engine (poorly) attempts to synchronize beginning times and input delay, poke through permissive firewalls, and gracefully handle dropped packets.
+        </p>
+
+        <p>
           Antistatic's build system is mostly automated starting from a build-free git repo,
-          pulling in and installing dependencies as well as building a few binaries.
+          pulling in and installing dependencies as well as building a few binaries. The process is
+          a mix of PowerShell and Bash scripts.
         </p>
 
         <p>
