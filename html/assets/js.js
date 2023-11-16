@@ -1,32 +1,6 @@
 'use strict';
-const intro = document.getElementById('intro');
-if (intro) {
-    const testPause = () => {
-        if (intro.currentTime > 12.33) {
-            intro.pause();
-        }
-    };
-    intro.addEventListener('ended', () => {
-        intro.addEventListener('timeupdate', testPause);
-        intro.currentTime = 0;
-        intro.play();
-    });
-    const togglePlay = () => {
-        if (intro.paused) {
-            intro.muted = false;
-            intro.removeEventListener('timeupdate', testPause);
-            intro.play();
-        }
-        else {
-            intro.pause();
-        }
-    };
-    intro.addEventListener('timeupdate', testPause);
-    intro.addEventListener('click', togglePlay);
-}
 const reels = document.getElementsByClassName('reel');
-for (let i = 0; i < reels.length; i++) {
-    const reelContainerContainer = reels[i];
+for (const reelContainerContainer of reels) {
     const reelContainer = document.createElement('div');
     const reel = document.createElement('video');
     const videoDir = 'assets/clips/';

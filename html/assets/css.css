@@ -16,7 +16,7 @@
 }
 
 .bluehexagons {
-  --bg-outer: #222228;
+  --bg-outer: #20202a;
   --bg-inner: #18181d;
   --bg: #29292f;
 
@@ -32,8 +32,8 @@ body {
   --bluehexagons: rgb(0, 223, 252);
   --antistatic: rgb(255, 110, 0);
 
-  background: var(--bg-outer);
-  background: center repeat url("b6bg.png"), var(--bg-outer);
+  background: var(--bg-outer) top repeat;
+  background-image: linear-gradient(to bottom, rgba(29, 24, 24, 0.8), rgba(29, 24, 24, 0.95)), url("b6bg.png");
   color: #eaeaea;
   margin: 0;
   padding: 0;
@@ -64,7 +64,7 @@ a:hover {
   width: 90%;
 
   border-top: 1px solid #272121;
-  padding: 20px 10px 0px 10px;
+  padding: 40px 20px 40px 20px;
 }
 #footer > .copyright {
   float: right;
@@ -160,7 +160,6 @@ a:hover {
 }
 #main {
   position: relative;
-  max-width: 900px;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 30px;
@@ -261,10 +260,6 @@ a:hover {
   margin-left: 8px;
 }
 
-#main ul > li::before {
-  content: '-';
-  padding-right: 4px;
-}
 #main h2, #main h3, #main h4 {
   text-align: left;
 }
@@ -305,7 +300,6 @@ h4 {
 
 .nav {
   font-size: 22px;
-  margin-left: 10px;
   white-space: nowrap;
   cursor: default;
 }
@@ -334,7 +328,6 @@ h4 {
 }
 
 .nav > a {
-  border: 2px solid var(--outline);
   border-radius: 3px;
   text-decoration: none;
   padding: 4px 9px;
@@ -347,7 +340,6 @@ h4 {
   color: var(--dim-highlight);
 }
 .nav > a:hover {
-  border-color: var(--outline-highlight);
   background: var(---bg);
   color: var(--highlight);
 }
@@ -444,4 +436,90 @@ pre code {
   font-size: 80%;
   border: none;
   padding: 0;
+}
+
+/* v2 */
+.contentArea > * {
+  display: grid;
+  grid-template-columns: 40px [widest-start] 1fr 60px [centered-start] 800px [centered-end] 60px 1fr [widest-end] 40px;
+  text-align: center;
+}
+
+.contentArea > * > * {
+  grid-column: centered;
+}
+
+.contentArea > article > p {
+
+}
+
+.contentArea > * .widest {
+  grid-column: widest;
+}
+
+.expandToggle {
+  color: green;
+  vertical-align: middle;
+  appearance: none;
+  background: none;
+  border: 0;
+  outline: 0;
+  cursor: pointer;
+  text-align: center;
+}
+
+.expandToggle::before {
+  color: white;
+  content: "more...";
+  width: 100px;
+  height: 100px;
+}
+.expandToggle ~ * {
+  display: none;
+}
+.expandToggle:checked {
+  display: none;
+}
+.expandToggle:checked ~ * {
+  display: block;
+}
+
+.flexList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  text-align: center;
+  justify-content: center;
+}
+
+.flexList__background > li {
+  background: var(--bg);
+  padding: 3px 5px;
+}
+
+.flexList > li {
+  list-style-type: none;
+  display: block;
+  white-space: nowrap;
+}
+
+.imageScroller {
+  height: 300px;
+  overflow: hidden;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+.imageScroller > * {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  max-width: 600px;
+}
+.camoAnchors a, .camoAnchors a:visited {
+  color: #eaeaea;
+}
+.camoAnchors a:hover, .camoAnchors a:focus {
+  color: #fff;
 }

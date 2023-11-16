@@ -20,8 +20,7 @@
     />
   </head>
   <body class="bluehexagons">
-    <div id="logo-div"><img id="logo" src="assets/b6.png" /></div>
-    <div id="main">
+    <div class="contentArea">
       <div class="navbar">
         <span class="nav">
           <a href="index"><span>bluehexagons</span></a>
@@ -29,25 +28,48 @@
           <a href="https://foodguide.bluehexagons.com"><span>Food Guide</span></a>
           <a href="antistatic/blog"><span>Blog</span></a>
         </span>
-
-        <span class="socials">
-          <span class="bluehexagons-text">
-            <!-- <a href="https://www.facebook.com/bluehexagons"><span class="fab fa-facebook-square"></span></a> unmaintained -->
-            <a href="https://twitter.com/bluehexagons"><span class="fab fa-twitter-square"></span></a>
-            <a href="https://www.youtube.com/channel/UCebIpk8QeSLTN9hRTVkqybw"><span class="fab fa-youtube-square"></span></a>
-            <a href="https://www.linkedin.com/in/loren-crain"><span class="fab fa-linkedin"></span></a>
-            <a href="https://github.com/bluehexagons"><span class="fab fa-github-square"></span></a>
-          </span>
-        </span>
       </div>
+      <article>
+        <h1>Loren Crain</h1>
+
+        <ul class="flexList camoAnchors">
+          <li><a href="mailto:loren@bluehexagons.com">loren@bluehexagons.com</a></li>
+          <!-- <li><a href="https://www.facebook.com/bluehexagons"><span class="fab fa-facebook-square"></span></a></li> unmaintained -->
+          <li><a href="https://twitter.com/bluehexagons"><span class="fab fa-twitter-square"></span></a></li>
+          <li><a href="https://www.youtube.com/channel/UCebIpk8QeSLTN9hRTVkqybw"><span class="fab fa-youtube-square"></span></a></li>
+          <li><a href="https://www.linkedin.com/in/loren-crain"><span class="fab fa-linkedin"></span></a></li>
+          <li><a href="https://github.com/bluehexagons"><span class="fab fa-github-square"></span></a></li>
+          <li>SW Missouri</li>
+        </ul>
+
+        <ul class="flexList flexList__background">
+          <li>Frontend Software Engineer</li>
+          <li>Indie Dev</li>
+          <li>Generalist Engineer</li>
+          <li>Web Dev</li>
+          <li>TypeScript</li>
+          <li>React</li>
+          <li>C#</li>
+          <li>C</li>
+          <li>Go</li>
+          <li>SQL</li>
+          <li>Linux Systems</li>
+        </ul>
+
+
+      </article>
 
       <article>
-        <h1>About bluehexagons</h1>
-        <p>
-          <strong class="bluehexagons-text">bluehexagons</strong> is comprised of
-          Loren "Terral" Crain, former lead programmer for Air Dash Online and
-          long-time Melee enthusiast and competitor.
-        </p>
+        <h1>Antistatic</h1>
+
+        <p>Put cool images and stuff here</p>
+        <div class="imageScroller widest">
+          <img src="assets/antistatic/boxart.png" />
+          <iframe width="533" height="300" src="https://www.youtube-nocookie.com/embed/GtGyPGYhTdE?si=mJMmQ1pbVitJQWLC&amp;controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          <img src="assets/antistatic/Screenshot 2023-11-16 135339.png" />
+          <img src="assets/antistatic/wheeeemodels.png" />
+        </div>
+
         <p>
           Antistatic, an uncompromising platform fighting game,
           has been in development since 2012 as an experimental homage
@@ -55,24 +77,53 @@
           written in TypeScript and C, with a 3D OpenGL graphics engine.
         </p>
 
+        <input type="checkbox" class="expandToggle" />
+
+        <h2>
+          Tech stack
+        </h2>
+
         <p>
-            Email:
-            <a href="mailto:this@bluehexagons.com">this@bluehexagons.com</a>
-        </p>
-        <p>
-            Discord: terral
+          Antistatic runs on top of Node.js, with the bulk written in TypeScript.
+          Native portions are written in C, and run as a Node.js addon. 
         </p>
       </article>
 
-      <div id="footer">
-        <span class="links">
-          <a href="antistatic/presskit">Presskit</a>
-          <a href="antistatic/privacy">Privacy</a>
-        </span>
-        <span class="copyright">
-          Copyright &copy; 2018-2020 bluehexagons, all rights reserved.
-        </span>
-      </div>
+      <article>
+        <h1>Air Dash Online</h1>
+
+        <div class="imageScroller widest">
+          <img src="assets/ado/1157428_391081464351375_1074064025_n.png" />
+          <img src="assets/ado/dd0e10cb88d38afeaf6303d24b11521f_large.gif" />
+          <img src="assets/ado/1093871_374154056044116_1718466907_o.png" />
+        </div>
+
+        <p>
+          Air Dash Online was a prototype of a fast-paced platform fighting game by JV5 Games.
+          As the lead programmer, I built its custom platform fighter gameplay engine
+          inside of Unity and performed all non-graphics programming.
+        </p>
+      </article>
+
+      <article>
+        <h1>Don't Starve Food Guide</h1>
+
+        <div class="imageScroller widest">
+          <img src="assets/foodguide/Screenshot 2023-11-16 141445.png" />
+          <img src="assets/foodguide/Screenshot 2023-11-16 141703.png" />
+          <img src="assets/foodguide/Screenshot 2023-11-16 141519.png" />
+        </div>
+      </article>
+    </div>
+
+    <div id="footer">
+      <span class="links">
+        <a href="antistatic/presskit">Presskit</a>
+        <a href="antistatic/privacy">Privacy</a>
+      </span>
+      <span class="copyright">
+        Antistatic &copy; 2018-2024 bluehexagons, all rights reserved. Air Dash Online &copy; 2013 JV5 Games.
+      </span>
     </div>
     <script src="assets/js.js"></script>
   </body>
