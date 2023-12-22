@@ -48,75 +48,100 @@
         </section>
 
         <section class="labeledList">
-        <div>Roles</div>
-        <ul class="flexList flexList__background">
-          <li>Frontend Software Engineer</li>
-          <li>Game Dev</li>
-          <li>Generalist Engineer</li>
-        </ul>
+          <div>Roles</div>
+          <ul class="flexList flexList__background">
+            <li>Frontend Software Engineer</li>
+            <li>Game Dev</li>
+            <li>Generalist Engineer</li>
+          </ul>
+        </section>
+
+        <h1>Skills</h1>
+
+        <section class="labeledList">
+          <div>Core</div>
+          <ul class="flexList flexList__background">
+            <li>TypeScript</li>
+            <li>React</li>
+            <li>C#</li>
+            <li>Go</li>
+            <li>SQL</li>
+            <li>C/C++</li>
+            <li>Node.js</li>
+          </ul>
         </section>
 
         <section class="labeledList">
-        <div>Core, ordered by experience</div>
-        <ul class="flexList flexList__background">
-          <li>TypeScript</li>
-          <li>React</li>
-          <li>C#</li>
-          <li>Go</li>
-          <li>SQL</li>
-          <li>C/C++</li>
-          <li>OpenGL</li>
-        </ul>
+          <div>Frontend web development</div>
+          <ul class="flexList flexList__background">
+            <li>TypeScript</li>
+            <li>React</li>
+            <li>Redux/Sagas</li>
+            <li>JavaScript</li>
+            <li>HTML</li>
+            <li>CSS</li>
+            <li>Jest</li>
+            <li>webpack</li>
+            <li>npm</li>
+            <li><a href="https://www.slatejs.org/">slate</a></li>
+          </ul>
         </section>
 
         <section class="labeledList">
-        <div>Frontend web development</div>
-        <ul class="flexList flexList__background">
-          <li>TypeScript</li>
-          <li>React</li>
-          <li>Redux/Sagas</li>
-          <li>JavaScript</li>
-          <li>HTML</li>
-          <li>CSS</li>
-          <li>Jest</li>
-          <li>webpack</li>
-          <li>npm</li>
-          <li><a href="https://www.slatejs.org/">slate</a></li>
-        </ul>
+          <div>Software engineering</div>
+          <ul class="flexList flexList__background">
+            <li>C#</li>
+            <li>Python</li>
+            <li>Rust</li>
+            <li>PHP</li>
+            <li>Linux</li>
+            <li>git</li>
+            <li>Reverse engineering</li>
+          </ul>
         </section>
 
         <section class="labeledList">
-        <div>Etc, unordered</div>
-        <ul class="flexList flexList__background">
-          <li>Python</li>
-          <li>Rust</li>
-          <li>PHP</li>
-          <li>git</li>
-          <li>Linux</li>
-          <li>Bash</li>
-          <li>Server administration</li>
-          <li>Network administration</li>
-          <li>Computer hardware</li>
-          <li>Embedded devices</li>
-          <li>VMs/VPS</li>
-          <li>Mac</li>
-          <li>Windows</li>
-          <li>PowerShell</li>
-          <li>ffmpeg</li>
-          <li>Unity</li>
-          <li>Unreal Engine</li>
-          <li>3D printing</li>
-          <li>2D animation</li>
-          <li>Photography</li>
-          <li>Backyard engineering</li>
-          <li>Electrical engineering</li>
-          <li>Reverse engineering</li>
-        </ul>
+          <div>Game development</div>
+          <ul class="flexList flexList__background">
+            <li>Unity</li>
+            <li>Unreal Engine</li>
+            <li>HTML5 Canvas</li>
+            <li>WebGL</li>
+            <li>OpenGL</li>
+            <li>Game design</li>
+            <li>2D animation</li>
+          </ul>
+        </section>
+
+        <section class="labeledList">
+          <div>Etc</div>
+          <ul class="flexList flexList__background">
+            <li>Bash</li>
+            <li>vim</li>
+            <li>Server administration</li>
+            <li>Network administration</li>
+            <li>PC & server hardware</li>
+            <li>Embedded devices</li>
+            <li>VMs/VPS</li>
+            <li>TrueNAS</li>
+            <li>OPNsense</li>
+            <li>Proxmox</li>
+            <li>Mac</li>
+            <li>Windows</li>
+            <li>PowerShell</li>
+            <li>ffmpeg</li>
+            <li>3D printing</li>
+            <li>Photography</li>
+            <li>Backyard engineering</li>
+            <li>Electrical engineering</li>
+          </ul>
         </section>
       </article>
 
       <article>
         <h1>Antistatic</h1>
+
+        <p class="timeRange">2012 - Present</p>
 
         <div class="imageScroller widest">
           <img src="assets/antistatic/boxart.png" title="Antistatic's Steam box art" />
@@ -170,9 +195,9 @@
           I run it as a service on a headless Ubuntu server that I maintain, hosted by a popular VPS.
         </p>
 
-        <h3>
+        <h2>
           Graphics engine
-        </h3>
+        </h2>
         
         <p>
           The graphics engine is also split, with lower-level code written in C and OpenGL and much of the model
@@ -180,32 +205,60 @@
           font atlas. Other libraries used include: GLEW for OpenGL bindings, SDL2 for window management, and SDL2_image for image loading. 
         </p>
 
+        <h2>
+          Audio engine
+        </h2>
+
         <p>
           The audio engine uses OpenAL-soft to interface with hardware. Files are OGGs, and libvorbistools is used
           to decode them.
         </p>
+
+        <h2>
+          Netcode
+        </h2>
+
+        <p>
+          Netcode is peer-to-peer and delay-based, and some infrastructure work has been done to move toward adding rollback in the future.
+          It runs on UDP, with higher-level messages encoded in JSON along with a binary stream of controller snapshots.
+          The engine attempts to synchronize beginning times and input delay, poke through permissive firewalls, and gracefully handle dropped packets.
+        </p>
+
+        <h2>
+          
+        </h2>
+
+        <h2>
+          USB GCN Controller Adapter Support
+        </h2>
 
         <p>
           To connect to the official Wii U/Switch GameCube controller adapter, I used LibUSB to directly communicate with
           the adapter over USB.
         </p>
 
-        <p>
-          Internationalization is handled using Fluent, with the language files <a href="https://github.com/bluehexagons/antistatic-translations">available on GitHub</a>.
-          (And open to pull requests!)
-        </p>
+        <h2>
+          Internationalization
+        </h2>
 
         <p>
-          Netcode is peer-to-peer and delay-based, and some infrastructure work has been done to move toward adding rollback in the future.
-          It runs on UDP, with higher-level messages encoded in JSON along with a binary stream of controller snapshots.
-          The engine (poorly) attempts to synchronize beginning times and input delay, poke through permissive firewalls, and gracefully handle dropped packets.
+          Internationalization is handled using Fluent, with the language files <a href="https://github.com/bluehexagons/antistatic-translations">available on GitHub</a>.
+          Currently, only English and Spanish have had human review.
         </p>
+
+        <h2>
+          Build system
+        </h2>
 
         <p>
           Antistatic's build system is mostly automated starting from a build-free git repo,
           pulling in and installing dependencies as well as building a few binaries. The process is
           a mix of PowerShell and Bash scripts.
         </p>
+
+        <h2>
+          History
+        </h2>
 
         <p>
           Originally, Antistatic ran in a web browser. The limitations started adding up,
@@ -217,6 +270,8 @@
 
       <article>
         <h1>Senior UI Engineer @ Zazzle.com</h1>
+
+        <p class="timeRange">Jun 2019 - Sep 2023</p>
 
         <div class="imageScroller widest">
           <img title="A screenshot showing a few technologies I built and worked on being used on the website. I worked extensively on displaying images, interactive hotspots, and our content management system." src="assets/zazzle/Screenshot 2023-11-13 121328.png" />
@@ -252,6 +307,8 @@
       <article>
         <h1>Lead Programmer @ Air Dash Online</h1>
 
+        <p class="timeRange">May - Oct 2013</p>
+
         <div class="imageScroller widest">
           <img title="A promotional screenshot showing Tesla using side-special against a stationary Chai." src="assets/ado/1157428_391081464351375_1074064025_n.png" />
           <img title="A short animation showing Tesla comboing Chai. It ends in an air dash knee used to punish a stun cancel air dash for the KO." src="assets/ado/dd0e10cb88d38afeaf6303d24b11521f_large.gif" />
@@ -265,6 +322,7 @@
           <li>Technical animation</li>
           <li>Rapid prototyping</li>
           <li>git</li>
+          <li>Fully playable pre-alpha, lost to time</li>
         </ul>
 
         <input type="checkbox" class="expandToggle" aria-label="Show more" />
@@ -272,12 +330,28 @@
         <p>
           Air Dash Online was a prototype of a fast-paced platform fighting game by JV5 Games.
           As the lead programmer, I built its custom platform fighter gameplay engine
-          inside of Unity and performed all non-graphics programming.
+          inside of Unity and performed non-graphics programming.
         </p>
+
+        <section class="labeledList">
+          <div>Custom Tech</div>
+          <ul>
+            <li>2D capsule-based attack collision system based on 3D animations</li>
+            <li>2D stage collision and management system</li>
+            <li>In-game controller remapping tech</li>
+            <li>Automated detection of some controllers for specific remapping</li>
+            <li>Keyboard, controller, and fight stick support</li>
+            <li>YAML parser</li>
+            <li>Animation sequencing, timing, interpolation system</li>
+            <li>Platform fighter mechanics: air dodging, wave dashing, light/heavy attacks, blocking, recovery, etc</li>
+          </ul>
+        </section>
       </article>
 
       <article>
         <h1>Don't Starve Food Guide</h1>
+
+        <p class="timeRange">Jan 2013 - Present</p>
 
         <div class="imageScroller widest">
           <img title="A screenshot of the Don't Starve Food Guide's Discovery tab." src="assets/foodguide/Screenshot 2023-11-16 141445.png" />
