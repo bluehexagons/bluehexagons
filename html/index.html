@@ -21,41 +21,98 @@
     />
   </head>
   <body class="bluehexagons">
+    <nav class="navbar">
+      <span class="nav">
+        <a href="index"><span>bluehexagons</span></a>
+        <a href="antistatic"><span>Antistatic</span></a>
+        <a href="https://foodguide.bluehexagons.com"><span>Food Guide</span></a>
+        <a href="antistatic/blog"><span>Blog</span></a>
+      </span>
+    </nav>
     <div class="contentArea">
-      <div class="navbar">
-        <span class="nav">
-          <a href="index"><span>bluehexagons</span></a>
-          <a href="antistatic"><span>Antistatic</span></a>
-          <a href="https://foodguide.bluehexagons.com"><span>Food Guide</span></a>
-          <a href="antistatic/blog"><span>Blog</span></a>
-        </span>
-      </div>
+      <div class="contentArea__background .centered"></div>
       <article>
         <h1>Loren Crain</h1>
 
-        <ul class="flexList camoAnchors">
-          <li><a href="https://www.linkedin.com/in/loren-crain" aria-label="Loren Crain on LinkedIn">LinkedIn</a></li>
-          <li><a href="https://github.com/bluehexagons" aria-label="Loren Crain is bluehexagons on GitHub">GitHub</a></li>
-          <li><a href="mailto:loren@bluehexagons.com">loren@bluehexagons.com</a></li>
-          <li><a href="https://twitter.com/bluehexagons" aria-label="Loren Crain is @bluehexagons on Twitter, or whatever it is when you read this">@bluehexagons</a></li>
-          <li aria-label="Southwest Missouri">SW Missouri</li>
-          <!-- <li><a href="https://www.youtube.com/channel/UCebIpk8QeSLTN9hRTVkqybw" aria-label="bluehexagons on YouTube">YouTube</a></li> --> <!-- Need a better way to include this link -->
-          <!-- <li><a href="https://www.facebook.com/bluehexagons"><span class="fab fa-facebook-square"></span></a></li> unmaintained -->
-        </ul>
+        <section class="labeledList">
+          <div>Contact</div>
+          <ul class="flexList">
+            <li><a href="https://www.linkedin.com/in/loren-crain" aria-label="Loren Crain on LinkedIn">LinkedIn</a></li>
+            <li><a href="https://github.com/bluehexagons" aria-label="Loren Crain is bluehexagons on GitHub">GitHub</a></li>
+            <li><a href="mailto:loren@bluehexagons.com">loren@bluehexagons.com</a></li>
+            <li><a href="https://twitter.com/bluehexagons" aria-label="Loren Crain is @bluehexagons on Twitter, or whatever it is when you read this">@bluehexagons</a></li>
+            <li aria-label="Southwest Missouri">SW Missouri</li>
+            <!-- <li><a href="https://www.youtube.com/channel/UCebIpk8QeSLTN9hRTVkqybw" aria-label="bluehexagons on YouTube">YouTube</a></li> --> <!-- Need a better way to include this link -->
+            <!-- <li><a href="https://www.facebook.com/bluehexagons"><span class="fab fa-facebook-square"></span></a></li> unmaintained -->
+          </ul>
+        </section>
 
+        <section class="labeledList">
+        <div>Roles</div>
         <ul class="flexList flexList__background">
           <li>Frontend Software Engineer</li>
-          <li>Indie Dev</li>
+          <li>Game Dev</li>
           <li>Generalist Engineer</li>
-          <li>Web Dev</li>
+        </ul>
+        </section>
+
+        <section class="labeledList">
+        <div>Core, ordered by experience</div>
+        <ul class="flexList flexList__background">
           <li>TypeScript</li>
           <li>React</li>
           <li>C#</li>
-          <li>C</li>
           <li>Go</li>
           <li>SQL</li>
-          <li>Linux Systems</li>
+          <li>C/C++</li>
+          <li>OpenGL</li>
         </ul>
+        </section>
+
+        <section class="labeledList">
+        <div>Frontend web development</div>
+        <ul class="flexList flexList__background">
+          <li>TypeScript</li>
+          <li>React</li>
+          <li>Redux/Sagas</li>
+          <li>JavaScript</li>
+          <li>HTML</li>
+          <li>CSS</li>
+          <li>Jest</li>
+          <li>webpack</li>
+          <li>npm</li>
+          <li><a href="https://www.slatejs.org/">slate</a></li>
+        </ul>
+        </section>
+
+        <section class="labeledList">
+        <div>Etc, unordered</div>
+        <ul class="flexList flexList__background">
+          <li>Python</li>
+          <li>Rust</li>
+          <li>PHP</li>
+          <li>git</li>
+          <li>Linux</li>
+          <li>Bash</li>
+          <li>Server administration</li>
+          <li>Network administration</li>
+          <li>Computer hardware</li>
+          <li>Embedded devices</li>
+          <li>VMs/VPS</li>
+          <li>Mac</li>
+          <li>Windows</li>
+          <li>PowerShell</li>
+          <li>ffmpeg</li>
+          <li>Unity</li>
+          <li>Unreal Engine</li>
+          <li>3D printing</li>
+          <li>2D animation</li>
+          <li>Photography</li>
+          <li>Backyard engineering</li>
+          <li>Electrical engineering</li>
+          <li>Reverse engineering</li>
+        </ul>
+        </section>
       </article>
 
       <article>
@@ -70,22 +127,52 @@
         </div>
 
         <p>
+          An uncompromising fighting game using a bespoke engine, built solo.
+        </p>
+
+        <ul class="flexList flexList__background">
+          <li>Main language: TypeScript</li>
+          <li>Native code: C</li>
+          <li>Runtime: Node.js</li>
+          <li>Server language: Go</li>
+          <li>Server OS: Ubuntu</li>
+          <li>Graphics: OpenGL</li>
+          <li>Shaders: GLES</li>
+          <li>Window: SDL2</li>
+          <li>USB: LibUSB</li>
+          <li>Audio: OpenAL-soft Ogg/Vorbis</li>
+          <li>Netcode: Delay-based over UDP</li>
+          <li>Internationalization: <a href="https://projectfluent.org/">Fluent</a></li>
+          <li>Build system: Bash, PowerShell</li>
+          <li>git</li>
+        </ul>
+
+        <input type="checkbox" class="expandToggle" aria-label="Show more technical details" />
+
+        <p>
           Antistatic, an uncompromising platform fighting game,
           has been in development since 2012 as an experimental homage
           to Super Smash Bros. Melee. It is built in a custom engine,
           written in TypeScript and C, with a 3D OpenGL graphics engine.
         </p>
 
-        <input type="checkbox" class="expandToggle" aria-label="Show more" />
-
         <h2>
-          Tech stack
+          Technical Details
         </h2>
 
         <p>
           Antistatic runs on top of Node.js, with the bulk written in TypeScript.
           Native portions are written in C, and run as a Node.js addon.
         </p>
+
+        <p>
+          Antistatic's matchmaking server is built in Go <a href="https://github.com/bluehexagons/antistatic-server">and is open-source</a>.
+          I run it as a service on a headless Ubuntu server that I maintain, hosted by a popular VPS.
+        </p>
+
+        <h3>
+          Graphics engine
+        </h3>
         
         <p>
           The graphics engine is also split, with lower-level code written in C and OpenGL and much of the model
@@ -106,10 +193,6 @@
         <p>
           Internationalization is handled using Fluent, with the language files <a href="https://github.com/bluehexagons/antistatic-translations">available on GitHub</a>.
           (And open to pull requests!)
-        </p>
-
-        <p>
-          Antistatic's matchmaking server is very simplistic, but is built in Go to run on a Linux host.
         </p>
 
         <p>
@@ -143,6 +226,21 @@
           <img title="A screenshot of a table rendered in React that was created using the internal table editing tool I authored." src="assets/zazzle/Screenshot 2023-11-13 121545.png" />
         </div>
 
+        <ul class="flexList flexList__background">
+          <li>TypeScript</li>
+          <li>React</li>
+          <li>SCSS</li>
+          <li>C#</li>
+          <li>Redux/Sagas</li>
+          <li>slate</li>
+          <li>SQL</li>
+          <li>Responsive design</li>
+          <li>Accessibility</li>
+          <li>Internationalization</li>
+          <li>Jira</li>
+          <li>Bitbucket</li>
+        </ul>
+
         <input type="checkbox" class="expandToggle" aria-label="Show more" />
 
         <p>
@@ -160,6 +258,17 @@
           <img title="A screenshot of progress made after the EVO demo, leading up to the Kickstarter launch." src="assets/ado/1093871_374154056044116_1718466907_o.png" />
         </div>
 
+        <ul class="flexList flexList__background">
+          <li>Unity Game Engine</li>
+          <li>Custom physics</li>
+          <li>Custom 2D collision system</li>
+          <li>Technical animation</li>
+          <li>Rapid prototyping</li>
+          <li>git</li>
+        </ul>
+
+        <input type="checkbox" class="expandToggle" aria-label="Show more" />
+
         <p>
           Air Dash Online was a prototype of a fast-paced platform fighting game by JV5 Games.
           As the lead programmer, I built its custom platform fighter gameplay engine
@@ -176,6 +285,16 @@
           <img title="A screenshot of the statistics analyzer in the Discovery tab." src="assets/foodguide/Screenshot 2023-11-16 141519.png" />
         </div>
 
+        <ul class="flexList flexList__background">
+          <li>JavaScript</li>
+          <li>HTML</li>
+          <li>CSS</li>
+          <li><a href="https://github.com/bluehexagons/foodguide">Open-source</a></li>
+          <li>100+ stars on GitHub</li>
+        </ul>
+
+        <input type="checkbox" class="expandToggle" aria-label="Show more" />
+
         <p>
           The open-source <a href="https://foodguide.bluehexagons.com">Food Guide</a>
           (<a href="https://github.com/bluehexagons/foodguide">on GitHub</a>)
@@ -187,6 +306,16 @@
 
       <article>
         <h1>bluehexagons.com</h1>
+
+        <ul class="flexList flexList__background">
+          <li>JavaScript</li>
+          <li>HTML</li>
+          <li>CSS</li>
+          <li>Ubuntu</li>
+          <li>Bash</li>
+        </ul>
+
+        <input type="checkbox" class="expandToggle" aria-label="Show more" />
 
         <p>
           This website is hosted on a headless Linux server running nginx, written using
