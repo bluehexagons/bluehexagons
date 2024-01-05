@@ -570,6 +570,7 @@ pre code {
   padding: 0 10px;
   margin: 0 auto;
   max-width: 100%;
+  justify-content: center;
 }
 .imageScroller > *, .imageScroller > a > img {
   display: block;
