@@ -57,3 +57,18 @@ for (const reelContainerContainer of reels) {
   reelContainer.appendChild(reel)
   reelContainerContainer.appendChild(reelContainer)
 }
+
+const findLastDot = /\.(?=[^.]*$)/
+const findSuffix = / \(Phone\)\./
+const findThumbs = /\wthumbs\//
+const imageScrollers = document.getElementsByClassName('imageScroller') as HTMLCollectionOf<HTMLDivElement>
+for (const scroller of imageScrollers) {
+  for (const img of scroller.querySelectorAll<HTMLImageElement>(':scope > img')) {
+    const link = document.createElement('a')
+    const thumbnail = img.src
+    const fullsize = thumbnail.replace(findThumbs, '')
+    link.href = fullsize
+    img.parentElement.replaceChild(link, img)
+    link.appendChild(img)
+  }
+}

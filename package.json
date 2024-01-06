@@ -3,6 +3,7 @@
     "typescript": "^5.2.2"
   },
   "scripts": {
-    "compile": "tsc"
+    "compile": "tsc",
+    "watch": "tsc --watch"
   }
 }
