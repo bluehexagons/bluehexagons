@@ -67,7 +67,6 @@ for (const scroller of imageScrollers) {
     const link = document.createElement('a')
     const thumbnail = img.src
     const fullsize = thumbnail.replace(findThumbs, '')
-    console.log('went from', thumbnail, 'to', fullsize)
     link.href = fullsize
     img.parentElement.replaceChild(link, img)
     link.appendChild(img)
