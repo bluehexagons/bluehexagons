@@ -582,7 +582,7 @@ pre code {
   white-space: nowrap;
 }
 
-.imageScroller {
+.image-scroller {
   height: 300px;
   overflow: hidden;
   display: inline-flex;
@@ -595,14 +595,14 @@ pre code {
   justify-content: flex-start;
 }
 
-.imageScroller > *, .imageScroller > a > img {
+.image-scroller > *, .image-scroller > a > img {
   display: block;
   height: 100%;
   width: auto;
   object-fit: contain;
   max-width: 600px;
 }
-.imageScroller img {
+.image-scroller img {
   border-radius: 2px;
 }
 

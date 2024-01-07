@@ -60,28 +60,4 @@ const initializeReels = () => {
   }
 }
 
-const findLastDot = /\.(?=[^.]*$)/
-const findSuffix = / \(Phone\)\./
-const findThumbs = /(thumbs\/|( |\%20)\(Phone\))/g
-const makeImageScroller = (scroller: HTMLDivElement) => {
-  let selectedImageIndex = 0;
-  for (const img of scroller.querySelectorAll<HTMLImageElement>(':scope > img')) {
-    const link = document.createElement('a')
-    const thumbnail = img.src
-    const fullsize = thumbnail.replace(findThumbs, '')
-    link.href = fullsize
-    img.parentElement.replaceChild(link, img)
-    link.appendChild(img)
-  }
-}
-
-const initializeImageScrollers = () => {
-  const imageScrollers = document.getElementsByClassName('imageScroller') as HTMLCollectionOf<HTMLDivElement>
-  for (const div of imageScrollers) {
-    makeImageScroller(div)
-  }
-}
-
-
 initializeReels()
-initializeImageScrollers()
