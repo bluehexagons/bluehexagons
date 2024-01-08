@@ -4,20 +4,50 @@ class ImageScroller extends HTMLElement {
     constructor() {
         super();
         this.container = null;
+        this.gallery = null;
         this.imageElements = [];
+        this.currentImage = null;
+        this.description = null;
+    }
+    selectImage(img) {
+        var _a;
+        if (this.currentImage) {
+            this.currentImage.classList.remove('highlighted');
+        }
+        this.currentImage = img;
+        this.currentImage.classList.add('highlighted');
+        this.description.textContent = (_a = img.title) !== null && _a !== void 0 ? _a : '';
     }
     appendNode(node) {
-        if (node.nodeName !== 'IMG') {
+        var _a;
+        let imgElement = null;
+        if (node.nodeName === 'A' && ((_a = node.firstChild) === null || _a === void 0 ? void 0 : _a.nodeName) === 'IMG') {
+            imgElement = node.firstChild;
+            this.gallery.appendChild(node);
+        }
+        else if (node.nodeName === 'IMG') {
+            imgElement = node;
+            const thumbnail = imgElement.src;
+            const fullsize = thumbnail.replace(findThumbs, '');
+            const link = document.createElement('a');
+            link.href = fullsize;
+            this.gallery.appendChild(link);
+            link.appendChild(imgElement);
+        }
+        else {
+            this.gallery.appendChild(node);
             return;
         }
-        const img = node;
-        const link = document.createElement('a');
-        const thumbnail = img.src;
-        const fullsize = thumbnail.replace(findThumbs, '');
-        link.href = fullsize;
-        this.container.appendChild(link);
-        link.appendChild(img);
-        this.imageElements.push(img);
+        this.imageElements.push(imgElement);
+        if (!this.currentImage) {
+            this.selectImage(imgElement);
+        }
+        imgElement.addEventListener('mouseenter', () => {
+            this.selectImage(imgElement);
+        });
+        imgElement.addEventListener('touchstart', () => {
+            this.selectImage(imgElement);
+        });
     }
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
@@ -26,9 +56,12 @@ class ImageScroller extends HTMLElement {
         style.href = 'assets/css.css';
         shadow.appendChild(style);
         const container = document.createElement('div');
-        container.className = 'image-scroller';
         this.container = container;
         shadow.appendChild(container);
+        const gallery = document.createElement('div');
+        gallery.className = 'image-scroller';
+        this.gallery = gallery;
+        container.appendChild(gallery);
         const observer = new MutationObserver(mutations => {
             for (const mutation of mutations) {
                 for (const node of mutation.addedNodes) {
@@ -37,6 +70,10 @@ class ImageScroller extends HTMLElement {
             }
         });
         observer.observe(this, { childList: true });
+        const description = document.createElement('div');
+        description.className = 'image-scroller__description';
+        shadow.appendChild(description);
+        this.description = description;
     }
     attributeChangedCallback(_name, _oldValue, _newValue) { }
 }

@@ -5,27 +5,62 @@ const findThumbs = /(thumbs\/|( |\%20)\(Phone\))/g;
 class ImageScroller extends HTMLElement {
   static observedAttributes = ['color', 'size'];
   container: HTMLDivElement = null;
+  gallery: HTMLDivElement = null;
   imageElements: HTMLImageElement[] = [];
+  currentImage: HTMLElement = null;
+  description: HTMLDivElement = null;
 
   constructor() {
     super();
   }
 
+  selectImage(img: HTMLImageElement) {
+    if (this.currentImage) {
+      this.currentImage.classList.remove('highlighted');
+    }
+
+    this.currentImage = img;
+    this.currentImage.classList.add('highlighted');
+
+    this.description.textContent = img.title ?? '';
+  }
+
   appendNode(node: Node) {
-    if (node.nodeName !== 'IMG') {
-      // for now, only accept images
+    let imgElement: HTMLImageElement = null;
+
+    if (node.nodeName === 'A' && node.firstChild?.nodeName === 'IMG') {
+      imgElement = node.firstChild as HTMLImageElement;
+      this.gallery.appendChild(node)
+    } else if (node.nodeName === 'IMG') {
+      // for image thumbnails, add a link to the full-size version
+
+      imgElement = node as HTMLImageElement;
+      const thumbnail = imgElement.src;
+      const fullsize = thumbnail.replace(findThumbs, '');
+
+      const link = document.createElement('a');
+      link.href = fullsize;
+      this.gallery.appendChild(link);
+      link.appendChild(imgElement);
+    } else {
+      this.gallery.appendChild(node);
       return;
     }
 
-    const img = node as HTMLImageElement;
-    const link = document.createElement('a');
-    const thumbnail = img.src;
-    const fullsize = thumbnail.replace(findThumbs, '');
-    link.href = fullsize;
-    this.container.appendChild(link);
-    link.appendChild(img);
+    this.imageElements.push(imgElement);
 
-    this.imageElements.push(img);
+    if (!this.currentImage) {
+      this.selectImage(imgElement);
+    }
+
+    imgElement.addEventListener('mouseenter', () => {
+      this.selectImage(imgElement);
+    });
+
+    imgElement.addEventListener('touchstart', () => {
+      // yeah, this isn't a great way to do this
+      this.selectImage(imgElement);
+    });
   }
 
   connectedCallback() {
@@ -38,10 +73,15 @@ class ImageScroller extends HTMLElement {
     shadow.appendChild(style);
 
     const container = document.createElement('div');
-    container.className = 'image-scroller';
     this.container = container;
     shadow.appendChild(container);
 
+    const gallery = document.createElement('div');
+    gallery.className = 'image-scroller';
+    this.gallery = gallery;
+    container.appendChild(gallery);
+
+    // watch for added nodes and move them to the shadow DOM
     const observer = new MutationObserver(mutations => {
       for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {
@@ -51,6 +91,11 @@ class ImageScroller extends HTMLElement {
     });
 
     observer.observe(this, { childList: true });
+
+    const description = document.createElement('div');
+    description.className = 'image-scroller__description';
+    shadow.appendChild(description);
+    this.description = description;
   }
 
   attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) { }
