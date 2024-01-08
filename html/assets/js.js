@@ -2,10 +2,9 @@
 const initializeReels = () => {
     const reels = document.getElementsByClassName('reel');
     for (const reelContainerContainer of reels) {
-        const reelContainer = document.createElement('div');
-        const reel = document.createElement('video');
         const videoDir = 'assets/clips/';
         const videos = ['carbon1.mp4', 'xenon1.mp4', 'silicon1.mp4', 'helium1.mp4', 'xenon2.mp4'];
+        const reel = document.createElement('video');
         let videoIndex = 1;
         let swapping = false;
         reel.width = 480;
@@ -51,6 +50,7 @@ const initializeReels = () => {
         reel.addEventListener('mouseleave', () => {
             reel.controls = false;
         });
+        const reelContainer = document.createElement('div');
         reelContainer.appendChild(reel);
         reelContainerContainer.appendChild(reelContainer);
     }

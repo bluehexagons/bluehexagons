@@ -4,6 +4,7 @@ class ImageScroller extends HTMLElement {
     constructor() {
         super();
         this.container = null;
+        this.imageElements = [];
     }
     appendNode(node) {
         if (node.nodeName !== 'IMG') {
@@ -16,6 +17,7 @@ class ImageScroller extends HTMLElement {
         link.href = fullsize;
         this.container.appendChild(link);
         link.appendChild(img);
+        this.imageElements.push(img);
     }
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
@@ -27,7 +29,7 @@ class ImageScroller extends HTMLElement {
         container.className = 'image-scroller';
         this.container = container;
         shadow.appendChild(container);
-        var observer = new MutationObserver(mutations => {
+        const observer = new MutationObserver(mutations => {
             for (const mutation of mutations) {
                 for (const node of mutation.addedNodes) {
                     this.appendNode(node);
@@ -36,8 +38,7 @@ class ImageScroller extends HTMLElement {
         });
         observer.observe(this, { childList: true });
     }
-    attributeChangedCallback(_name, _oldValue, _newValue) {
-    }
+    attributeChangedCallback(_name, _oldValue, _newValue) { }
 }
 ImageScroller.observedAttributes = ['color', 'size'];
 customElements.define('image-scroller', ImageScroller);
