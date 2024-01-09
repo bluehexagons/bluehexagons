@@ -79,7 +79,7 @@ a:hover {
 
 #footer {
   font-size: 9pt;
-  margin: 20px auto;
+  margin: 0 auto 20px auto;
   width: 90%;
   max-width: 100%;
   line-height: 16pt;
@@ -363,7 +363,7 @@ h4 {
   box-shadow: 0px 3px 6px -2px rgba(0, 0, 0, 0.75);
 }
 .nav > a:visited {
-  color: var(--dim-highlight);
+  color: var(--highlight);
 }
 .nav > a:hover {
   background: var(--bg);
@@ -468,6 +468,7 @@ pre code {
 .contentArea {
   position: relative;
   overflow-x: auto;
+  padding-bottom: 40px;
 }
 .contentArea > * {
   display: grid;
@@ -520,7 +521,7 @@ pre code {
   background: #0004;
   backdrop-filter: blur(40px);
   width: 900px;
-  height: 100%;
+  height: calc(100% - 40px);
   z-index: -1;
   left: 50%;
   transform: translateX(-50%);
