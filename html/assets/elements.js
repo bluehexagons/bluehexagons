@@ -14,6 +14,10 @@ class ImageScrollerElement extends HTMLElement {
         this.imageElements = [];
         this.currentImage = null;
         this.description = null;
+        this.resizeObserver = null;
+    }
+    updateDescriptionPosition() {
+        this.description.style.transform = `translateX(${this.currentImage.offsetLeft || 0}px)`;
     }
     selectImage(img) {
         var _a;
@@ -23,6 +27,7 @@ class ImageScrollerElement extends HTMLElement {
         this.currentImage = img;
         this.currentImage.classList.add('highlighted');
         this.description.textContent = (_a = img.title) !== null && _a !== void 0 ? _a : '';
+        this.updateDescriptionPosition();
     }
     appendNode(node) {
         var _a;
@@ -49,20 +54,29 @@ class ImageScrollerElement extends HTMLElement {
             this.selectImage(imgElement);
         }
         imgElement.addEventListener('mouseenter', () => {
+            if (this.currentImage === imgElement) {
+                return;
+            }
             this.selectImage(imgElement);
+            this.currentImage.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
         });
         imgElement.addEventListener('touchstart', () => {
             this.selectImage(imgElement);
         });
+        this.resizeObserver.observe(imgElement);
     }
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
         addStylesheet(shadow);
+        const imageScroller = document.createElement('div');
+        imageScroller.className = 'image-scroller';
+        shadow.appendChild(imageScroller);
         const container = document.createElement('div');
         this.container = container;
-        shadow.appendChild(container);
+        container.className = 'image-scroller__container';
+        imageScroller.appendChild(container);
         const gallery = document.createElement('div');
-        gallery.className = 'image-scroller';
+        gallery.className = 'image-scroller__gallery';
         this.gallery = gallery;
         container.appendChild(gallery);
         const observer = new MutationObserver(mutations => {
@@ -75,8 +89,16 @@ class ImageScrollerElement extends HTMLElement {
         observer.observe(this, { childList: true });
         const description = document.createElement('div');
         description.className = 'image-scroller__description';
-        shadow.appendChild(description);
+        container.appendChild(description);
         this.description = description;
+        this.resizeObserver = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+                if (entry.target !== this.currentImage) {
+                    return;
+                }
+                this.updateDescriptionPosition();
+            }
+        });
     }
     attributeChangedCallback(_name, _oldValue, _newValue) { }
 }

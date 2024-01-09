@@ -45,7 +45,7 @@ body {
   --breakpoint: 990px;
 
   background: var(--bg-outer) top repeat;
-  background-image: linear-gradient(to bottom,rgba(226, 210, 166, 0.01), rgba(70, 53, 37, 0.7)), url("b6bg_b.png");
+  background-image: linear-gradient(to bottom,rgba(166, 192, 226, 0.01), rgba(94, 71, 51, 0.185)), url("b6bg_b.png");
   color: #eaeaea;
   margin: 0;
   padding: 0;
@@ -53,6 +53,19 @@ body {
   font-size: 18px;
   overflow-x: hidden;
 }
+
+body::-webkit-scrollbar {
+  width: 10px;
+}
+ 
+body::-webkit-scrollbar-track {
+  background-color: rgba(14, 17, 19, 0.671);
+}
+ 
+body::-webkit-scrollbar-thumb {
+  background-color: rgba(117, 137, 155, 0.671);
+}
+
 a {
   color: #c9baae;
   text-decoration: underline;
@@ -345,6 +358,7 @@ h4 {
   padding: 4px 9px;
   background: var(--bg-outer);
   color: var(--highlight);
+  border: 1px solid rgb(59, 69, 82);
   font-weight: bold;
   box-shadow: 0px 3px 6px -2px rgba(0, 0, 0, 0.75);
 }
@@ -503,13 +517,16 @@ pre code {
 .contentArea__background {
   display: block;
   position: absolute;
-  background: #0b161dcc;
-  box-shadow: inset 0 0 40px 5px #0b161d;
+  background: #0004;
+  backdrop-filter: blur(40px);
   width: 900px;
   height: 100%;
   z-index: -1;
   left: 50%;
   transform: translateX(-50%);
+  border: 2px solid #252a33;
+  border-radius: 3px;
+  box-shadow: 0 0 40px rgb(8, 9, 10);
 }
 
 @media (max-width: 990px) {
@@ -517,8 +534,8 @@ pre code {
     display: none;
   }
   .contentArea {
-    background: #0b161dcc;
-    box-shadow: inset 0 0 40px 5px #0b161d;
+    background: #0004;
+    backdrop-filter: blur(40px);
   }
 }
 
@@ -599,7 +616,7 @@ icon-img {
   transform: translate(-50%, 0);
   left: 50%;
   bottom: 0;
-  background: #555;
+  background: #555d;
 
   transition: color 120ms ease-out, width 120ms ease-out, transform 120ms ease-out, height 120ms ease-out;
 }
@@ -618,37 +635,70 @@ icon-img {
 }
 
 .image-scroller {
-  height: 300px;
-  overflow: hidden;
-  display: inline-flex;
-  gap: 10px;
-  overflow-x: auto;
-  padding: 10px;
-  max-width: 100%;
-  background: #232c31cc;
-  white-space: nowrap;
-  justify-content: flex-start;
+  position: relative;
 }
 
-.image-scroller > *, .image-scroller > a > img {
+.image-scroller__container {
+  overflow-x: auto;
+  padding-bottom: 10px;
+  max-width: 100%;
+}
+
+.image-scroller__container::-webkit-scrollbar {
+  height: 8px;
+}
+ 
+.image-scroller__container::-webkit-scrollbar-track {
+  background-color: rgba(14, 17, 19, 0.671);
+  display: none;
+  height: 2px;
+  top: 0;
+}
+ 
+.image-scroller__container::-webkit-scrollbar-thumb {
+  background-color: rgba(117, 137, 155, 0.671);
+  height: 8px;
+}
+
+.image-scroller__gallery {
+  white-space: nowrap;
+  justify-content: flex-start;
+  padding: 10px;
+  display: inline-flex;
+  height: 300px;
+  gap: 10px;
+  align-items: center;
+  overflow: visible;
+}
+
+.image-scroller__gallery > *, .image-scroller__gallery > a > img {
   display: block;
-  height: 100%;
+  max-height: 300px;
   width: auto;
   object-fit: contain;
   max-width: 600px;
 }
+
 .image-scroller img {
   border-radius: 2px;
   border-bottom: 4px solid #555555;
   transition: border-bottom 120ms ease-out;
+  box-shadow: 0 4px 12px black;
+}
+
+.image-scroller img.highlighted {
+  border-bottom: 4px solid #ccc055;
 }
 
 .image-scroller__description {
-  margin: 5px auto;
+  margin: 10px 0 0 0;
   max-width: 600px;
-}
-.image-scroller img.highlighted {
-  border-bottom: 4px solid #ccc055;
+  text-align: left;
+  transform: translateX(10px);
+  transition: transform 66ms ease-out;
+  background: rgba(19, 21, 22, 0.7);
+  border-radius: 6px;
+  padding: 10px;
 }
 
 .contentArea ul {
@@ -661,7 +711,9 @@ icon-img {
 .labeledList {
   > div {
     color: rgb(147, 211, 219);
+    text-shadow: 0 0.5px 4px black;
   }
+
   > ul {
     margin-top: 5px;
     margin-bottom: 25px;
@@ -673,6 +725,7 @@ icon-img {
   font-size: 32px;
 
   color: rgb(213, 250, 255);
+  text-shadow: 0 0.5px 4px black;
 }
 
 .contentArea h2 {

@@ -16,9 +16,14 @@ class ImageScrollerElement extends HTMLElement {
   imageElements: HTMLImageElement[] = [];
   currentImage: HTMLElement = null;
   description: HTMLDivElement = null;
+  resizeObserver: ResizeObserver = null;
 
   constructor() {
     super();
+  }
+
+  updateDescriptionPosition() {
+    this.description.style.transform = `translateX(${this.currentImage.offsetLeft || 0}px)`;
   }
 
   selectImage(img: HTMLImageElement) {
@@ -30,6 +35,8 @@ class ImageScrollerElement extends HTMLElement {
     this.currentImage.classList.add('highlighted');
 
     this.description.textContent = img.title ?? '';
+
+    this.updateDescriptionPosition();
   }
 
   appendNode(node: Node) {
@@ -61,13 +68,20 @@ class ImageScrollerElement extends HTMLElement {
     }
 
     imgElement.addEventListener('mouseenter', () => {
+      if (this.currentImage === imgElement) {
+        return;
+      }
+
       this.selectImage(imgElement);
+      this.currentImage.scrollIntoView({behavior: "smooth", block: "nearest", inline: "nearest"});
     });
 
     imgElement.addEventListener('touchstart', () => {
       // yeah, this isn't a great way to do this
       this.selectImage(imgElement);
     });
+
+    this.resizeObserver.observe(imgElement);
   }
 
   connectedCallback() {
@@ -76,12 +90,18 @@ class ImageScrollerElement extends HTMLElement {
     // for now, do it the hacky way
     addStylesheet(shadow);
 
+    const imageScroller = document.createElement('div');
+    imageScroller.className = 'image-scroller';
+    shadow.appendChild(imageScroller);
+
     const container = document.createElement('div');
     this.container = container;
-    shadow.appendChild(container);
+    container.className = 'image-scroller__container';
+    imageScroller.appendChild(container);
+
 
     const gallery = document.createElement('div');
-    gallery.className = 'image-scroller';
+    gallery.className = 'image-scroller__gallery';
     this.gallery = gallery;
     container.appendChild(gallery);
 
@@ -98,8 +118,18 @@ class ImageScrollerElement extends HTMLElement {
 
     const description = document.createElement('div');
     description.className = 'image-scroller__description';
-    shadow.appendChild(description);
+    container.appendChild(description);
     this.description = description;
+
+    this.resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target !== this.currentImage) {
+          return;
+        }
+
+        this.updateDescriptionPosition()
+      }
+    });
   }
 
   attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) { }
