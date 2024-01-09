@@ -567,6 +567,10 @@ pre code {
   overflow-x: hidden;
 }
 
+icon-img {
+  vertical-align: middle;
+}
+
 .flexList__background {
   gap: 6px;
 }

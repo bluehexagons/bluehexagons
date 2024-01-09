@@ -1,6 +1,12 @@
 'use strict';
 const findThumbs = /(thumbs\/|( |\%20)\(Phone\))/g;
-class ImageScroller extends HTMLElement {
+const addStylesheet = (shadow) => {
+    const style = document.createElement('link');
+    style.rel = 'stylesheet';
+    style.href = 'assets/css.css';
+    shadow.appendChild(style);
+};
+class ImageScrollerElement extends HTMLElement {
     constructor() {
         super();
         this.container = null;
@@ -51,10 +57,7 @@ class ImageScroller extends HTMLElement {
     }
     connectedCallback() {
         const shadow = this.attachShadow({ mode: 'open' });
-        const style = document.createElement('link');
-        style.rel = 'stylesheet';
-        style.href = 'assets/css.css';
-        shadow.appendChild(style);
+        addStylesheet(shadow);
         const container = document.createElement('div');
         this.container = container;
         shadow.appendChild(container);
@@ -77,6 +80,45 @@ class ImageScroller extends HTMLElement {
     }
     attributeChangedCallback(_name, _oldValue, _newValue) { }
 }
-ImageScroller.observedAttributes = ['color', 'size'];
-customElements.define('image-scroller', ImageScroller);
+ImageScrollerElement.observedAttributes = [];
+customElements.define('image-scroller', ImageScrollerElement);
+class IconElement extends HTMLElement {
+    constructor() {
+        super();
+        this.container = null;
+        this.image = null;
+        const shadow = this.attachShadow({ mode: 'open' });
+        addStylesheet(shadow);
+        const container = document.createElement('span');
+        this.container = container;
+        shadow.appendChild(container);
+        const image = new Image();
+        image.width = 16;
+        image.height = 16;
+        this.image = image;
+    }
+    changeIcon(iconName) {
+        if (!iconName) {
+            if (this.container.firstChild) {
+                this.container.removeChild(this.image);
+            }
+            return;
+        }
+        if (!this.container.firstChild) {
+            this.container.appendChild(this.image);
+        }
+        this.image.src = `assets/icons/${iconName}.svg`;
+    }
+    connectedCallback() {
+    }
+    attributeChangedCallback(name, _oldValue, newValue) {
+        switch (name) {
+            case 'name':
+                this.changeIcon(newValue);
+                break;
+        }
+    }
+}
+IconElement.observedAttributes = ['name'];
+customElements.define('icon-img', IconElement);
 //# sourceMappingURL=elements.js.map
