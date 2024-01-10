@@ -58,7 +58,11 @@ class ImageScrollerElement extends HTMLElement {
                 return;
             }
             this.selectImage(imgElement);
-            this.currentImage.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+            this.currentImage.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'nearest',
+            });
         });
         imgElement.addEventListener('touchstart', () => {
             this.selectImage(imgElement);
@@ -131,8 +135,7 @@ class IconElement extends HTMLElement {
         }
         this.image.src = `assets/icons/${iconName}.svg`;
     }
-    connectedCallback() {
-    }
+    connectedCallback() { }
     attributeChangedCallback(name, _oldValue, newValue) {
         switch (name) {
             case 'name':

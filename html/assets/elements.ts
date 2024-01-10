@@ -73,7 +73,11 @@ class ImageScrollerElement extends HTMLElement {
       }
 
       this.selectImage(imgElement);
-      this.currentImage.scrollIntoView({behavior: "smooth", block: "nearest", inline: "nearest"});
+      this.currentImage.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'nearest',
+      });
     });
 
     imgElement.addEventListener('touchstart', () => {
@@ -127,7 +131,7 @@ class ImageScrollerElement extends HTMLElement {
           return;
         }
 
-        this.updateDescriptionPosition()
+        this.updateDescriptionPosition();
       }
     });
   }
@@ -175,9 +179,7 @@ class IconElement extends HTMLElement {
     this.image.src = `assets/icons/${iconName}.svg`;
   }
 
-  connectedCallback() {
-
-  }
+  connectedCallback() { }
 
   attributeChangedCallback(name: string, _oldValue: string, newValue: string) {
     switch (name) {
