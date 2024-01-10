@@ -468,7 +468,7 @@ pre code {
 .contentArea {
   position: relative;
   overflow-x: auto;
-  padding-bottom: 40px;
+  padding: 40px 0;
 }
 .contentArea > * {
   display: grid;
@@ -518,7 +518,7 @@ pre code {
 .contentArea__background {
   display: block;
   position: absolute;
-  background: #0004;
+  background: rgba(8, 12, 17, 0.8);
   backdrop-filter: blur(40px);
   width: 900px;
   height: calc(100% - 40px);
@@ -528,6 +528,12 @@ pre code {
   border: 2px solid #252a33;
   border-radius: 3px;
   box-shadow: 0 0 40px rgb(8, 9, 10);
+}
+
+@supports (backdrop-filter: blur(40px)) {
+  .contentArea__background {
+    background: #0004;
+  }
 }
 
 @media (max-width: 990px) {
