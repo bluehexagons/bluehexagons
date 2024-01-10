@@ -42,6 +42,7 @@ body {
   --antistatic: rgb(255, 110, 0);
 
   --content-width: 1200px;
+  --background-width: 1420px;
   --breakpoint: 990px;
 
   background: var(--bg-outer) top repeat;
@@ -83,12 +84,17 @@ a:hover {
   width: 90%;
   max-width: 100%;
   line-height: 16pt;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  text-align: right;
+  gap: 10px;
 
   /* padding: 0 20px; */
 }
 
 #footer > .copyright {
-  float: right;
+  flex: 1 1;
 }
 
 #footer > .links > a:not(:first-child) {
@@ -468,28 +474,54 @@ pre code {
 .contentArea {
   position: relative;
   overflow-x: auto;
-  padding: 40px 0;
+  padding: 40px 0 80px 0;
 }
+
 .contentArea > * {
   display: grid;
-  grid-template-columns: [widest-start] 1fr 60px [centered-start] 800px [centered-end] 60px 1fr [widest-end];
+  grid-template-columns: [widest-start] 1fr 120px [centered-start] var(--content-width) [centered-end] 120px 1fr [widest-end];
 
   max-width: 100%;
   overflow-x: auto;
 }
 
-@media (max-width: 990px) {
-  .contentArea > * {
-    grid-template-columns: [widest-start] 60px [centered-start] 1fr [centered-end] 60px [widest-end];
+@media (max-width: 1600px) {
+  .contentArea {
+    --background-width: calc(100% - 360px);
   }
-
+  .contentArea > * {
+    grid-template-columns: [widest-start] 240px [centered-start] 1fr [centered-end] 240px [widest-end];
+  }
   #footer {
     padding: 0 5px;
+    display: block;
+    text-align: center;
   }
 
   #footer > .copyright {
-    float: none;
     display: block;
+    margin-top: 15px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .contentArea {
+    --background-width: calc(100% - 120px);
+  }
+  .contentArea > * {
+    grid-template-columns: [widest-start] 120px [centered-start] 1fr [centered-end] 120px [widest-end];
+  }
+}
+
+@media (max-width: 990px) {
+  .contentArea {
+    padding-bottom: 0;
+  }
+  .contentArea > * {
+    grid-template-columns: [widest-start] 60px [centered-start] 1fr [centered-end] 60px [widest-end];
+  }
+  #footer {
+    padding-top: 20px;
   }
 }
 
@@ -520,8 +552,8 @@ pre code {
   position: absolute;
   background: rgba(8, 12, 17, 0.8);
   backdrop-filter: blur(40px);
-  width: 900px;
-  height: calc(100% - 40px);
+  width: var(--background-width);
+  height: calc(100% - 80px);
   z-index: -1;
   left: 50%;
   transform: translateX(-50%);
@@ -699,7 +731,8 @@ icon-img {
 
 .image-scroller__description {
   margin: 10px 0 0 0;
-  max-width: 600px;
+  width: 600px;
+  max-width: 60%;
   text-align: left;
   transform: translateX(10px);
   transition: transform 66ms ease-out;

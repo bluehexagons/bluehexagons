@@ -133,7 +133,7 @@ class IconElement extends HTMLElement {
         if (!this.container.firstChild) {
             this.container.appendChild(this.image);
         }
-        this.image.src = `assets/icons/${iconName}.svg`;
+        this.image.src = `assets/icons/${iconName}${iconName.endsWith('.png') ? '' : '.svg'}`;
     }
     connectedCallback() { }
     attributeChangedCallback(name, _oldValue, newValue) {

@@ -176,7 +176,7 @@ class IconElement extends HTMLElement {
       this.container.appendChild(this.image);
     }
 
-    this.image.src = `assets/icons/${iconName}.svg`;
+    this.image.src = `assets/icons/${iconName}${iconName.endsWith('.png') ? '' : '.svg'}`;
   }
 
   connectedCallback() { }
