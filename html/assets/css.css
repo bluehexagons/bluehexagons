@@ -56,15 +56,28 @@ body {
 }
 
 body::-webkit-scrollbar {
-  width: 10px;
+  width: 14px;
+  border-left: 1px solid rgba(57, 71, 75, 0.479);
 }
  
 body::-webkit-scrollbar-track {
-  background-color: rgba(14, 17, 19, 0.671);
+  background-color: rgba(14, 17, 19, 0.37);
+  display: none;
+  top: 0;
 }
  
 body::-webkit-scrollbar-thumb {
-  background-color: rgba(117, 137, 155, 0.671);
+  background-color: rgba(93, 109, 122, 0.767);
+  border-radius: 1.5px;
+  border-left: 1px solid rgba(57, 71, 75, 0.479);
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(146, 160, 172, 0.767);
+}
+
+body::-webkit-scrollbar-thumb:active {
+  background-color: rgb(203, 214, 226);
 }
 
 a {
@@ -89,8 +102,6 @@ a:hover {
   align-items: flex-end;
   text-align: right;
   gap: 10px;
-
-  /* padding: 0 20px; */
 }
 
 #footer > .copyright {
@@ -225,7 +236,6 @@ a:hover {
   text-justify: auto;
 }
 
-/* #main p, #main ul, #main h2, #main h3, #main h4 { */
 #main article > * {
   max-width: 690px;
   padding-left: 5px;
@@ -261,11 +271,9 @@ a:hover {
   display: none;
 }
 #main div.spoiler > input:checked ~ label:first-of-type {
-  /* opacity: 0.5; */
   display: none;
 }
 #main div.spoiler > input:checked ~ label:last-of-type {
-  /* opacity: 0.5; */
   display: block;
 }
 #main div.spoiler > input {
@@ -585,14 +593,13 @@ pre code {
   border: 0;
   outline: 0;
   cursor: pointer;
-  margin-bottom: 25px;
   font-weight: bold;
+  margin-bottom: 20px;
 }
 
 .expandToggle::before {
   color: white;
   content: '(more...)';
-  width: 100px;
   font-size: 17px;
   text-decoration: underline;
 }
@@ -602,7 +609,6 @@ pre code {
 }
 
 .expandToggle:checked {
-  /* display: none; */
   font-style: italic;
   font-weight: lighter;
   margin-bottom: 10px;
@@ -619,14 +625,17 @@ pre code {
 .flexList {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 20px;
   text-align: center;
   padding: 0;
   overflow-x: hidden;
+  margin: 5px 5px 20px 5px;
 }
 
-icon-img {
+.icon_img img {
   vertical-align: middle;
+  /* nudge a little bit */
+  margin-top: -3px;
 }
 
 .flexList__background {
@@ -639,11 +648,9 @@ icon-img {
 }
 
 .flexList__background > li {
-  /* background: #251808; */
-  /* border-bottom: 4px solid #775020; */
-  padding: 6px 10px;
+  padding: 10px 10px;
   position: relative;
-  /* border-radius: 3px; */
+  transform: translateY(-5px);
 }
 
 .flexList__background > li::before {
@@ -680,6 +687,7 @@ icon-img {
 .image-scroller__container {
   overflow-x: auto;
   padding-bottom: 10px;
+  margin-bottom: 10px;
   max-width: 100%;
 }
 
@@ -688,15 +696,22 @@ icon-img {
 }
  
 .image-scroller__container::-webkit-scrollbar-track {
-  background-color: rgba(14, 17, 19, 0.671);
+  background-color: rgba(14, 17, 19, 0.37);
   display: none;
-  height: 2px;
   top: 0;
 }
  
 .image-scroller__container::-webkit-scrollbar-thumb {
-  background-color: rgba(117, 137, 155, 0.671);
-  height: 8px;
+  background-color: rgba(93, 109, 122, 0.767);
+  border-radius: 1.5px;
+}
+
+.image-scroller__container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(146, 160, 172, 0.767);
+}
+
+.image-scroller__container::-webkit-scrollbar-thumb:active {
+  background-color: rgb(203, 214, 226);
 }
 
 .image-scroller__gallery {
@@ -749,23 +764,29 @@ icon-img {
 }
 
 .labeledList {
+  margin: 5px 0 20px 0;
+
   > div {
     color: rgb(147, 211, 219);
     text-shadow: 0 0.5px 4px black;
   }
 
   > ul {
-    margin-top: 5px;
-    margin-bottom: 25px;
+    margin: 0;
   }
 }
 
 .contentArea h1 {
+  margin-top: 30px;
   margin-bottom: 10px;
   font-size: 32px;
 
   color: rgb(213, 250, 255);
   text-shadow: 0 0.5px 4px black;
+}
+
+.contentArea p {
+  margin-top: 0;
 }
 
 .contentArea h2 {
@@ -775,12 +796,12 @@ icon-img {
   font-size: 26px;
 }
 
-.timeRange {
+.contentArea p.timeRange {
   margin-top: -8px;
 }
 
 @media (min-width: 990px) {
-  .timeRange {
+  .contentArea p.timeRange {
     margin-top: -40px;
     float: right;
     text-align: right;

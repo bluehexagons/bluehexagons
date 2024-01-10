@@ -117,10 +117,10 @@ class IconElement extends HTMLElement {
         addStylesheet(shadow);
         const container = document.createElement('span');
         this.container = container;
+        container.className = 'icon_img';
         shadow.appendChild(container);
         const image = new Image();
         image.width = 16;
-        image.height = 16;
         this.image = image;
     }
     changeIcon(iconName) {
