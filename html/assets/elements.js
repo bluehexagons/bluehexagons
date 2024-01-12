@@ -73,14 +73,14 @@ class ImageScrollerElement extends HTMLElement {
         const shadow = this.attachShadow({ mode: 'open' });
         addStylesheet(shadow);
         const imageScroller = document.createElement('div');
-        imageScroller.className = 'image-scroller';
+        imageScroller.className = 'image_scroller';
         shadow.appendChild(imageScroller);
         const container = document.createElement('div');
         this.container = container;
-        container.className = 'image-scroller__container';
+        container.className = 'image_scroller__container';
         imageScroller.appendChild(container);
         const gallery = document.createElement('div');
-        gallery.className = 'image-scroller__gallery';
+        gallery.className = 'image_scroller__gallery';
         this.gallery = gallery;
         container.appendChild(gallery);
         const observer = new MutationObserver(mutations => {
@@ -92,7 +92,7 @@ class ImageScrollerElement extends HTMLElement {
         });
         observer.observe(this, { childList: true });
         const description = document.createElement('div');
-        description.className = 'image-scroller__description';
+        description.className = 'image_scroller__description';
         container.appendChild(description);
         this.description = description;
         this.resizeObserver = new ResizeObserver((entries) => {
@@ -107,7 +107,7 @@ class ImageScrollerElement extends HTMLElement {
     attributeChangedCallback(_name, _oldValue, _newValue) { }
 }
 ImageScrollerElement.observedAttributes = [];
-customElements.define('image-scroller', ImageScrollerElement);
+customElements.define('image_scroller', ImageScrollerElement);
 class IconElement extends HTMLElement {
     constructor() {
         super();

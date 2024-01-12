@@ -95,17 +95,17 @@ class ImageScrollerElement extends HTMLElement {
     addStylesheet(shadow);
 
     const imageScroller = document.createElement('div');
-    imageScroller.className = 'image-scroller';
+    imageScroller.className = 'image_scroller';
     shadow.appendChild(imageScroller);
 
     const container = document.createElement('div');
     this.container = container;
-    container.className = 'image-scroller__container';
+    container.className = 'image_scroller__container';
     imageScroller.appendChild(container);
 
 
     const gallery = document.createElement('div');
-    gallery.className = 'image-scroller__gallery';
+    gallery.className = 'image_scroller__gallery';
     this.gallery = gallery;
     container.appendChild(gallery);
 
@@ -121,7 +121,7 @@ class ImageScrollerElement extends HTMLElement {
     observer.observe(this, { childList: true });
 
     const description = document.createElement('div');
-    description.className = 'image-scroller__description';
+    description.className = 'image_scroller__description';
     container.appendChild(description);
     this.description = description;
 
@@ -139,7 +139,7 @@ class ImageScrollerElement extends HTMLElement {
   attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) { }
 }
 
-customElements.define('image-scroller', ImageScrollerElement);
+customElements.define('image_scroller', ImageScrollerElement);
 
 class IconElement extends HTMLElement {
   static observedAttributes = ['name'];
