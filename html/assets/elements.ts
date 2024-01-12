@@ -139,7 +139,7 @@ class ImageScrollerElement extends HTMLElement {
   attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) { }
 }
 
-customElements.define('image_scroller', ImageScrollerElement);
+customElements.define('image-scroller', ImageScrollerElement);
 
 class IconElement extends HTMLElement {
   static observedAttributes = ['name'];
