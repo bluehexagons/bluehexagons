@@ -24,6 +24,7 @@ class ImageScrollerElement extends HTMLElement {
 
   updateDescriptionPosition() {
     this.description.style.transform = `translateX(${this.currentImage.offsetLeft || 0}px)`;
+    this.description.style.maxWidth = `${this.currentImage.offsetWidth}px`;
   }
 
   selectImage(img: HTMLImageElement) {
