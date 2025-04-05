@@ -1,12 +1,12 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "ESNext",
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
     "newLine": "LF",
-    "target": "ES6",
+    "target": "ESNext",
     "allowJs": false
   }
 }
