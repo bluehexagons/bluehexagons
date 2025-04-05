@@ -1,2 +1,0 @@
-# bluehexagons
-bluehexagons website

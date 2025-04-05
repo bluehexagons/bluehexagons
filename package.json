@@ -1,9 +1,14 @@
 {
   "devDependencies": {
-    "typescript": "^5.2.2"
+    "@types/node": "^20.10.4",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8"
   },
   "scripts": {
     "compile": "tsc",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   }
 }
