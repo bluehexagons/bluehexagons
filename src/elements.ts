@@ -2,13 +2,6 @@
 
 const findThumbs = /(thumbs\/|( |\%20)\(Phone\))/g;
 
-const addStylesheet = (shadow: ShadowRoot) => {
-  const style = document.createElement('link');
-  style.rel = 'stylesheet';
-  style.href = 'assets/css.css';
-  shadow.appendChild(style);
-}
-
 class ImageScrollerElement extends HTMLElement {
   static observedAttributes = [];
   container: HTMLDivElement = null;
@@ -48,10 +41,15 @@ class ImageScrollerElement extends HTMLElement {
       this.gallery.appendChild(node);
     } else if (node.nodeName === 'IMG') {
       // for image thumbnails, add a link to the full-size version
-
       imgElement = node as HTMLImageElement;
+      
+      // Fix image paths for Vite - ensure they start with a leading slash for public directory
+      if (imgElement.src && !imgElement.src.startsWith('http') && !imgElement.src.startsWith('/')) {
+        imgElement.src = '/' + imgElement.src;
+      }
+      
       const thumbnail = imgElement.src;
-      const fullsize = thumbnail.replace(findThumbs, '');
+      const fullsize = thumbnail.replace(findThumbs, '/');
 
       const link = document.createElement('a');
       link.href = fullsize;
@@ -92,8 +90,21 @@ class ImageScrollerElement extends HTMLElement {
   connectedCallback() {
     const shadow = this.attachShadow({ mode: 'open' });
 
-    // for now, do it the hacky way
-    addStylesheet(shadow);
+    // Add CSS to shadow DOM using Vite's approach
+    const style = document.createElement('style');
+    style.textContent = `
+      @import "/css.css";
+      
+      /* Ensure images are rendered correctly in shadow DOM */
+      img {
+        display: block;
+        max-height: 300px;
+        width: auto;
+        object-fit: contain;
+        max-width: 600px;
+      }
+    `;
+    shadow.appendChild(style);
 
     const imageScroller = document.createElement('div');
     imageScroller.className = 'image_scroller';
@@ -103,7 +114,6 @@ class ImageScrollerElement extends HTMLElement {
     this.container = container;
     container.className = 'image_scroller__container';
     imageScroller.appendChild(container);
-
 
     const gallery = document.createElement('div');
     gallery.className = 'image_scroller__gallery';
@@ -135,6 +145,12 @@ class ImageScrollerElement extends HTMLElement {
         this.updateDescriptionPosition();
       }
     });
+    
+    // Process any existing children
+    Array.from(this.childNodes).forEach(node => {
+      this.appendNode(node.cloneNode(true));
+      this.removeChild(node);
+    });
   }
 
   attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) { }
@@ -151,7 +167,18 @@ class IconElement extends HTMLElement {
     super();
 
     const shadow = this.attachShadow({ mode: 'open' });
-    addStylesheet(shadow);
+    
+    const style = document.createElement('style');
+    style.textContent = `
+      @import "/css.css";
+
+      .icon_img img {
+        vertical-align: middle;
+        /* nudge a little bit */
+        margin-top: -3px;
+      }
+    `;
+    shadow.appendChild(style);
 
     const container = document.createElement('span');
     this.container = container;
@@ -176,7 +203,7 @@ class IconElement extends HTMLElement {
       this.container.appendChild(this.image);
     }
 
-    this.image.src = `assets/icons/${iconName}${iconName.endsWith('.png') ? '' : '.svg'}`;
+    this.image.src = `/assets/icons/${iconName}${iconName.endsWith('.png') ? '' : '.svg'}`;
   }
 
   connectedCallback() { }

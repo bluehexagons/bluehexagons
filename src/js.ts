@@ -6,7 +6,7 @@ const initializeReels = () => {
   const reels = document.getElementsByClassName('reel') as HTMLCollectionOf<HTMLDivElement>;
 
   for (const reelContainerContainer of reels) {
-    const videoDir = 'assets/clips/';
+    const videoDir = '/assets/clips/';
     const videos = ['carbon1.mp4', 'xenon1.mp4', 'silicon1.mp4', 'helium1.mp4', 'xenon2.mp4'];
 
     const reel = document.createElement('video');

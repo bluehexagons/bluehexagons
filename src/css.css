@@ -1,3 +1,5 @@
+@import './reset.css';
+
 @font-face {
   font-family: 'Fira Sans';
   font-style: normal;
@@ -33,7 +35,7 @@ body {
   --breakpoint: 990px;
 
   background: var(--bg-outer) top repeat;
-  background-image: linear-gradient(to bottom,rgba(166, 192, 226, 0.01), rgba(94, 71, 51, 0.185)), url('b6bg_b.png');
+  background-image: linear-gradient(to bottom,rgba(166, 192, 226, 0.01), rgba(94, 71, 51, 0.185)), url('/assets/b6bg_b.png');
   color: #eaeaea;
   margin: 0;
   padding: 0;
@@ -78,7 +80,12 @@ a:hover {
   color: #fff;
 }
 
-#footer {
+.site-footer {  
+  grid-column: widest;
+  padding: 20px 0;
+  margin-top: 40px;
+  width: 100%;
+
   font-size: 9pt;
   margin: 0 auto 20px auto;
   width: 90%;
@@ -87,19 +94,35 @@ a:hover {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  text-align: right;
+  text-align: center;
   gap: 10px;
 }
 
-#footer > .copyright {
+.site-footer > .copyright {
   flex: 1 1;
+  width: 80%;
+  margin: 0 auto 0 auto;
+  color: #ccc;
 }
 
-#footer > .links > a:not(:first-child) {
+.links {
+  display: flex;
+  flex: 1 1;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  gap: 10px;
+  justify-content: center;
+}
+
+.links > li {
   display: inline-block;
+}
+
+.site-footer > .links > li:not(:first-child) {
   border-left: 1px solid #686058;
   padding-left: 10px;
-  margin-left: 10px;
 }
 
 .reel > div {
@@ -239,13 +262,13 @@ pre code {
   .content_area > * {
     grid-template-columns: [widest-start] 240px [centered-start] 1fr [centered-end] 240px [widest-end];
   }
-  #footer {
+  .site-footer {
     padding: 0 5px;
     display: block;
     text-align: center;
   }
 
-  #footer > .copyright {
+  .site-footer > .copyright {
     display: block;
     margin-top: 15px;
   }
@@ -267,7 +290,7 @@ pre code {
   .content_area > * {
     grid-template-columns: [widest-start] 60px [centered-start] 1fr [centered-end] 60px [widest-end];
   }
-  #footer {
+  .site-footer {
     padding-top: 20px;
   }
 }
@@ -369,12 +392,6 @@ pre code {
   padding: 0;
   overflow-x: hidden;
   margin: 5px 5px 20px 5px;
-}
-
-.icon_img img {
-  vertical-align: middle;
-  /* nudge a little bit */
-  margin-top: -3px;
 }
 
 .flex_list__background {
