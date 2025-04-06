@@ -52,7 +52,7 @@ class ImageScrollerElement extends HTMLElement {
       }
       
       const thumbnail = imgElement.src;
-      const fullsize = thumbnail.replace(findThumbs, '/');
+      const fullsize = thumbnail.replace(findThumbs, '');
 
       const link = document.createElement('a');
       link.href = fullsize;
