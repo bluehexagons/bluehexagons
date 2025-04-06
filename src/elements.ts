@@ -1,5 +1,8 @@
 'use strict';
 
+// Import CSS for shadow DOM usage
+import cssStyles from './css.css?inline';
+
 const findThumbs = /(thumbs\/|( |\%20)\(Phone\))/g;
 
 class ImageScrollerElement extends HTMLElement {
@@ -90,10 +93,10 @@ class ImageScrollerElement extends HTMLElement {
   connectedCallback() {
     const shadow = this.attachShadow({ mode: 'open' });
 
-    // Add CSS to shadow DOM using Vite's approach
+    // Add CSS to shadow DOM using Vite's inline import
     const style = document.createElement('style');
     style.textContent = `
-      @import "/css.css";
+      ${cssStyles}
       
       /* Ensure images are rendered correctly in shadow DOM */
       img {
@@ -170,7 +173,7 @@ class IconElement extends HTMLElement {
     
     const style = document.createElement('style');
     style.textContent = `
-      @import "/css.css";
+      ${cssStyles}
 
       .icon_img img {
         vertical-align: middle;
