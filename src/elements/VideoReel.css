@@ -1,0 +1,80 @@
+.video-container {
+  background: rgb(9, 7, 5);
+  outline: 2px solid var(--outline, rgb(2, 2, 6));
+  display: block;
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+
+.bluehexagons .video-container {
+  background: rgb(5, 7, 9);
+}
+
+video {
+  position: absolute;
+  margin: auto;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  transition: opacity 167ms ease-in-out;
+}
+
+:host(.no-controls) video:not(:hover) {
+  cursor: none;
+}
+
+.reel > div {
+  background: rgb(9, 7, 5);
+  outline: 2px solid var(--outline, rgb(2, 2, 6));
+  display: block;
+  position: relative;
+  padding-bottom: 56.25%;
+}
+
+.bluehexagons > .reel > div {
+  background: rgb(5, 7, 9);
+}
+
+.reel > div > video {
+  position: absolute;
+  margin: auto;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  transition: opacity 167ms ease-in-out;
+}
+
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    padding: 10px 15px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: 1px solid white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Media queries */
+
+@media (max-width: 990px) {
+  .play-button {
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  video::-webkit-media-controls-panel {
+    opacity: 1 !important;
+    display: flex !important;
+  }
+
+  video::-webkit-media-controls-play-button,
+  video::-webkit-media-controls-volume-slider {
+    display: flex !important;
+  }
+}

@@ -1,5 +1,4 @@
 import './css.css';
-import './elements';
-import './js';
+import './elements/index';
 
 console.log('hello, from bluehexagons');

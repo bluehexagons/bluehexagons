@@ -5,7 +5,7 @@
 
     <title>bluehexagons - Loren Crain</title>
 
-    <meta name="description" content="Learn about Antistatic, bluehexagons, and the person who made them.">
+    <meta name="description" content="Learn about Antistatic, bluehexagons, and the person who made them." />
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
     <link rel="icon" sizes="362x362" type="image/png" href="/assets/icon.png" />
@@ -14,17 +14,15 @@
 
     <script type="module" src="/main.ts"></script>
   </head>
-  <body class="bluehexagons">
-    <nav class="navbar">
-      <span class="nav">
-        <a href="index"><span>bluehexagons</span></a>
-        <a href="antistatic"><span>Antistatic</span></a>
-        <a href="https://foodguide.bluehexagons.com"><span>Don't Starve Food Guide</span></a>
-      </span>
-    </nav>
-    <div class="content_area">
-      <div class="content_area__background"></div>
-      <article>
+  <body>
+    <page-header>
+      <a href="index"><span>bluehexagons</span></a>
+      <a href="antistatic"><span>Antistatic</span></a>
+      <a href="https://foodguide.bluehexagons.com"><span>Don't Starve Food Guide</span></a>
+    </page-header>
+    
+    <content-area>
+      <article slot="content">
         <h1>Loren Crain</h1>
 
         <p>
@@ -36,8 +34,9 @@
           <ul class="flex_list">
             <li><a href="https://www.linkedin.com/in/loren-crain" aria-label="Loren Crain on LinkedIn">LinkedIn</a></li>
             <li><a href="https://github.com/bluehexagons" aria-label="Loren Crain is bluehexagons on GitHub">GitHub</a></li>
+            <li><a href="https://ko-fi.com/bluehexagons" aria-label="Loren Crain is bluehexagons on Ko-fi">Ko-fi</a></li>
             <li><a href="mailto:loren@bluehexagons.com" aria-label="Email me at loren@bluehexagons.com">loren@bluehexagons.com</a></li>
-            <li aria-label="Southwest Missouri"><icon-img name="MissouriFlag.png"></icon-img>&nbsp;SW MO USA</li>
+            <li aria-label="Southwest Missouri"><icon-img name="MissouriFlag.png"></icon-img> SW MO, USA (central time)</li>
           </ul>
         </div>
 
@@ -68,131 +67,128 @@
         <div class="labeled_list">
           <div>Core skills</div>
           <ul class="flex_list flex_list__background">
-            <li><icon-img name="TypeScript"></icon-img>&nbsp;TypeScript</li>
+            <li><icon-img name="TypeScript"></icon-img> TypeScript</li>
             <li>React</li>
-            <li><icon-img name="CSharp"></icon-img>&nbsp;C#</li>
-            <li><icon-img name="Go"></icon-img>&nbsp;Go</li>
-            <li><icon-img name="CPlusPlus"></icon-img>&nbsp;C/C++</li>
+            <li><icon-img name="CSharp"></icon-img> C#</li>
+            <li><icon-img name="Go"></icon-img> Go</li>
+            <li><icon-img name="CPlusPlus"></icon-img> C/C++</li>
             <li>SQL</li>
             <li>Node.js</li>
           </ul>
         </div>
 
-        <input type="checkbox" class="expand_toggle" aria-label="Show more" />
+        <expandable-section aria-label="Show more">
+          <div class="labeled_list">
+            <div>Frontend web development</div>
+            <ul class="flex_list flex_list__background">
+              <li><icon-img name="TypeScript"></icon-img> TypeScript</li>
+              <li>React</li>
+              <li>Redux/Sagas</li>
+              <li><icon-img name="JS"></icon-img> JavaScript</li>
+              <li>HTML</li>
+              <li>CSS</li>
+              <li>Jest</li>
+              <li>webpack</li>
+              <li>npm</li>
+              <li><a href="https://www.slatejs.org/">slate</a></li>
+            </ul>
+          </div>
 
-        <div class="labeled_list">
-          <div>Frontend web development</div>
-          <ul class="flex_list flex_list__background">
-            <li><icon-img name="TypeScript"></icon-img>&nbsp;TypeScript</li>
-            <li>React</li>
-            <li>Redux/Sagas</li>
-            <li><icon-img name="JS"></icon-img>&nbsp;JavaScript</li>
-            <li>HTML</li>
-            <li>CSS</li>
-            <li>Jest</li>
-            <li>webpack</li>
-            <li>npm</li>
-            <li><a href="https://www.slatejs.org/">slate</a></li>
-          </ul>
-        </div>
+          <div class="labeled_list">
+            <div>Software engineering</div>
+            <ul class="flex_list flex_list__background">
+              <li><icon-img name="CSharp"></icon-img> C#</li>
+              <li><icon-img name="Python"></icon-img> Python</li>
+              <li><icon-img name="Rust"></icon-img> Rust</li>
+              <li><icon-img name="PHP"></icon-img> PHP</li>
+              <li>git</li>
+            </ul>
+          </div>
 
-        <div class="labeled_list">
-          <div>Software engineering</div>
-          <ul class="flex_list flex_list__background">
-            <li><icon-img name="CSharp"></icon-img>&nbsp;C#</li>
-            <li><icon-img name="Python"></icon-img>&nbsp;Python</li>
-            <li><icon-img name="Rust"></icon-img>&nbsp;Rust</li>
-            <li><icon-img name="PHP"></icon-img>&nbsp;PHP</li>
-            <li>git</li>
-          </ul>
-        </div>
+          <div class="labeled_list">
+            <div>Game development</div>
+            <ul class="flex_list flex_list__background">
+              <li>Godot</li>
+              <li>Unreal Engine</li>
+              <li>Unity</li>
+              <li>HTML5 Canvas</li>
+              <li>WebGL</li>
+              <li>OpenGL</li>
+              <li>Game design</li>
+              <li>Esports</li>
+            </ul>
+          </div>
 
-        <div class="labeled_list">
-          <div>Game development</div>
-          <ul class="flex_list flex_list__background">
-            <li>Godot</li>
-            <li>Unreal Engine</li>
-            <li>Unity</li>
-            <li>HTML5 Canvas</li>
-            <li>WebGL</li>
-            <li>OpenGL</li>
-            <li>Game design</li>
-            <li>Esports</li>
-          </ul>
-        </div>
+          <div class="labeled_list">
+            <div>Systems</div>
+            <ul class="flex_list flex_list__background">
+              <li>Bash</li>
+              <li>vim</li>
+              <li>Linux administration</li>
+              <li>Networking</li>
+              <li>Hardware</li>
+              <li>VMs/VPS</li>
+              <li>TrueNAS</li>
+              <li>OPNsense</li>
+              <li>Proxmox</li>
+              <li>PowerShell</li>
+            </ul>
+          </div>
 
-        <div class="labeled_list">
-          <div>Systems</div>
-          <ul class="flex_list flex_list__background">
-            <li>Bash</li>
-            <li>vim</li>
-            <li>Linux administration</li>
-            <li>Networking</li>
-            <li>Hardware</li>
-            <li>VMs/VPS</li>
-            <li>TrueNAS</li>
-            <li>OPNsense</li>
-            <li>Proxmox</li>
-            <li>PowerShell</li>
-          </ul>
-        </div>
+          <div class="labeled_list">
+            <div>Tools and software</div>
+            <ul class="flex_list flex_list__background">
+              <li>Linux</li>
+              <li>Windows</li>
+              <li>Mac</li>
+              <li>Visual Studio</li>
+              <li>VSCode</li>
+              <li>ffmpeg</li>
+              <li>RDP</li>
+              <li>Trello</li>
+              <li>Bitbucket</li>
+              <li>GitHub</li>
+              <li>Jira</li>
+              <li>Jenkins</li>
+            </ul>
+          </div>
 
-        <div class="labeled_list">
-          <div>Tools and software</div>
-          <ul class="flex_list flex_list__background">
-            <li>Linux</li>
-            <li>Windows</li>
-            <li>Mac</li>
-            <li>Visual Studio</li>
-            <li>VSCode</li>
-            <li>ffmpeg</li>
-            <li>RDP</li>
-            <li>Trello</li>
-            <li>Bitbucket</li>
-            <li>GitHub</li>
-            <li>Jira</li>
-            <li>Jenkins</li>
-          </ul>
-        </div>
+          <div class="labeled_list">
+            <div>Other engineering</div>
+            <ul class="flex_list flex_list__background">
+              <li>3D printing</li>
+              <li>Soldering</li>
+              <li>Reverse engineering</li>
+              <li>Electrical engineering</li>
+              <li>Backyard engineering</li>
+              <li>Embedded devices</li>
+            </ul>
+          </div>
 
-        <div class="labeled_list">
-          <div>Other engineering</div>
-          <ul class="flex_list flex_list__background">
-            <li>3D printing</li>
-            <li>Soldering</li>
-            <li>Reverse engineering</li>
-            <li>Electrical engineering</li>
-            <li>Backyard engineering</li>
-            <li>Embedded devices</li>
-          </ul>
-        </div>
-
-        <div class="labeled_list">
-          <div>Major hobbies</div>
-          <ul class="flex_list flex_list__background">
-            <li>Photography</li>
-            <li>Automation games</li>
-            <li>2D animation</li>
-            <li>Music creation</li>
-            <li>Super Smash Bros.</li>
-            <li>Competitive gaming</li>
-          </ul>
-        </div>
+          <div class="labeled_list">
+            <div>Major hobbies</div>
+            <ul class="flex_list flex_list__background">
+              <li>Photography</li>
+              <li>Automation games</li>
+              <li>2D animation</li>
+              <li>Music creation</li>
+              <li>Super Smash Bros.</li>
+              <li>Competitive gaming</li>
+            </ul>
+          </div>
+        </expandable-section>
       </article>
 
-      <article>
-        <h1>Antistatic</h1>
-
-        <p class="time_range">2012 - Present</p>
-
-        <p>
-          An uncompromising fighting game using a bespoke engine, built solo.
+      <article slot="content">
+        <h1>Antistatic <span class="time_range">2012 - Present</span></h1>
+        
+        <p class="description">
+          A solo-developed uncompromising platform fighting game using a bespoke C/TypeScript engine.
         </p>
 
         <div class="widest center">
           <image-scroller>
             <img src="/assets/thumbs/antistatic/boxart (Phone).png" title="Antistatic's Steam box art" />
-            <!-- <iframe width="533" height="300" src="https://www.youtube-nocookie.com/embed/GtGyPGYhTdE?si=mJMmQ1pbVitJQWLC&amp;controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> -->
             <a href="https://youtu.be/GtGyPGYhTdE?si=AbhJgwcNC9TpAteq"><img title="A thumbnail for the Antistatic 0.7 combo video trailer. Follow the link to check it out." src="/assets/thumbs/antistatic/eztrailer_4-00.00.01.149 (Phone).png" /></a>
             <img src="/assets/thumbs/antistatic/Screenshot 2023-11-16 135339 (Phone).png" title="A screenshot of the current state of the 0.8 open alpha test." />
             <img src="/assets/thumbs/antistatic/wheeeemodels (Phone).png" title="A screenshot showing a graphics engine test. It uses public domain high-detail models of a DSLR or mirrorless camera, and a rolling coffee cart." />
@@ -206,10 +202,16 @@
           <li>Server OS: Ubuntu</li>
           <li>Graphics: OpenGL</li>
           <li>Shaders: GLES</li>
-          <li>From-scratch font atlassing in C</li>
-          <li>Netcode: Delay-based over UDP</li>
-          <li>Pseudo-CI: Bash, PowerShell</li>
-          <li>git</li>
+        </ul>
+
+        <ul class="flex_list flex_list__background">
+          <li>Fully from-scratch graphics</li>
+          <li>Custom physics engine</li>
+          <li>Uncapped player count</li>
+          <li>Latency-optimized rendering and input processing</li>
+          <li>Font atlassing in C</li>
+          <li>Delay-based P2P UDP netcode</li>
+          <li>Custom build system: Bash, PowerShell</li>
         </ul>
 
         <div class="labeled_list">
@@ -231,11 +233,12 @@
             <li>Runtime: <a href="https://nodejs.org">Node.js</a></li>
             <li>Window: <a href="https://www.libsdl.org/">SDL2</a></li>
             <li>Gamepads: SDL2</li>
-            <li>Font rendering: <a href="https://github.com/freetype">Freetype</a></li>
+            <li>Fonts: <a href="https://github.com/freetype">Freetype</a></li>
             <li>USB: <a href="https://github.com/libusb/libusb">LibUSB</a></li>
             <li>Audio: <a href="https://github.com/kcat/openal-soft">OpenAL-soft</a></li>
             <li>Container/codec: <a href="https://github.com/xiph/ogg">Ogg</a>/<a href="https://github.com/xiph/vorbis">Vorbis</a></li>
             <li>Internationalization: <a href="https://projectfluent.org/">Fluent</a></li>
+            <li>Source control: <a href="https://git-scm.com/">git</a></li>
             <li><a href="https://github.com/nigels-com/glew">GLEW</a></li>
             <li><a href="https://github.com/nothings/stb">stb</a></li>
             <li><a href="https://github.com/TooTallNate/node-bindings">node-bindings</a></li>
@@ -248,98 +251,98 @@
           </ul>
         </div>
 
-        <input type="checkbox" class="expand_toggle" aria-label="Show more technical details" />
+        <expandable-section aria-label="Show more technical details">
+          <p>
+            Antistatic has been in development since 2012 as an experimental homage
+            to Super Smash Bros. Melee. It is built in a custom engine,
+            written in TypeScript and C, with a 3D OpenGL graphics engine.
+          </p>
 
-        <p>
-          Antistatic has been in development since 2012 as an experimental homage
-          to Super Smash Bros. Melee. It is built in a custom engine,
-          written in TypeScript and C, with a 3D OpenGL graphics engine.
-        </p>
+          <h2>
+            Technical Details
+          </h2>
 
-        <h2>
-          Technical Details
-        </h2>
+          <p>
+            Antistatic runs on top of Node.js, with the bulk written in TypeScript.
+            Native portions are written in C, and run as a Node.js addon.
+          </p>
 
-        <p>
-          Antistatic runs on top of Node.js, with the bulk written in TypeScript.
-          Native portions are written in C, and run as a Node.js addon.
-        </p>
+          <p>
+            Antistatic's matchmaking server is built in Go <a href="https://github.com/bluehexagons/antistatic-server">and is open-source</a>.
+            I run it as a service on a headless Ubuntu server that I maintain, hosted by a popular VPS.
+          </p>
 
-        <p>
-          Antistatic's matchmaking server is built in Go <a href="https://github.com/bluehexagons/antistatic-server">and is open-source</a>.
-          I run it as a service on a headless Ubuntu server that I maintain, hosted by a popular VPS.
-        </p>
+          <h2>
+            Graphics engine
+          </h2>
+          
+          <p>
+            The graphics engine is also split, with lower-level code written in C and OpenGL and much of the model
+            manipulation, vertex rendering, and animation written in TypeScript. FreeType is used to render a dynamically-growing
+            font atlas. Other libraries used include: GLEW for OpenGL bindings, SDL2 for window management, and SDL2_image for image loading. 
+          </p>
 
-        <h2>
-          Graphics engine
-        </h2>
-        
-        <p>
-          The graphics engine is also split, with lower-level code written in C and OpenGL and much of the model
-          manipulation, vertex rendering, and animation written in TypeScript. FreeType is used to render a dynamically-growing
-          font atlas. Other libraries used include: GLEW for OpenGL bindings, SDL2 for window management, and SDL2_image for image loading. 
-        </p>
+          <h2>
+            Audio engine
+          </h2>
 
-        <h2>
-          Audio engine
-        </h2>
+          <p>
+            The audio engine uses OpenAL-soft to interface with hardware. Files are OGGs, and libvorbistools is used
+            to decode them.
+          </p>
 
-        <p>
-          The audio engine uses OpenAL-soft to interface with hardware. Files are OGGs, and libvorbistools is used
-          to decode them.
-        </p>
+          <h2>
+            Netcode
+          </h2>
 
-        <h2>
-          Netcode
-        </h2>
+          <p>
+            Netcode is peer-to-peer and delay-based, and some infrastructure work has been done to move toward adding rollback in the future.
+            It runs on UDP, with higher-level messages encoded in JSON along with a binary stream of controller snapshots.
+            The engine attempts to synchronize beginning times and input delay, poke through permissive firewalls, and gracefully handle dropped packets.
+          </p>
 
-        <p>
-          Netcode is peer-to-peer and delay-based, and some infrastructure work has been done to move toward adding rollback in the future.
-          It runs on UDP, with higher-level messages encoded in JSON along with a binary stream of controller snapshots.
-          The engine attempts to synchronize beginning times and input delay, poke through permissive firewalls, and gracefully handle dropped packets.
-        </p>
+          <h2>
+            USB GCN Controller Adapter Support
+          </h2>
 
-        <h2>
-          USB GCN Controller Adapter Support
-        </h2>
+          <p>
+            To connect to the official Wii U/Switch GameCube controller adapter, I used LibUSB to directly communicate with
+            the adapter over USB.
+          </p>
 
-        <p>
-          To connect to the official Wii U/Switch GameCube controller adapter, I used LibUSB to directly communicate with
-          the adapter over USB.
-        </p>
+          <h2>
+            Internationalization
+          </h2>
 
-        <h2>
-          Internationalization
-        </h2>
+          <p>
+            Internationalization is handled using Fluent, with the language files <a href="https://github.com/bluehexagons/antistatic-translations">available on GitHub</a>.
+            Currently, only English and Spanish have had human review.
+          </p>
 
-        <p>
-          Internationalization is handled using Fluent, with the language files <a href="https://github.com/bluehexagons/antistatic-translations">available on GitHub</a>.
-          Currently, only English and Spanish have had human review.
-        </p>
+          <h2>
+            Build system
+          </h2>
 
-        <h2>
-          Build system
-        </h2>
+          <p>
+            Antistatic's build system is mostly automated starting from a build-free git repo,
+            pulling in and installing dependencies as well as building a few binaries. The process is
+            a mix of PowerShell and Bash scripts.
+          </p>
 
-        <p>
-          Antistatic's build system is mostly automated starting from a build-free git repo,
-          pulling in and installing dependencies as well as building a few binaries. The process is
-          a mix of PowerShell and Bash scripts.
-        </p>
+          <h2>
+            History
+          </h2>
 
-        <h2>
-          History
-        </h2>
-
-        <p>
-          Originally, Antistatic ran in a web browser. The limitations started adding up,
-          and I made the decision to move to Electron and add a native add-on. When I couldn't
-          squeeze the consistent performance and hardware support I felt I needed,
-          I re-implemented more pieces in C and moved onto Node.js directly.
-        </p>
+          <p>
+            Originally, Antistatic ran in a web browser. The limitations started adding up,
+            and I made the decision to move to Electron and add a native add-on. When I couldn't
+            squeeze the consistent performance and hardware support I felt I needed,
+            I re-implemented more pieces in C and moved onto Node.js directly.
+          </p>
+        </expandable-section>
       </article>
 
-      <article>
+      <article slot="content">
         <h1>Senior UI Engineer @ Zazzle.com</h1>
 
         <p class="time_range">Jun 2019 - Sep 2023</p>
@@ -370,15 +373,15 @@
           <li>Bitbucket</li>
         </ul>
 
-        <input type="checkbox" class="expand_toggle" aria-label="Show more" />
-
-        <p>
-          Built and maintained frontend UI infrastructure and for public and internal
-          pages. The primary technologies I used were TypeScript, React, Redux/Sagas, and C#.
-        </p>
+        <expandable-section aria-label="Show more">
+          <p>
+            Built and maintained frontend UI infrastructure and for public and internal
+            pages. The primary technologies I used were TypeScript, React, Redux/Sagas, and C#.
+          </p>
+        </expandable-section>
       </article>
 
-      <article>
+      <article slot="content">
         <h1>Application Developer @ Dexter Solutions</h1>
 
         <p class="time_range">Feb 2014 - Jun 2018</p>
@@ -395,15 +398,15 @@
           <li>Linux system administration</li>
         </ul>
 
-        <input type="checkbox" class="expand_toggle" aria-label="Show more" />
-
-        <p>
-          Developed bespoke pages and utilities using Go, SQL Server, and TypeScript.
-          Enhanced legacy PHP, JavaScript, and third-party software. Administered Linux servers.
-        </p>
+        <expandable-section aria-label="Show more">
+          <p>
+            Developed bespoke pages and utilities using Go, SQL Server, and TypeScript.
+            Enhanced legacy PHP, JavaScript, and third-party software. Administered Linux servers.
+          </p>
+        </expandable-section>
       </article>
 
-      <article>
+      <article slot="content">
         <h1>Lead Programmer @ Air Dash Online</h1>
 
         <p class="time_range">May - Oct 2013</p>
@@ -411,7 +414,7 @@
         <div class="widest center">
           <image-scroller>
             <img title="A promotional screenshot showing Tesla using side-special against a stationary Chai." src="/assets/thumbs/ado/1157428_391081464351375_1074064025_n (Phone).png" />
-            <img loading="lazy" width="620" height="414" title="A short animation showing Tesla comboing Chai. It ends in an air dash knee used to punish a stun cancel air dash for the KO." src="/assets/ado/dd0e10cb88d38afeaf6303d24b11521f_large.gif" />
+            <img loading="lazy" title="A short animation showing Tesla comboing Chai. It ends in an air dash knee used to punish a stun cancel air dash for the KO." src="/assets/ado/dd0e10cb88d38afeaf6303d24b11521f_large.gif" />
             <img title="A screenshot of progress made after the EVO demo, leading up to the Kickstarter launch." src="/assets/thumbs/ado/1093871_374154056044116_1718466907_o (Phone).png" />
           </image-scroller>
         </div>
@@ -425,30 +428,30 @@
           <li>git</li>
         </ul>
 
-        <input type="checkbox" class="expand_toggle" aria-label="Show more" />
+        <expandable-section aria-label="Show more">
+          <p>
+            Air Dash Online was a prototype of a fast-paced platform fighting game by JV5 Games.
+            As the lead programmer, I built its custom platform fighter gameplay engine
+            inside of Unity and performed non-graphics programming.
+          </p>
 
-        <p>
-          Air Dash Online was a prototype of a fast-paced platform fighting game by JV5 Games.
-          As the lead programmer, I built its custom platform fighter gameplay engine
-          inside of Unity and performed non-graphics programming.
-        </p>
-
-        <div class="labeled_list">
-          <div>Custom Tech</div>
-          <ul>
-            <li>2D capsule-based attack collision system based on 3D animations</li>
-            <li>2D stage collision and management system</li>
-            <li>In-game controller remapping tech</li>
-            <li>Automated detection of some controllers for specific remapping</li>
-            <li>Keyboard, controller, and fight stick support</li>
-            <li>YAML parser</li>
-            <li>Animation sequencing, timing, interpolation system</li>
-            <li>Platform fighter mechanics: air dodging, wave dashing, light/heavy attacks, blocking, recovery, etc</li>
-          </ul>
-        </div>
+          <div class="labeled_list">
+            <div>Custom Tech</div>
+            <ul>
+              <li>2D capsule-based attack collision system based on 3D animations</li>
+              <li>2D stage collision and management system</li>
+              <li>In-game controller remapping tech</li>
+              <li>Automated detection of some controllers for specific remapping</li>
+              <li>Keyboard, controller, and fight stick support</li>
+              <li>YAML parser</li>
+              <li>Animation sequencing, timing, interpolation system</li>
+              <li>Platform fighter mechanics: air dodging, wave dashing, light/heavy attacks, blocking, recovery, etc</li>
+            </ul>
+          </div>
+        </expandable-section>
       </article>
 
-      <article>
+      <article slot="content">
         <h1>Don't Starve Food Guide</h1>
 
         <p class="time_range">Jan 2013 - Present</p>
@@ -469,50 +472,50 @@
           <li>100+ stars on GitHub</li>
         </ul>
 
-        <input type="checkbox" class="expand_toggle" aria-label="Show more" />
-
-        <p>
-          The open-source <a href="https://foodguide.bluehexagons.com">Food Guide</a>
-          (<a href="https://github.com/bluehexagons/foodguide">on GitHub</a>)
-          was created to simulate the in-game crock pot, which crafts different dishes
-          depending on what four ingredients are chosen. It expanded to include more tools,
-          and has been maintained since Don't Starve was in Early Access.
-        </p>
+        <expandable-section aria-label="Show more">
+          <p>
+            The open-source <a href="https://foodguide.bluehexagons.com">Food Guide</a>
+            (<a href="https://github.com/bluehexagons/foodguide">on GitHub</a>)
+            was created to simulate the in-game crock pot, which crafts different dishes
+            depending on what four ingredients are chosen. It expanded to include more tools,
+            and has been maintained since Don't Starve was in Early Access.
+          </p>
+        </expandable-section>
       </article>
 
-      <article>
+      <article slot="content">
         <h1>bluehexagons.com</h1>
 
         <ul class="flex_list flex_list__background">
           <li>TypeScript</li>
           <li>HTML</li>
           <li>CSS</li>
+          <li>Web Components</li>
+          <li>Vite</li>
+          <li>Node.js</li>
           <li>Ubuntu</li>
           <li>Bash</li>
           <li><a href="https://github.com/bluehexagons/bluehexagons">On GitHub</a></li>
         </ul>
 
-        <input type="checkbox" class="expand_toggle" aria-label="Show more" />
-
-        <p>
-          This website is hosted on a headless Linux server running nginx, written using
-          modern HTML, CSS, and TypeScript. It's still under construction.
-        </p>
+        <expandable-section aria-label="Show more">
+          <p>
+            This website is hosted on a headless Linux server running nginx, written using
+            modern HTML, CSS, and TypeScript. It's still under construction.
+          </p>
+        </expandable-section>
       </article>
-      
-      <footer class="site-footer">
-          <ul class="links">
-            <li><a href="antistatic/presskit">Presskit</a></li>
-            <li><a href="antistatic/privacy">Privacy</a></li>
-          </ul>
-          <span class="copyright">
-            Antistatic &copy; 2018-2024 bluehexagons, all rights reserved.
-            Air Dash Online &copy; 2013 JV5 Games.
-            Logos and trademarks attributed to their respective owners.
-            bluehexagons logo, Antistatic logo, background tile produced by <a href="https://twitter.com/UGVTS">UGVTS</a>.
-          </span>
-      </footer>
-    </div>
+    </content-area>
+    <page-footer slot="content">
+      <li slot="links"><a href="antistatic/presskit">Presskit</a></li>
+      <li slot="links"><a href="antistatic/privacy">Privacy</a></li>
+      <span slot="copyright">
+        Antistatic &copy; 2018-2024 bluehexagons, all rights reserved.
+        Air Dash Online &copy; 2013 JV5 Games.
+        Logos and trademarks attributed to their respective owners.
+        bluehexagons logo, Antistatic logo, background tile produced by <a href="https://twitter.com/UGVTS">UGVTS</a>.
+      </span>
+    </page-footer>
   </body>
 </html>
 
