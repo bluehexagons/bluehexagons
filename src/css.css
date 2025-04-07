@@ -243,8 +243,9 @@ pre code {
 
 .time_range {
   float: right;
-  padding-left: 30px;
+  margin: 0 10px 0 30px;
   font-size: 14px;
   font-weight: normal;
   color: #ccc;
+  vertical-align: text-top;
 }
