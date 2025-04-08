@@ -187,6 +187,8 @@
         
         <p class="description">
           A solo-developed uncompromising platform fighting game using a bespoke C/TypeScript engine.
+
+          Read more at <a href="/antistatic">the main Antistatic page.</a>
         </p>
 
         <div class="widest center">
@@ -199,149 +201,39 @@
         </div>
 
         <ul class="flex_list flex_list__background">
+          <li>Built from Scratch</li>
           <li>Main language: TypeScript</li>
           <li>Native code: C</li>
           <li>Server language: Go</li>
-          <li>Server OS: Ubuntu</li>
-          <li>Graphics: OpenGL</li>
-          <li>Shaders: GLES</li>
         </ul>
 
-        <ul class="flex_list flex_list__background">
-          <li>Fully from-scratch graphics</li>
-          <li>Custom physics engine</li>
-          <li>Uncapped player count</li>
-          <li>Latency-optimized rendering and input processing</li>
-          <li>Font atlassing in C</li>
-          <li>Delay-based P2P UDP netcode</li>
-          <li>Custom build system: Bash, PowerShell</li>
-        </ul>
-
-        <div class="labeled_list">
-          <div>Open-Source Pieces</div>
+        <expandable-section aria-label="Show more">
           <ul class="flex_list flex_list__background">
-            <li>Lobby server: <a href="https://github.com/bluehexagons/antistatic-server">antistatic-server</a></li>
-            <li>Input state machine: <a href="https://github.com/bluehexagons/capacitor">capacitor</a></li>
-            <li>Color math scripting language: <a href="https://github.com/bluehexagons/trace">trace</a></li>
-            <li>Loader: <a href="https://github.com/bluehexagons/antistatic-loader">antistatic-loader</a></li>
-            <li>Animator: <a href="https://github.com/bluehexagons/antistatic-animator">antistatic-animator</a></li>
-            <li>Translations: <a href="https://github.com/bluehexagons/antistatic-translations">antistatic-translations</a></li>
-            <li>Easing library: <a href="https://github.com/bluehexagons/easing">@bluehexagons/easing</a></li>
+            <li>Shaders: GLES</li>
+            <li>Server OS: Ubuntu</li>
+            <li>Graphics: OpenGL</li>
+            <li>Bespoke graphics engine</li>
+            <li>Dynamic sound engine</li>
+            <li>Custom physics engine</li>
+            <li>Uncapped player count</li>
+            <li>Latency-optimized rendering and input processing</li>
+            <li>Font atlassing in C</li>
+            <li>Delay-based P2P UDP netcode</li>
+            <li>Custom build system: Bash, PowerShell</li>
           </ul>
-        </div>
 
-        <div class="labeled_list">
-          <div>All Third-Party Dependencies</div>
-          <ul class="flex_list flex_list__background">
-            <li>Runtime: <a href="https://nodejs.org">Node.js</a></li>
-            <li>Window: <a href="https://www.libsdl.org/">SDL2</a></li>
-            <li>Gamepads: SDL2</li>
-            <li>Fonts: <a href="https://github.com/freetype">Freetype</a></li>
-            <li>USB: <a href="https://github.com/libusb/libusb">LibUSB</a></li>
-            <li>Audio: <a href="https://github.com/kcat/openal-soft">OpenAL-soft</a></li>
-            <li>Container/codec: <a href="https://github.com/xiph/ogg">Ogg</a>/<a href="https://github.com/xiph/vorbis">Vorbis</a></li>
-            <li>Internationalization: <a href="https://projectfluent.org/">Fluent</a></li>
-            <li>Source control: <a href="https://git-scm.com/">git</a></li>
-            <li><a href="https://github.com/nigels-com/glew">GLEW</a></li>
-            <li><a href="https://github.com/nothings/stb">stb</a></li>
-            <li><a href="https://github.com/TooTallNate/node-bindings">node-bindings</a></li>
-            <li><a href="https://github.com/toji/gl-matrix">gl-matrix</a></li>
-            <li><a href="https://github.com/andyearnshaw/Intl.js">intl</a></li>
-            <li><a href="https://github.com/microsoft/node-jsonc-parser">jsonc-parser</a></li>
-            <li><a href="https://github.com/sindresorhus/open">open</a></li>
-            <li><a href="https://github.com/sindresorhus/os-locale">os-locale</a></li>
-            <li><a href="https://github.com/ddopson/node-segfault-handler">node-segfault-handler</a></li>
-          </ul>
-        </div>
-
-        <expandable-section aria-label="Show more technical details">
-          <p>
-            Antistatic has been in development since 2012 as an experimental homage
-            to Super Smash Bros. Melee. It is built in a custom engine,
-            written in TypeScript and C, with a 3D OpenGL graphics engine.
-          </p>
-
-          <h2>
-            Technical Details
-          </h2>
-
-          <p>
-            Antistatic runs on top of Node.js, with the bulk written in TypeScript.
-            Native portions are written in C, and run as a Node.js addon.
-          </p>
-
-          <p>
-            Antistatic's matchmaking server is built in Go <a href="https://github.com/bluehexagons/antistatic-server">and is open-source</a>.
-            I run it as a service on a headless Ubuntu server that I maintain, hosted by a popular VPS.
-          </p>
-
-          <h2>
-            Graphics engine
-          </h2>
-          
-          <p>
-            The graphics engine is also split, with lower-level code written in C and OpenGL and much of the model
-            manipulation, vertex rendering, and animation written in TypeScript. FreeType is used to render a dynamically-growing
-            font atlas. Other libraries used include: GLEW for OpenGL bindings, SDL2 for window management, and SDL2_image for image loading. 
-          </p>
-
-          <h2>
-            Audio engine
-          </h2>
-
-          <p>
-            The audio engine uses OpenAL-soft to interface with hardware. Files are OGGs, and libvorbistools is used
-            to decode them.
-          </p>
-
-          <h2>
-            Netcode
-          </h2>
-
-          <p>
-            Netcode is peer-to-peer and delay-based, and some infrastructure work has been done to move toward adding rollback in the future.
-            It runs on UDP, with higher-level messages encoded in JSON along with a binary stream of controller snapshots.
-            The engine attempts to synchronize beginning times and input delay, poke through permissive firewalls, and gracefully handle dropped packets.
-          </p>
-
-          <h2>
-            USB GCN Controller Adapter Support
-          </h2>
-
-          <p>
-            To connect to the official Wii U/Switch GameCube controller adapter, I used LibUSB to directly communicate with
-            the adapter over USB.
-          </p>
-
-          <h2>
-            Internationalization
-          </h2>
-
-          <p>
-            Internationalization is handled using Fluent, with the language files <a href="https://github.com/bluehexagons/antistatic-translations">available on GitHub</a>.
-            Currently, only English and Spanish have had human review.
-          </p>
-
-          <h2>
-            Build system
-          </h2>
-
-          <p>
-            Antistatic's build system is mostly automated starting from a build-free git repo,
-            pulling in and installing dependencies as well as building a few binaries. The process is
-            a mix of PowerShell and Bash scripts.
-          </p>
-
-          <h2>
-            History
-          </h2>
-
-          <p>
-            Originally, Antistatic ran in a web browser. The limitations started adding up,
-            and I made the decision to move to Electron and add a native add-on. When I couldn't
-            squeeze the consistent performance and hardware support I felt I needed,
-            I re-implemented more pieces in C and moved onto Node.js directly.
-          </p>
+          <div class="labeled_list">
+            <div>Open-Source Pieces</div>
+            <ul class="flex_list flex_list__background">
+              <li>Lobby server: <a href="https://github.com/bluehexagons/antistatic-server">antistatic-server</a></li>
+              <li>Input state machine: <a href="https://github.com/bluehexagons/capacitor">capacitor</a></li>
+              <li>Color math scripting language: <a href="https://github.com/bluehexagons/trace">trace</a></li>
+              <li>Loader: <a href="https://github.com/bluehexagons/antistatic-loader">antistatic-loader</a></li>
+              <li>Animator: <a href="https://github.com/bluehexagons/antistatic-animator">antistatic-animator</a></li>
+              <li>Translations: <a href="https://github.com/bluehexagons/antistatic-translations">antistatic-translations</a></li>
+              <li>Easing library: <a href="https://github.com/bluehexagons/easing">@bluehexagons/easing</a></li>
+            </ul>
+          </div>
         </expandable-section>
       </article>
 
@@ -548,10 +440,9 @@
       </article>
     </content-area>
     <page-footer slot="content">
-      <li slot="links"><a href="antistatic/presskit">Presskit</a></li>
       <li slot="links"><a href="antistatic/privacy">Privacy</a></li>
       <span slot="copyright">
-        Antistatic &copy; 2018-2024 bluehexagons, all rights reserved.
+        Antistatic &copy; 2018-2025 bluehexagons, all rights reserved.
         Air Dash Online &copy; 2013 JV5 Games.
         Logos and trademarks attributed to their respective owners.
         bluehexagons logo, Antistatic logo, background tile produced by <a href="https://twitter.com/UGVTS">UGVTS</a>.

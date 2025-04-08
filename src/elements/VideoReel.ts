@@ -9,7 +9,7 @@ export class VideoReelElement extends BaseElement {
   private videos: string[] = [];
   private videoIndex = 0;
   private swapping = false;
-  private videoDir = '/assets/clips/';
+  private videoDir = '/etc/antistatic/clips/';
   
   constructor() {
     super();
