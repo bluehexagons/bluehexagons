@@ -2,6 +2,7 @@
   line-height: 44px;
   margin: 10px auto;
   text-align: center;
+  margin-bottom: -20px;
 }
 
 .nav {
@@ -60,13 +61,11 @@
   }
 }
 
-@media(max-width: 600px) {
+@media(max-width: 660px) {
   .navbar {
     padding: 10px 0;
     margin: 0 auto;
-    background: #20202a17;
     line-height: normal;
-    backdrop-filter: blur(20px);
   }
   
   .nav {

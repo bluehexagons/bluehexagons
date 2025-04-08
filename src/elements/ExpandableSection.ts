@@ -45,7 +45,7 @@ export class ExpandableSection extends BaseElement {
         transition: max-height 0.3s ease-in-out;
       }
 
-      @media (max-width: 600px) {
+      @media (max-width: 660px) {
         .expand_toggle {
           display: block;
           width: 100%;

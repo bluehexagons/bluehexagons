@@ -67,7 +67,7 @@ video {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 660px) {
   video::-webkit-media-controls-panel {
     opacity: 1 !important;
     display: flex !important;

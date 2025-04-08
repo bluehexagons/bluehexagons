@@ -28,15 +28,15 @@ body {
   --bluehexagons: rgb(0, 223, 252);
   --antistatic: rgb(255, 110, 0);
 
-  --content-width: 1200px;
-  --background-width: 1420px;
+  --content-width: 1100px;
+  --background-width: calc(100% - 400px);
   --breakpoint: 990px;
 
-  background: var(--bg-outer) top repeat;
-  background-image: linear-gradient(to bottom,rgba(166, 192, 226, 0.01), rgba(94, 71, 51, 0.185)), url('/assets/b6bg_b.png');
+  background: linear-gradient(to bottom, var(--bg-inner), var(--bg-outer));
   color: #eaeaea;
   margin: 0;
   padding: 0;
+  padding-top: 20px;
   font-family: 'Fira Sans', sans-serif;
   font-size: 18px;
   overflow-x: hidden;
@@ -79,7 +79,10 @@ a:hover {
 }
 
 h1 {
+  margin: 0;
+  padding: 0;
   line-height: 40px;
+  font-size: 38px;
   position: relative;
   color: var(--highlight);
   text-shadow: var(--shadow) 1px 0 10px;
@@ -248,4 +251,38 @@ pre code {
   font-weight: normal;
   color: #ccc;
   vertical-align: text-top;
+}
+
+article {
+  margin: 40px 0;
+  width: 100%;
+  padding: 20px;
+  backdrop-filter: blur(20px);
+  border: 2px solid #252a33;
+  border-radius: 6.6px;
+  background: rgba(6, 7, 8, 0.65);
+  box-shadow: 0 20px 30px rgba(6, 7, 8, 0.65);
+  
+}
+
+@media (max-width: 990px) {
+  article {
+    margin: 30px 0;
+    padding: 10px;
+    box-shadow: 0 16px 20px rgba(6, 7, 8, 0.45);
+  }
+}
+
+@media (max-width: 660px) {
+  article {
+    margin: 10px 0;
+    padding: 6px;
+    box-shadow: 0 6px 10px rgba(6, 7, 8, 0.45);
+  }
+
+  .flex_list > li {
+    white-space: wrap;
+
+    hyphens: auto;
+  }
 }

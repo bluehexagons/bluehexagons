@@ -64,7 +64,7 @@
   max-height: 300px;
   width: auto;
   object-fit: contain;
-  max-width: 600px;
+  max-width: 660px;
   transition: transform 0.15s ease-out;
   cursor: pointer;
   border: 2px solid transparent;
@@ -117,7 +117,6 @@
 
 @media (max-width: 990px) {
   .image_scroller__gallery {
-    height: auto;
     max-height: 300px;
     flex-wrap: nowrap;
     justify-content: flex-start;
@@ -136,8 +135,8 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 660px) {
   .image_scroller img {
-    max-height: 180px;
+    max-height: 80px;
   }
 }
