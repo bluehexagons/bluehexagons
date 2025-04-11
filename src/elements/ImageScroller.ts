@@ -45,7 +45,7 @@ export class ImageScrollerElement extends BaseElement {
       const fullsize = thumbnail.replace(findThumbs, '');
 
       const link = document.createElement('a');
-      link.href = fullsize;
+      link.href = imgElement.dataset.linkOverride || fullsize;
       this.gallery.appendChild(link);
       link.appendChild(imgElement);
     } else {
