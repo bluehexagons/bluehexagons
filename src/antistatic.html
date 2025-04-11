@@ -187,15 +187,16 @@
         <expandable-section aria-label="Show more details">
           <h3 id="energy">Energy</h3>
           <p>
-            The biggest new feature is the <strong>Energy</strong> meter. Shields,
-            specials, lag-canceling, and holding opponents all consume Energy.
+            The biggest new feature is the <strong>Energy</strong> meter.
+            Shields, specials, lag-canceling, and holding opponents all consume
+            Energy.
           </p>
           <p>
             Each character has the same energy pool and regeneration speed. The
-            last chunk of used energy, the ligher chunk on the meter, regenerates
-            more quickly; it can help to space out big specials and avoid
-            lag-canceling or using shield immediately after for the fastest
-            regeneration potential.
+            last chunk of used energy, the ligher chunk on the meter,
+            regenerates more quickly; it can help to space out big specials and
+            avoid lag-canceling or using shield immediately after for the
+            fastest regeneration potential.
           </p>
           <h3 id="familiar">Familiar</h3>
           <ul>
@@ -206,7 +207,8 @@
             <li>Wave dashing; air dodges send into free fall</li>
             <li>Moonwalking, charlie walking</li>
             <li>
-              Ledge mechanics, including right-stick options and 100%+ animations
+              Ledge mechanics, including right-stick options and 100%+
+              animations
             </li>
             <li>DI/SDI/ASDI</li>
             <li>Grabs, throws</li>
@@ -229,7 +231,8 @@
           <h3 id="differences">Differences</h3>
           <ul>
             <li>
-              Reverse aerial rush possible during initial dash, but not during run
+              Reverse aerial rush possible during initial dash, but not during
+              run
             </li>
             <li>Initial dash can be canceled on first two frames</li>
             <li>
@@ -250,8 +253,8 @@
             </li>
             <li>If grabs collide, they will cancel out</li>
             <li>
-              If a grab trades with an attack, grab is released if hit is above a
-              knockback threshold
+              If a grab trades with an attack, grab is released if hit is above
+              a knockback threshold
             </li>
             <li>Powershield window is shorter</li>
             <li>
@@ -268,8 +271,8 @@
               refreshed
             </li>
             <li>
-              Dodge panic: pressing grab (Z) during air dodge will cancel movement
-              into a stall that can grab ledge after a delay
+              Dodge panic: pressing grab (Z) during air dodge will cancel
+              movement into a stall that can grab ledge after a delay
             </li>
           </ul>
           <h3 id="shields-and-energy">Shields and Energy</h3>
@@ -280,7 +283,9 @@
             <li>
               When shield breaks, character crumples and falls to the ground
             </li>
-            <li>Shield stun has two phases: heavy (full) stun, and light stun</li>
+            <li>
+              Shield stun has two phases: heavy (full) stun, and light stun
+            </li>
             <li>During light shield stun, character can spot dodge and roll</li>
             <li>
               Lag-canceling can be performed regardless of how much energy is
@@ -294,7 +299,7 @@
         </expandable-section>
       </article>
 
-      <article>
+      <article slot="content">
         <h1 id="controllers">Controllers</h1>
         <p>
           Currently officially supports GameCube (via Wii U/Switch adapter in
@@ -313,14 +318,13 @@
           >
           for detailed instructions. Mac/Linux seem to work without hassle.
         </p>
-        <p>A copy of Zadig is bundled in the installation folder</p>
         <p>
           If you can already use controllers in Dolphin, it should work in
           Antistatic too. In the future, this process might be an automated
           option
         </p>
 
-        <h1 id="control-rebinding">Control rebinding</h1>
+        <h2 id="control-rebinding">Control rebinding</h2>
         <p>
           Basic controller rebinding is available in the in-game controls menu,
           but is early in development and only changes default controls.
@@ -328,14 +332,17 @@
         </p>
 
         <h2>Advanced</h2>
-        <p>
-          Advanced control rebinding can be accessed through the console (bound
-          to <kbd>`</kbd>; close with <kbd>escape</kbd>,
-          <kbd>ctrl</kbd>+<kbd>d</kbd>, or <kbd>enter</kbd> with nothing
-          entered).
-        </p>
-        <p>Basic help is provided by using <code>mapping</code> on its own:</p>
-        <pre><code>Usage: mapping [controller ID]
+        <expandable-section>
+          <p>
+            Advanced control rebinding can be accessed through the console
+            (bound to <kbd>`</kbd>; close with <kbd>escape</kbd>,
+            <kbd>ctrl</kbd>+<kbd>d</kbd>, or <kbd>enter</kbd> with nothing
+            entered).
+          </p>
+          <p>
+            Basic help is provided by using <code>mapping</code> on its own:
+          </p>
+          <pre><code>Usage: mapping [controller ID]
   Prints mapping for controller ID, as well as lists available button/axis actions
 Usage: mapping [controller ID] bind [button/axis name] [button/axis action] [axis value (keyboard only)]
   Binds button/axis to action for controller ID
@@ -353,27 +360,26 @@ Usage: mapping list [controller kind]
 
 See also: controller (all)
   Lists active controllers; if all is specified, includes all connected controllers</code></pre>
-        <h2>Examples</h2>
-        <h3>Keyboard rebinding</h3>
-        <p>
-          Rebind the space bar to shield, and save as the default.<br />Note
-          that all keys are case-sensitive right now; letters should be
-          lowercase (e.g. <code>w</code>, not <code>W</code>), special keys
-          should be capitalized (e.g. <code>RETURN</code>), and numbers are
-          either e.g. <code>A_0</code> (number row) or <code>KP_0</code> (number
-          pad)
-        </p>
-        <p>Press <kbd>`</kbd> to open the console.</p>
-        <pre><code>$ controller all      # list out all controllers
+          <h2>Examples</h2>
+          <h3>Keyboard rebinding</h3>
+          <p>
+            Rebind the space bar to shield, and save as the default.<br />Note
+            that all keys are case-sensitive right now; letters should be
+            lowercase (e.g. <code>w</code>, not <code>W</code>), special keys
+            should be capitalized (e.g. <code>RETURN</code>), and numbers are
+            either e.g. <code>A_0</code> (number row) or
+            <code>KP_0</code> (number pad)
+          </p>
+          <p>Press <kbd>`</kbd> to open the console.</p>
+          <pre><code>$ controller all      # list out all controllers
 0. keyboard: keyboard
 $ mapping 0 bind SPACE shield
 $ mapping 0 save      # saves as the default keyboard layout
 Saved mapping file</code></pre>
-        <div class="spoiler">
-          <input type="checkbox" id="spoiler" /><label for="spoiler"
-            >(view key names)</label
-          ><label for="spoiler">(hide key names)</label>
-          <pre><code>RETURN
+
+            <h3>List of all SDL2 key names, until the rebinding UI is done...</h3>
+            <expandable-section>
+            <pre><code>RETURN
 ESCAPE
 BACKSPACE
 TAB
@@ -612,10 +618,11 @@ APP1
 APP2
 AUDIOREWIND
 AUDIOFASTFORWARD</code></pre>
-        </div>
-        <h3>XInput (e.g. XB1): rebind X to jump, B to special</h3>
-        <p>Press <kbd>`</kbd> to open the console.</p>
-        <pre><code>$ controller all    # list out all controllers
+</expandable-section>
+          </div>
+          <h3>XInput (e.g. XB1): rebind X to jump, B to special</h3>
+          <p>Press <kbd>`</kbd> to open the console.</p>
+          <pre><code>$ controller all    # list out all controllers
 0. keyboard: keyboard
 1. XInput Controller: standard
 $ mapping 1
@@ -626,19 +633,20 @@ $ mapping 1 bind X jump
 $ mapping 1 bind B special
 $ mapping 1 save
 Saved mapping file</code></pre>
-        <h3>Reset all saved mappings to original</h3>
-        <h4>Option 1, using <code>rm</code></h4>
-        <p>Press <kbd>`</kbd> to open the console.</p>
-        <pre><code>$ rm ~/mapping/standard.default</code></pre>
-        <h4>Option 2, also reset controller</h4>
-        <p>Press <kbd>`</kbd> to open the console.</p>
-        <pre><code>$ controller all    # list out all controllers
+          <h3>Reset all saved mappings to original</h3>
+          <h4>Option 1, using <code>rm</code></h4>
+          <p>Press <kbd>`</kbd> to open the console.</p>
+          <pre><code>$ rm ~/mapping/standard.default</code></pre>
+          <h4>Option 2, also reset controller</h4>
+          <p>Press <kbd>`</kbd> to open the console.</p>
+          <pre><code>$ controller all    # list out all controllers
 0. keyboard: keyboard
 1. XInput Controller: standard
 $ mapping 1 reset
 Reset mapping
 $ mapping 1 save
 Saved mapping file</code></pre>
+        </expandable-section>
       </article>
 
       <article slot="content">
