@@ -9,10 +9,6 @@
   font-display: swap;
 }
 
-* {
-  box-sizing: border-box;
-}
-
 body {
   --bg-outer: #20202a;
   --bg-inner: #18181d;
@@ -40,7 +36,22 @@ body {
   font-family: 'Fira Sans', sans-serif;
   font-size: 18px;
   overflow-x: hidden;
+
 }
+
+  a {
+    color: #c9baae;
+    text-decoration: underline;
+  }
+  a:visited {
+    color: #c9baae;
+  }
+  a:hover {
+    color: #fff;
+  }
+  a:active {
+    filter: brightness(0.8);
+  }
 
 ::-webkit-scrollbar {
   width: 14px;
@@ -67,16 +78,6 @@ body {
   background-color: rgb(203, 214, 226);
 }
 
-a {
-  color: #c9baae;
-  text-decoration: underline;
-}
-a:visited {
-  color: #c9baae;
-}
-a:hover {
-  color: #fff;
-}
 
 h1 {
   margin: 0;

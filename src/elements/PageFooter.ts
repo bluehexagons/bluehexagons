@@ -13,17 +13,16 @@ export class PageFooter extends BaseElement {
 
     const linksContainer = document.createElement('ul');
     linksContainer.className = 'links-container';
-    
-    const linksSlot = document.createElement('slot');
-    linksSlot.name = 'links';
-    linksContainer.appendChild(linksSlot);
+    linksContainer.innerHTML = `<li><a href="antistatic/privacy">Privacy</a></li>`;
 
-    const copyright = document.createElement('span');
+    const copyright = document.createElement('div');
     copyright.className = 'copyright';
-    
-    const copyrightSlot = document.createElement('slot');
-    copyrightSlot.name = 'copyright';
-    copyright.appendChild(copyrightSlot);
+    copyright.innerHTML = `
+      Antistatic &copy; 2018-${new Date().getFullYear()} bluehexagons, all rights reserved.
+      Air Dash Online &copy; 2013 JV5 Games.
+      Logos and trademarks attributed to their respective owners.
+      bluehexagons logo, Antistatic logo, background tile produced by <a href="https://bsky.app/profile/hobith.bsky.social">hobith</a>.
+    `;
 
     footer.appendChild(copyright);
     footer.appendChild(linksContainer);
