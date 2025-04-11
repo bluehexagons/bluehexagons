@@ -6,3 +6,4 @@ export * from './PageHeader';
 export * from './PageFooter';
 export * from './ContentArea';
 export * from './ExpandableSection';
+export * from './Link';

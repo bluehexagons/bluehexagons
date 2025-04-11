@@ -1,0 +1,18 @@
+:host {
+  display: inline;
+}
+
+a {
+  color: #c9baae;
+  text-decoration: underline;
+}
+
+a:visited {
+  color: #c9baae;
+}
+a:hover {
+  color: #fff;
+}
+a:active {
+  filter: brightness(0.8);
+}

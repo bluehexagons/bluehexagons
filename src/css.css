@@ -39,20 +39,6 @@ body {
 
 }
 
-  a {
-    color: #c9baae;
-    text-decoration: underline;
-  }
-  a:visited {
-    color: #c9baae;
-  }
-  a:hover {
-    color: #fff;
-  }
-  a:active {
-    filter: brightness(0.8);
-  }
-
 ::-webkit-scrollbar {
   width: 14px;
   border-left: 1px solid rgba(57, 71, 75, 0.479);

@@ -13,20 +13,13 @@ export class PageHeader extends BaseElement {
 
     const nav = document.createElement('span');
     nav.className = 'nav';
-
-    // Define links directly
     nav.innerHTML = `
-      <a href="/"><span>bluehexagons</span></a>
-      <a href="/antistatic"><span>Antistatic</span></a>
-      <a href="https://foodguide.bluehexagons.com"><span>DS Food Guide</span></a>
+      <a href="/">bluehexagons</a>
+      <a href="/antistatic">Antistatic</a>
+      <a href="https://foodguide.bluehexagons.com">DS Food Guide</a>
     `;
 
-    // Keep the slot for potential additional content
-    const slot = document.createElement('slot');
-    slot.name = 'additional';
-
     header.appendChild(nav);
-    header.appendChild(slot);
     this.shadow.appendChild(header);
   }
 }

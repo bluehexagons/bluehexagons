@@ -15,27 +15,32 @@
   max-width: 100%;
   overflow: visible;
   justify-content: center;
-}
 
-.nav > a {
-  border-radius: 3px;
-  text-decoration: none;
-  padding: 4px 9px;
-  background: rgb(27, 58, 83);
-  color: var(--highlight, rgb(0, 223, 252));
-  border: 1px solid rgb(59, 69, 82);
-  font-weight: bold;
-  box-shadow: 0px 3px 40px -6px rgba(0, 0, 0, 1);
-  display: inline-block;
-}
+  > a {
+    border-radius: 3px;
+    text-decoration: none;
+    padding: 4px 9px;
+    background: rgb(27, 58, 83);
+    color: var(--highlight, rgb(0, 223, 252));
+    border: 1px solid rgb(59, 69, 82);
+    font-weight: bold;
+    box-shadow: 0px 3px 40px -6px rgba(0, 0, 0, 1);
+    display: inline-block;
+    text-shadow: var(--shadow) 0 1px 3px 20px;
+  }
 
-.nav > a:visited {
-  color: var(--highlight, rgb(0, 223, 252));
-}
+  > a:visited {
+    color: var(--highlight, rgb(0, 223, 252));
+  }
 
-.nav > a:hover {
-  background: var(--bg, #29292f);
-  color: var(--antistatic);
+  > a:hover {
+    background: var(--bg, #29292f);
+    color: var(--antistatic, rgb(255, 110, 0));
+  }
+
+  > a:active {
+    filter: brightness(0.8);
+  }
 }
 
 .nav::-webkit-scrollbar {
