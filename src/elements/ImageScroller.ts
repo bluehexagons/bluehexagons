@@ -1,7 +1,7 @@
 import { BaseElement, createElementWithClass } from './BaseElement';
 import imageScrollerStyles from './ImageScroller.css?inline';
 
-const findThumbs = /(thumbs\/|( |\%20)\(Phone\))/g;
+const findThumbs = /thumbs\//g;
 
 export class ImageScrollerElement extends BaseElement {
   container: HTMLDivElement = null;
