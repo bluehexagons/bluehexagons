@@ -3,7 +3,7 @@
     "@types/node": "^24.0.7",
     "glob": "^11.0.1",
     "typescript": "^5.2.2",
-    "vite": "^7.0.0"
+    "vite": "^7.0.8"
   },
   "scripts": {
     "compile": "tsc",
