@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import { globSync } from 'glob';
 
 // Find all HTML files in src directory and subdirectories
-const htmlEntries = globSync('src/**/*.html').reduce((entries, path) => {
+const htmlEntries = globSync('src/**/*.html').reduce((entries: Record<string, string>, path) => {
   const fileName = path.replace('src/', '').replace('.html', '');
   entries[fileName] = resolve(__dirname, path);
   return entries;
@@ -36,7 +36,14 @@ export default defineConfig({
   // Explicitly configure asset handling
   resolve: {
     alias: {
+      '@': resolve(__dirname, 'src'),
       '/assets': resolve(__dirname, 'public/assets'),
     }
-  }
+  },
+
+  esbuild: {
+    jsxFactory: 'h',
+    jsxFragment: 'Fragment',
+    jsxInject: "import { h, Fragment } from '@/jsx';",
+  },
 });

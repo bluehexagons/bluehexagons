@@ -1,15 +1,15 @@
-import { BaseElement, createElementWithClass } from './BaseElement';
+import { BaseElement } from './BaseElement';
 import imageScrollerStyles from './ImageScroller.css?inline';
 
 const findThumbs = /thumbs\//g;
 
 export class ImageScrollerElement extends BaseElement {
-  container: HTMLDivElement = null;
-  gallery: HTMLDivElement = null;
+  container: HTMLDivElement | null = null;
+  gallery: HTMLDivElement | null = null;
   imageElements: HTMLImageElement[] = [];
-  currentImage: HTMLElement = null;
-  description: HTMLDivElement = null;
-  resizeObserver: ResizeObserver = null;
+  currentImage: HTMLElement | null = null;
+  description: HTMLDivElement | null = null;
+  resizeObserver: ResizeObserver | null = null;
 
   constructor() {
     super();
@@ -24,10 +24,14 @@ export class ImageScrollerElement extends BaseElement {
     this.currentImage = img;
     this.currentImage.classList.add('highlighted');
 
-    this.description.textContent = img.title ?? '';
+    if (this.description) {
+      this.description.textContent = img.title ?? '';
+    }
   }
 
   appendNode(node: Node) {
+    if (!this.gallery) return;
+
     let imgElement: HTMLImageElement = null;
 
     if (node.nodeName === 'A' && node.firstChild?.nodeName === 'IMG') {
@@ -76,20 +80,44 @@ export class ImageScrollerElement extends BaseElement {
       this.selectImage(imgElement);
     });
 
-    this.resizeObserver.observe(imgElement);
+    this.resizeObserver?.observe(imgElement);
   }
 
   connectedCallback() {
-    const imageScroller = createElementWithClass<HTMLDivElement>('div', 'image_scroller');
-    this.shadow.appendChild(imageScroller);
+    let container: HTMLDivElement | null = null;
+    let gallery: HTMLDivElement | null = null;
+    let description: HTMLDivElement | null = null;
 
-    const container = createElementWithClass<HTMLDivElement>('div', 'image_scroller__container');
+    this.render(
+      <div class="image_scroller">
+        <div
+          class="image_scroller__container"
+          ref={(el) => {
+            container = el as HTMLDivElement;
+          }}
+        >
+          <div
+            class="image_scroller__gallery"
+            ref={(el) => {
+              gallery = el as HTMLDivElement;
+            }}
+          ></div>
+
+          <div class="image_scroller__description_container">
+            <div
+              class="image_scroller__description"
+              ref={(el) => {
+                description = el as HTMLDivElement;
+              }}
+            ></div>
+          </div>
+        </div>
+      </div>
+    );
+
     this.container = container;
-    imageScroller.appendChild(container);
-
-    const gallery = createElementWithClass<HTMLDivElement>('div', 'image_scroller__gallery');
     this.gallery = gallery;
-    container.appendChild(gallery);
+    this.description = description;
 
     // watch for added nodes and move them to the shadow DOM
     const observer = new MutationObserver(mutations => {
@@ -101,13 +129,6 @@ export class ImageScrollerElement extends BaseElement {
     });
 
     observer.observe(this, { childList: true });
-
-    const descriptionContainer = createElementWithClass<HTMLDivElement>('div', 'image_scroller__description_container');
-    container.appendChild(descriptionContainer);
-
-    const description = createElementWithClass<HTMLDivElement>('div', 'image_scroller__description');
-    descriptionContainer.appendChild(description);
-    this.description = description;
 
     this.resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
