@@ -10,10 +10,12 @@ export abstract class BaseElement extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' });
 
     this.stylesRoot = document.createElement('div');
+    this.stylesRoot.style.display = 'inline-block';
     this.stylesRoot.setAttribute('data-root', 'styles');
     this.shadow.appendChild(this.stylesRoot);
 
     this.contentRoot = document.createElement('div');
+    this.contentRoot.style.display = 'inline-block';
     this.contentRoot.setAttribute('data-root', 'content');
     this.shadow.appendChild(this.contentRoot);
 
