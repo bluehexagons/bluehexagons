@@ -55,30 +55,34 @@ render(
               src="/assets/thumbs/antistatic/eztrailer_4-00.00.01.149.png"
             />
             <img
-              title="A screenshot of a table rendered in React that was created using the internal table editing tool I authored at Zazzle."
-              src="/assets/thumbs/zazzle/Screenshot 2023-11-13 121545.png"
-            />
-            <img
               title="Air Dash Online was a short-lived project to create a fast platform fighting game for PC, which I was the programmer for."
               src="/assets/thumbs/ado/1157428_391081464351375_1074064025_n.png"
+            />
+            <img title="End of Blackjack, a PC game made in Godot, coming soon." src="/assets/thumbs/bluehexagons/end_of_blackjack.jpg" />
+            <img title="A prototype version of End of Blackjack." src="/assets/thumbs/bluehexagons/early_prototype_card_game.png" />
+            <img title="Minimal Clicker was a short project to learn about Ruby on Rails, with a login system and a button that's fun to press." src="/assets/thumbs/bluehexagons/minimal_clicker.png" />
+            <img
+              title="A Simple Snake Game is as-described, made in Godot and open-source."
+              src="/assets/thumbs/bluehexagons/a_simple_snake_game.png"
+            />
+          </image-scroller>
+          <image-scroller>
+            <img
+              title="A table rendered in React that was created using the internal table editing tool I authored at Zazzle."
+              src="/assets/thumbs/zazzle/Screenshot 2023-11-13 121545.png"
             />
             <img
               title="The unofficial Don't Starve Food Guide started as a crockpot simulator early in alpha, and has grown since."
               src="/assets/thumbs/foodguide/Screenshot 2023-11-16 141703.png"
             />
-            <img
-              title="A screenshot of A Simple Snake Game during development, made in Godot and open-sourced."
-              src="/assets/thumbs/bluehexagons/a_simple_snake_game.png"
-            />
-            <img title="A prototype card game made in Godot." src="/assets/thumbs/bluehexagons/early_prototype_card_game.png" />
             <img title="Part of the admin UI for backend systems built for a client." src="/assets/thumbs/bluehexagons/redacted_admin_ui.png" />
-            <img
-              title="A macro photograph I took of a butterfly. I post more photos to Bluesky, and offer higher-quality downloads."
-              src="/assets/thumbs/bluehexagons/set_2_5_butterfly.jpg"
-            />
             <img
               title="vector-pose is an open-source vector-based character posing tool I built for an in-development project."
               src="/assets/thumbs/bluehexagons/vector_pose_alpha.png"
+            />
+            <img
+              title="A macro photograph I took of a butterfly. I post more photos to Bluesky, and offer higher-quality downloads."
+              src="/assets/thumbs/bluehexagons/set_2_5_butterfly.jpg"
             />
           </image-scroller>
         </div>
@@ -595,7 +599,10 @@ render(
           <span class="time_range">May - Oct 2013</span>
         </h1>
 
-        <p class="description">This game scared Wobbles with how fast it was at Evo, and I miss it.</p>
+        <p class="description">
+          Air Dash Online was an obscenely fast-paced platform fighting game built by a small team of FGC members and artists.
+          After a few months of development, we demoed it at Evo 2013, but did not secure funding to finish the game.
+        </p>
 
         <div class="widest center">
           <image-scroller>
