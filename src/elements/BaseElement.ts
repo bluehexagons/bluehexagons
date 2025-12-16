@@ -2,19 +2,36 @@ import cssStyles from '../css.css?inline';
 
 export abstract class BaseElement extends HTMLElement {
   protected shadow: ShadowRoot;
+  protected stylesRoot: HTMLElement;
+  protected contentRoot: HTMLElement;
   
-  constructor() {
+  constructor(...styles: string[]) {
     super();
     this.shadow = this.attachShadow({ mode: 'open' });
-    this.injectStyles(cssStyles);
+
+    this.stylesRoot = document.createElement('div');
+    this.stylesRoot.style.display = 'inline-block';
+    this.stylesRoot.setAttribute('data-root', 'styles');
+    this.shadow.appendChild(this.stylesRoot);
+
+    this.contentRoot = document.createElement('div');
+    this.contentRoot.style.display = 'inline-block';
+    this.contentRoot.setAttribute('data-root', 'content');
+    this.shadow.appendChild(this.contentRoot);
+
+    this.injectStyles(cssStyles, ...styles);
   }
   
   protected injectStyles(...sheets: string[]): void {
     for (const sheet of sheets) {
       const style = document.createElement('style');
       style.textContent = `${sheet}`;
-      this.shadow.appendChild(style);
+      this.stylesRoot.appendChild(style);
     }
+  }
+
+  protected render(node: Node): void {
+    this.contentRoot.replaceChildren(node);
   }
 }
 

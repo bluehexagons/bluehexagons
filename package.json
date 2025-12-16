@@ -1,7 +1,9 @@
 {
+  "type": "module",
   "devDependencies": {
-    "@types/node": "^24.0.7",
-    "glob": "^11.0.1",
+    "@types/node": "^25.0.2",
+    "glob": "^13.0.0",
+    "sharp": "^0.34.5",
     "typescript": "^5.2.2",
     "vite": "^7.0.0"
   },
@@ -9,7 +11,8 @@
     "compile": "tsc",
     "watch": "tsc --watch",
     "dev": "vite",
-    "build": "tsc && vite build",
+    "generate-thumbs": "node scripts/generate-thumbs.ts",
+    "build": "tsc && npm run generate-thumbs && vite build",
     "preview": "vite preview"
   }
 }

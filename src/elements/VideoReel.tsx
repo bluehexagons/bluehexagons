@@ -1,19 +1,18 @@
-import { BaseElement, createElementWithClass } from './BaseElement';
+import { BaseElement } from './BaseElement';
 import videoReelStyles from './VideoReel.css?inline';
 
 export class VideoReelElement extends BaseElement {
   static observedAttributes = ['video-dir', 'width', 'height'];
   
-  private videoContainer: HTMLDivElement;
-  private videoElement: HTMLVideoElement;
+  private videoContainer: HTMLDivElement | null = null;
+  private videoElement: HTMLVideoElement | null = null;
   private videos: string[] = [];
   private videoIndex = 0;
   private swapping = false;
   private videoDir = '/etc/antistatic/clips/';
   
   constructor() {
-    super();
-    this.injectStyles(videoReelStyles);
+    super(videoReelStyles);
   }
 
   private getVideos(): string[] {
@@ -37,6 +36,7 @@ export class VideoReelElement extends BaseElement {
 
   private playNextVideo(): void {
     this.videoIndex = (this.videoIndex + 1) % this.videos.length;
+    if (!this.videoElement) return;
     this.videoElement.currentTime = 0;
     this.videoElement.src = `${this.videoDir}${this.videos[this.videoIndex]}`;
     this.videoElement.load();
@@ -44,16 +44,33 @@ export class VideoReelElement extends BaseElement {
   }
 
   connectedCallback() {
-    this.videoContainer = createElementWithClass<HTMLDivElement>('div', 'video-container');
-    this.shadow.appendChild(this.videoContainer);
-
-    this.videoElement = document.createElement('video');
-    
     const width = this.getAttribute('width') || '480';
     const height = this.getAttribute('height') || '270';
-    this.videoElement.width = parseInt(width);
-    this.videoElement.height = parseInt(height);
-    this.videoElement.muted = true;
+
+    let videoContainer: HTMLDivElement | null = null;
+    let videoElement: HTMLVideoElement | null = null;
+
+    this.render(
+      <div
+        class="video-container"
+        ref={(el) => {
+          videoContainer = el as HTMLDivElement;
+        }}
+      >
+        <video
+          width={parseInt(width)}
+          height={parseInt(height)}
+          muted={true}
+          ref={(el) => {
+            videoElement = el as HTMLVideoElement;
+          }}
+        ></video>
+      </div>
+    );
+
+    this.videoContainer = videoContainer;
+    this.videoElement = videoElement;
+    if (!this.videoElement || !this.videoContainer) return;
     
     this.videos = this.getVideos();
     if (this.getAttribute('video-dir')) {
@@ -61,27 +78,33 @@ export class VideoReelElement extends BaseElement {
     }
     
     this.videoElement.src = `${this.videoDir}${this.videos[0]}`;
-    this.videoContainer.appendChild(this.videoElement);
     
     this.setupEventListeners();
     
     this.videoElement.play().catch(err => {
       console.warn('Autoplay not allowed:', err);
-      
-      const playButton = document.createElement('button');
-      playButton.textContent = 'Play';
-      playButton.className = 'play-button';
-      playButton.onclick = () => {
-        this.videoElement.play();
-        playButton.remove();
-      };
-      this.videoContainer.appendChild(playButton);
+
+      const playButton = (
+        <button
+          class="play-button"
+          onClick={() => {
+            this.videoElement?.play();
+            (playButton as HTMLElement).remove();
+          }}
+        >
+          Play
+        </button>
+      ) as HTMLElement;
+
+      this.videoContainer?.appendChild(playButton);
     });
     
     this.preloadNextVideo();
   }
 
   setupEventListeners() {
+    if (!this.videoElement) return;
+
     this.videoElement.addEventListener('ended', () => {
       if (this.swapping) return;
 

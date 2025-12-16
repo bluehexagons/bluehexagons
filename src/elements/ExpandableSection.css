@@ -1,0 +1,43 @@
+.expandable-container {
+  width: 100%;
+  margin: 10px 0;
+}
+
+.expand_toggle {
+  vertical-align: middle;
+  appearance: none;
+  background: none;
+  border: 0;
+  outline: 0;
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: var(--dim-highlight, rgb(0, 134, 151));
+  padding: 5px;
+  text-align: left;
+}
+
+.expand_toggle::before {
+  content: '(more...)';
+  font-size: 17px;
+  text-decoration: underline;
+  color: white;
+}
+
+.expand_toggle[aria-expanded="true"]::before {
+  content: '(less)';
+  font-style: italic;
+  font-weight: lighter;
+}
+
+.expandable-content {
+  transition: max-height 0.3s ease-in-out;
+}
+
+@media (max-width: 660px) {
+  .expand_toggle {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+}
