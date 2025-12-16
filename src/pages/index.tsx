@@ -62,7 +62,7 @@ render(
             <img title="A prototype version of End of Blackjack." src="/assets/thumbs/bluehexagons/early_prototype_card_game.png" />
             <img title="Minimal Clicker was a short project to learn about Ruby on Rails, with a login system and a button that's fun to press." src="/assets/thumbs/bluehexagons/minimal_clicker.png" />
             <img
-              title="A Simple Snake Game is as-described, made in Godot and open-source."
+              title="A Simple Snake Game is self descriptive, made in Godot and open-source."
               src="/assets/thumbs/bluehexagons/a_simple_snake_game.png"
             />
           </image-scroller>
@@ -85,6 +85,64 @@ render(
               src="/assets/thumbs/bluehexagons/set_2_5_butterfly.jpg"
             />
           </image-scroller>
+        </div>
+
+        <div class="labeled_list">
+          <div>Roles</div>
+          <ul class="flex_list flex_list__background">
+            <li>Software Engineer</li>
+            <li>True Full-Stack</li>
+            <li>Web Dev</li>
+            <li>Game Dev</li>
+            <li>SysAdmin</li>
+          </ul>
+        </div>
+
+        <div class="labeled_list">
+          <div>Core skills</div>
+          <ul class="flex_list flex_list__background">
+            <li>
+              <icon-img name="TypeScript"></icon-img> TypeScript
+            </li>
+            <li>
+              <icon-img name="JavaScript"></icon-img> JavaScript
+            </li>
+            <li>
+              <site-link href="https://nodejs.org/en">Node.js</site-link>
+            </li>
+            <li>
+              <site-link href="https://electronjs.org/">Electron</site-link>
+            </li>
+            <li>
+              <site-link href="https://react.dev/">React</site-link>
+            </li>
+            <li>
+              <icon-img name="CSharp"></icon-img> C#
+            </li>
+            <li>
+              <icon-img name="Go"></icon-img> <site-link href="https://go.dev/">Go</site-link>
+            </li>
+            <li>
+              <icon-img name="CPlusPlus"></icon-img> C/C++
+            </li>
+            <li>SQL</li>
+            <li>
+              <site-link href="https://godotengine.org/">Godot</site-link>
+            </li>
+            <li>
+              <site-link href="https://aws.amazon.com/pm/lambda">AWS Lambda</site-link>
+            </li>
+          </ul>
+        </div>
+
+        <div class="labeled_list">
+          <div>Freelance Services</div>
+          <ul class="flex_list flex_list__background">
+            <li>Website design & hosting</li>
+            <li>Software & game development</li>
+            <li>Full-stack web development</li>
+            <li>General technical consulting</li>
+          </ul>
         </div>
 
         <div class="labeled_list">
@@ -150,61 +208,6 @@ render(
                 bluehexagons
               </site-link>
             </li>
-          </ul>
-        </div>
-
-        <div class="labeled_list">
-          <div>Roles</div>
-          <ul class="flex_list flex_list__background">
-            <li>Software Engineer</li>
-            <li>True Full-Stack</li>
-            <li>Web Dev</li>
-            <li>Game Dev</li>
-            <li>SysAdmin</li>
-          </ul>
-        </div>
-
-        <div class="labeled_list">
-          <div>Core skills</div>
-          <ul class="flex_list flex_list__background">
-            <li>
-              <icon-img name="TypeScript"></icon-img> TypeScript
-            </li>
-            <li>
-              <site-link href="https://electronjs.org/">Electron</site-link>
-            </li>
-            <li>
-              <site-link href="https://react.dev/">React</site-link>
-            </li>
-            <li>
-              <icon-img name="CSharp"></icon-img> C#
-            </li>
-            <li>
-              <icon-img name="Go"></icon-img> <site-link href="https://go.dev/">Go</site-link>
-            </li>
-            <li>
-              <icon-img name="CPlusPlus"></icon-img> C/C++
-            </li>
-            <li>SQL</li>
-            <li>
-              <site-link href="https://nodejs.org/en">Node.js</site-link>
-            </li>
-            <li>
-              <site-link href="https://aws.amazon.com/pm/lambda">AWS Lambda</site-link>
-            </li>
-            <li>
-              <site-link href="https://godotengine.org/">Godot</site-link>
-            </li>
-          </ul>
-        </div>
-
-        <div class="labeled_list">
-          <div>Freelance Services</div>
-          <ul class="flex_list flex_list__background">
-            <li>Website design & hosting</li>
-            <li>Software & game development</li>
-            <li>Full-stack web development</li>
-            <li>etc</li>
           </ul>
         </div>
 
@@ -413,7 +416,6 @@ render(
               <li>Android</li>
               <li>Steam</li>
               <li>Steam Deck</li>
-              <li>Duolingo</li>
             </ul>
           </div>
         </expandable-section>
