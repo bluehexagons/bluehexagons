@@ -34,7 +34,7 @@
   transition: max-height 0.3s ease-in-out;
 }
 
-@media (max-width: 660px) {
+@media (max-width: 700px) {
   .expand_toggle {
     display: block;
     width: 100%;

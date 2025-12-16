@@ -25,14 +25,13 @@ body {
   --antistatic: rgb(255, 110, 0);
 
   --content-width: 1100px;
-  --background-width: calc(100% - 400px);
-  --breakpoint: 990px;
+  --background-width: calc(100% - 200px);
+  --breakpoint: 1100px;
 
   background: linear-gradient(to bottom, var(--bg-inner), var(--bg-outer));
   color: #eaeaea;
   margin: 0;
   padding: 0;
-  padding-top: 20px;
   font-family: 'Fira Sans', sans-serif;
   font-size: 18px;
   overflow-x: hidden;
@@ -243,8 +242,8 @@ pre code {
 }
 
 article {
-  margin: 40px 0;
   width: 100%;
+  margin-bottom: 20px;
   padding: 20px;
   backdrop-filter: blur(20px);
   border: 2px solid #252a33;
@@ -254,15 +253,14 @@ article {
   
 }
 
-@media (max-width: 990px) {
+@media (max-width: 1100px) {
   article {
-    margin: 30px 0;
     padding: 10px;
     box-shadow: 0 16px 20px rgba(6, 7, 8, 0.45);
   }
 }
 
-@media (max-width: 660px) {
+@media (max-width: 700px) {
   article {
     margin: 10px 0;
     padding: 6px;
