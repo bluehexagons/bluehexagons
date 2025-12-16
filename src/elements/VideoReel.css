@@ -60,14 +60,14 @@ video {
 
 /* Media queries */
 
-@media (max-width: 990px) {
+@media (max-width: 1100px) {
   .play-button {
     padding: 12px 20px;
     font-size: 16px;
   }
 }
 
-@media (max-width: 660px) {
+@media (max-width: 700px) {
   video::-webkit-media-controls-panel {
     opacity: 1 !important;
     display: flex !important;
