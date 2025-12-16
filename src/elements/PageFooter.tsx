@@ -3,8 +3,7 @@ import pageFooterStyles from './PageFooter.css?inline';
 
 export class PageFooter extends BaseElement {
   constructor() {
-    super();
-    this.injectStyles(pageFooterStyles);
+    super(pageFooterStyles);
   }
 
   connectedCallback() {

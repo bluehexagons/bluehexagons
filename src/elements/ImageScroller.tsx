@@ -12,8 +12,7 @@ export class ImageScrollerElement extends BaseElement {
   resizeObserver: ResizeObserver | null = null;
 
   constructor() {
-    super();
-    this.injectStyles(imageScrollerStyles);
+    super(imageScrollerStyles);
   }
 
   selectImage(img: HTMLImageElement) {

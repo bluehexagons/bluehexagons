@@ -3,8 +3,7 @@ import contentAreaStyles from './ContentArea.css?inline';
 
 export class ContentArea extends BaseElement {
   constructor() {
-    super();
-    this.injectStyles(contentAreaStyles);
+    super(contentAreaStyles);
   }
 
   connectedCallback() {

@@ -3,8 +3,7 @@ import pageHeaderStyles from './PageHeader.css?inline';
 
 export class PageHeader extends BaseElement {
   constructor() {
-    super();
-    this.injectStyles(pageHeaderStyles);
+    super(pageHeaderStyles);
   }
 
   connectedCallback() {

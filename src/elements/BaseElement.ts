@@ -5,7 +5,7 @@ export abstract class BaseElement extends HTMLElement {
   protected stylesRoot: HTMLElement;
   protected contentRoot: HTMLElement;
   
-  constructor() {
+  constructor(...styles: string[]) {
     super();
     this.shadow = this.attachShadow({ mode: 'open' });
 
@@ -19,7 +19,7 @@ export abstract class BaseElement extends HTMLElement {
     this.contentRoot.setAttribute('data-root', 'content');
     this.shadow.appendChild(this.contentRoot);
 
-    this.injectStyles(cssStyles);
+    this.injectStyles(cssStyles, ...styles);
   }
   
   protected injectStyles(...sheets: string[]): void {

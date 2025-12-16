@@ -3,8 +3,7 @@ import linkStyles from './Link.css?inline';
 
 export class Link extends BaseElement {
   constructor() {
-    super();
-    this.injectStyles(linkStyles);
+    super(linkStyles);
   }
 
   connectedCallback() {

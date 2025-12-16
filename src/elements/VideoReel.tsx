@@ -12,8 +12,7 @@ export class VideoReelElement extends BaseElement {
   private videoDir = '/etc/antistatic/clips/';
   
   constructor() {
-    super();
-    this.injectStyles(videoReelStyles);
+    super(videoReelStyles);
   }
 
   private getVideos(): string[] {

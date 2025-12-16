@@ -7,8 +7,7 @@ export class IconElement extends BaseElement {
   image: HTMLImageElement | null = null;
 
   constructor() {
-    super();
-    this.injectStyles(iconStyles);
+    super(iconStyles);
   }
   
   changeIcon(iconName: string) {
