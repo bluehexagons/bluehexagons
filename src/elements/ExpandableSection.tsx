@@ -22,7 +22,7 @@ export class ExpandableSection extends BaseElement {
           type="button"
           aria-expanded="false"
           aria-label={ariaLabel}
-          ref={(el) => {
+          ref={(el: Element) => {
             toggleButton = el as HTMLButtonElement;
           }}
           onClick={() => {
@@ -35,7 +35,7 @@ export class ExpandableSection extends BaseElement {
         <div
           class="expandable-content"
           style={{ display: 'none' }}
-          ref={(el) => {
+          ref={(el: Element) => {
             contentContainer = el as HTMLDivElement;
           }}
         >

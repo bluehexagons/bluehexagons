@@ -53,7 +53,7 @@ export class VideoReelElement extends BaseElement {
     this.render(
       <div
         class="video-container"
-        ref={(el) => {
+        ref={(el: Element) => {
           videoContainer = el as HTMLDivElement;
         }}
       >
@@ -61,7 +61,7 @@ export class VideoReelElement extends BaseElement {
           width={parseInt(width)}
           height={parseInt(height)}
           muted={true}
-          ref={(el) => {
+          ref={(el: Element) => {
             videoElement = el as HTMLVideoElement;
           }}
         ></video>
@@ -71,17 +71,18 @@ export class VideoReelElement extends BaseElement {
     this.videoContainer = videoContainer;
     this.videoElement = videoElement;
     if (!this.videoElement || !this.videoContainer) return;
-    
+    const videoEl = this.videoElement as HTMLVideoElement;
+
     this.videos = this.getVideos();
     if (this.getAttribute('video-dir')) {
-      this.videoDir = this.getAttribute('video-dir');
+      this.videoDir = this.getAttribute('video-dir') ?? this.videoDir;
     }
-    
-    this.videoElement.src = `${this.videoDir}${this.videos[0]}`;
-    
+
+    videoEl.src = `${this.videoDir}${this.videos[0]}`;
+
     this.setupEventListeners();
-    
-    this.videoElement.play().catch(err => {
+
+    videoEl.play().catch((err: unknown) => {
       console.warn('Autoplay not allowed:', err);
 
       const playButton = (
@@ -104,44 +105,45 @@ export class VideoReelElement extends BaseElement {
 
   setupEventListeners() {
     if (!this.videoElement) return;
+    const videoElement = this.videoElement;
 
-    this.videoElement.addEventListener('ended', () => {
+    videoElement.addEventListener('ended', () => {
       if (this.swapping) return;
 
       this.swapping = true;
-      this.videoElement.style.opacity = '0';
+      videoElement.style.opacity = '0';
     });
 
-    this.videoElement.addEventListener('timeupdate', () => {
-      if (!this.swapping && this.videoElement.currentTime > this.videoElement.duration - 0.2) {
+    videoElement.addEventListener('timeupdate', () => {
+      if (!this.swapping && videoElement.currentTime > videoElement.duration - 0.2) {
         this.swapping = true;
-        this.videoElement.style.opacity = '0';
+        videoElement.style.opacity = '0';
       }
     });
 
-    this.videoElement.addEventListener('transitionend', () => {
+    videoElement.addEventListener('transitionend', () => {
       if (!this.swapping) return;
 
       this.playNextVideo();
     });
 
-    this.videoElement.addEventListener('canplaythrough', () => {
+    videoElement.addEventListener('canplaythrough', () => {
       if (!this.swapping) return;
 
-      this.videoElement.play();
+      videoElement.play();
       this.swapping = false;
     });
 
-    this.videoElement.addEventListener('play', () => {
-      this.videoElement.style.opacity = '1';
+    videoElement.addEventListener('play', () => {
+      videoElement.style.opacity = '1';
     });
 
-    this.videoElement.addEventListener('mouseenter', () => {
-      this.videoElement.controls = true;
+    videoElement.addEventListener('mouseenter', () => {
+      videoElement.controls = true;
     });
 
-    this.videoElement.addEventListener('mouseleave', () => {
-      this.videoElement.controls = false;
+    videoElement.addEventListener('mouseleave', () => {
+      videoElement.controls = false;
     });
   }
 

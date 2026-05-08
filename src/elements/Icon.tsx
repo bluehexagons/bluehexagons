@@ -30,13 +30,13 @@ export class IconElement extends BaseElement {
     this.render(
       <span
         class="icon_img"
-        ref={(el) => {
+        ref={(el: Element) => {
           container = el as HTMLSpanElement;
         }}
       >
         <img
           width={16}
-          ref={(el) => {
+          ref={(el: Element) => {
             image = el as HTMLImageElement;
           }}
         />

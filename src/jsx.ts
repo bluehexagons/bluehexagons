@@ -61,7 +61,7 @@ const setProp = (el: Element, key: string, value: unknown): void => {
       const style = (el as HTMLElement).style;
       for (const [styleKey, styleValue] of Object.entries(value as Record<string, unknown>)) {
         if (styleValue == null) continue;
-        style[styleKey] = String(styleValue);
+        (style as unknown as Record<string, string>)[styleKey] = String(styleValue);
       }
     }
     return;

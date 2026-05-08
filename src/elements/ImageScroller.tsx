@@ -31,7 +31,7 @@ export class ImageScrollerElement extends BaseElement {
   appendNode(node: Node) {
     if (!this.gallery) return;
 
-    let imgElement: HTMLImageElement = null;
+    let imgElement: HTMLImageElement | null = null;
 
     if (node.nodeName === 'A' && node.firstChild?.nodeName === 'IMG') {
       imgElement = node.firstChild as HTMLImageElement;
@@ -68,7 +68,7 @@ export class ImageScrollerElement extends BaseElement {
       }
 
       this.selectImage(imgElement);
-      this.currentImage.scrollIntoView({
+      this.currentImage?.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
         inline: 'nearest',
@@ -91,13 +91,13 @@ export class ImageScrollerElement extends BaseElement {
       <div class="image_scroller">
         <div
           class="image_scroller__container"
-          ref={(el) => {
+          ref={(el: Element) => {
             container = el as HTMLDivElement;
           }}
         >
           <div
             class="image_scroller__gallery"
-            ref={(el) => {
+            ref={(el: Element) => {
               gallery = el as HTMLDivElement;
             }}
           ></div>
@@ -105,7 +105,7 @@ export class ImageScrollerElement extends BaseElement {
           <div class="image_scroller__description_container">
             <div
               class="image_scroller__description"
-              ref={(el) => {
+              ref={(el: Element) => {
                 description = el as HTMLDivElement;
               }}
             ></div>
