@@ -228,6 +228,83 @@ pre code {
   }
 }
 
+.profile_links {
+  margin-top: 26px;
+}
+
+.profile_links__list,
+.also_on__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  column-gap: 22px;
+  row-gap: 6px;
+  padding: 10px 0;
+  margin: 0;
+  list-style-type: none;
+  border-top: 1px solid #1a2e3a;
+  border-bottom: 1px solid #1a2e3a;
+}
+
+.profile_links__list > li,
+.also_on__list > li {
+  min-width: 0;
+}
+
+.profile_links__static {
+  display: block;
+  padding: 6px 0;
+  min-width: 0;
+}
+
+.profile_links__link .profile_links__label,
+.profile_links__static .profile_links__label,
+.also_on__label {
+  color: rgb(147, 211, 219);
+  font-size: 14px;
+  line-height: 1.2;
+  text-align: left;
+  display: block;
+}
+
+.profile_links__link .profile_links__tag,
+.profile_links__static .profile_links__tag,
+.also_on__tag {
+  display: block;
+  min-width: 0;
+  max-width: none;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.also_on .profile_links__tag,
+.also_on__tag {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile_links__link .profile_links__tag icon-img,
+.profile_links__static .profile_links__tag icon-img {
+  margin-right: 4px;
+  vertical-align: text-bottom;
+}
+
+.contact_links .profile_links__list {
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+}
+
+.location_line {
+  margin: 8px 0 24px 0;
+  color: #c9baae;
+  font-size: 14px;
+}
+
+.location_line icon-img {
+  margin-right: 4px;
+  vertical-align: text-bottom;
+}
+
 .description {
   margin: 10px 20px 30px 20px;
 }
@@ -271,5 +348,32 @@ article {
     white-space: wrap;
 
     hyphens: auto;
+  }
+
+  .profile_links__list,
+  .also_on__list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .profile_links__static {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: 6px;
+    padding: 4px 0;
+  }
+
+  .profile_links__link .profile_links__label,
+  .profile_links__static .profile_links__label,
+  .also_on__label {
+    display: inline;
+  }
+
+  .profile_links__link .profile_links__label::after,
+  .profile_links__static .profile_links__label::after,
+  .also_on__label::after {
+    content: ':';
   }
 }

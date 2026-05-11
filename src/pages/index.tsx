@@ -14,28 +14,32 @@ render(
 
         <br />
 
-        <div class="labeled_list">
+        <div class="labeled_list profile_links contact_links">
           <div>Contact</div>
-          <ul class="flex_list">
+          <ul class="profile_links__list">
             <li>
-              <site-link href="https://www.linkedin.com/in/loren-crain" aria-label="Loren Crain on LinkedIn">
-                LinkedIn
+              <site-link class="profile_links__link" href="https://www.linkedin.com/in/loren-crain" aria-label="Loren Crain on LinkedIn">
+                <span class="profile_links__label">LinkedIn</span>
+                <span class="profile_links__tag">/in/loren-crain</span>
               </site-link>
             </li>
             <li>
-              <site-link href="https://github.com/bluehexagons" aria-label="Loren Crain is bluehexagons on GitHub">
-                GitHub
+              <site-link class="profile_links__link" href="https://github.com/bluehexagons" aria-label="Loren Crain is bluehexagons on GitHub">
+                <span class="profile_links__label">GitHub</span>
+                <span class="profile_links__tag">bluehexagons</span>
               </site-link>
             </li>
             <li>
-              <site-link href="mailto:loren@bluehexagons.com" aria-label="Email me at loren@bluehexagons.com">
-                loren@bluehexagons.com
+              <site-link class="profile_links__link" href="mailto:loren@bluehexagons.com" aria-label="Email me at loren@bluehexagons.com">
+                <span class="profile_links__label">Email</span>
+                <span class="profile_links__tag">loren@<wbr />bluehexagons.com</span>
               </site-link>
-            </li>
-            <li aria-label="Southwest Missouri">
-              <icon-img name="MissouriFlag.png"></icon-img> SW MO, USA (central time)
             </li>
           </ul>
+        </div>
+
+        <div class="location_line" aria-label="Southwest Missouri">
+          <icon-img name="MissouriFlag.png"></icon-img> SW MO, USA (central time)
         </div>
 
         <div class="description">
@@ -105,7 +109,7 @@ render(
               <icon-img name="TypeScript"></icon-img> TypeScript
             </li>
             <li>
-              <icon-img name="JavaScript"></icon-img> JavaScript
+              <icon-img name="JS"></icon-img> JavaScript
             </li>
             <li>
               <site-link href="https://nodejs.org/en">Node.js</site-link>
@@ -145,67 +149,69 @@ render(
           </ul>
         </div>
 
-        <div class="labeled_list">
+        <div class="labeled_list profile_links also_on">
           <div>Also On</div>
-          <ul class="flex_list">
+          <ul class="profile_links__list also_on__list">
             <li>
-              Bluesky:{' '}
-              <site-link href="https://bsky.app/profile/bluehexagons.com" aria-label="Loren Crain is @bluehexagons.com on Bluesky">
-                @bluehexagons.com
+              <site-link class="profile_links__link also_on__link" href="https://bsky.app/profile/bluehexagons.com" aria-label="Loren Crain is @bluehexagons.com on Bluesky">
+                <span class="profile_links__label also_on__label">Bluesky</span>
+                <span class="profile_links__tag also_on__tag">@bluehexagons.com</span>
               </site-link>
             </li>
             <li>
-              itch.io:{' '}
-              <site-link href="https://bluehexagons.itch.io/" aria-label="bluehexagons on itch.io">
-                bluehexagons
+              <site-link class="profile_links__link also_on__link" href="https://bluehexagons.itch.io/" aria-label="bluehexagons on itch.io">
+                <span class="profile_links__label also_on__label">itch.io</span>
+                <span class="profile_links__tag also_on__tag">bluehexagons</span>
               </site-link>
             </li>
             <li>
-              YouTube:{' '}
-              <site-link href="https://www.youtube.com/@bluehexagons" aria-label="@bluehexagons on YouTube">
-                @bluehexagons
+              <site-link class="profile_links__link also_on__link" href="https://www.youtube.com/@bluehexagons" aria-label="@bluehexagons on YouTube">
+                <span class="profile_links__label also_on__label">YouTube</span>
+                <span class="profile_links__tag also_on__tag">@bluehexagons</span>
               </site-link>
             </li>
             <li>
-              Second channel:{' '}
-              <site-link href="https://www.youtube.com/@bluehexagons2" aria-label="@bluehexagons2 on YouTube">
-                @bluehexagons2
+              <site-link class="profile_links__link also_on__link" href="https://www.youtube.com/@bluehexagons2" aria-label="@bluehexagons2 on YouTube">
+                <span class="profile_links__label also_on__label">2nd YouTube</span>
+                <span class="profile_links__tag also_on__tag">@bluehexagons2</span>
               </site-link>
             </li>
             <li>
-              Ko-fi:{' '}
-              <site-link href="https://ko-fi.com/bluehexagons" aria-label="Loren Crain is bluehexagons on Ko-fi">
-                bluehexagons
+              <site-link class="profile_links__link also_on__link" href="https://ko-fi.com/bluehexagons" aria-label="Loren Crain is bluehexagons on Ko-fi">
+                <span class="profile_links__label also_on__label">Ko-fi</span>
+                <span class="profile_links__tag also_on__tag">bluehexagons</span>
               </site-link>
             </li>
             <li>
-              Birdsite:{' '}
               <site-link
+                class="profile_links__link also_on__link"
                 href="https://twitter.com/bluehexagons"
                 aria-label="@bluehexagons on Twitter, or whatever it is when you read this"
               >
-                @bluehexagons
+                <span class="profile_links__label also_on__label">Birdsite</span>
+                <span class="profile_links__tag also_on__tag">@bluehexagons</span>
               </site-link>
             </li>
             <li>
-              Twitch:{' '}
-              <site-link href="https://www.twitch.tv/thisterral" aria-label="thisterral on Twitch">
-                thisTerral
+              <site-link class="profile_links__link also_on__link" href="https://www.twitch.tv/thisterral" aria-label="thisterral on Twitch">
+                <span class="profile_links__label also_on__label">Twitch</span>
+                <span class="profile_links__tag also_on__tag">thisTerral</span>
               </site-link>
             </li>
             <li>
-              Mastodon:{' '}
               <site-link
+                class="profile_links__link also_on__link"
                 href="https://mastodon.gamedev.place/@terral"
                 aria-label="@terral@mastodon.gamedev.place on Mastodon"
               >
-                @terral@mastodon.gamedev.place
+                <span class="profile_links__label also_on__label">Mastodon</span>
+                <span class="profile_links__tag also_on__tag">@terral@mastodon.gamedev.place</span>
               </site-link>
             </li>
             <li>
-              Linktree:{' '}
-              <site-link href="https://linktr.ee/bluehexagons" aria-label="bluehexagons on Linktree">
-                bluehexagons
+              <site-link class="profile_links__link also_on__link" href="https://linktr.ee/bluehexagons" aria-label="bluehexagons on Linktree">
+                <span class="profile_links__label also_on__label">Linktree</span>
+                <span class="profile_links__tag also_on__tag">bluehexagons</span>
               </site-link>
             </li>
           </ul>

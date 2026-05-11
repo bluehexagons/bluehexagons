@@ -2,8 +2,54 @@
   display: inline;
 }
 
+:host(.profile_links__link),
+:host(.also_on__link) {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+}
+
+:host(.profile_links__link) [data-root='styles'],
+:host(.also_on__link) [data-root='styles'] {
+  display: none !important;
+}
+
+:host(.profile_links__link) [data-root='content'],
+:host(.also_on__link) [data-root='content'] {
+  display: block !important;
+  min-width: 0;
+  max-width: 100%;
+}
+
 a {
   color: #c9baae;
+  text-decoration: underline;
+}
+
+:host(.profile_links__link) a,
+:host(.also_on__link) a {
+  display: block;
+  padding: 6px 0;
+  min-width: 0;
+  max-width: 100%;
+  text-decoration: none;
+}
+
+:host(.profile_links__link) ::slotted(.profile_links__tag),
+:host(.also_on__link) ::slotted(.profile_links__tag) {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+}
+
+:host(.also_on__link) ::slotted(.profile_links__tag) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:host(.profile_links__link) a:hover,
+:host(.also_on__link) a:hover {
   text-decoration: underline;
 }
 
@@ -15,4 +61,15 @@ a:hover {
 }
 a:active {
   filter: brightness(0.8);
+}
+
+@media (max-width: 520px) {
+  :host(.profile_links__link) a,
+  :host(.also_on__link) a {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: 6px;
+    padding: 4px 0;
+  }
 }
