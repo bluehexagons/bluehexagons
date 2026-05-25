@@ -14,6 +14,8 @@
     "host": "vite --host",
     "generate-thumbs": "node scripts/generate-thumbs.ts",
     "build": "tsc && npm run generate-thumbs && vite build",
+    "build:shop": "tsc && npm run generate-thumbs && VITE_SHOP=1 vite build",
+    "dev:shop": "VITE_SHOP=1 vite",
     "preview": "vite preview"
   }
 }

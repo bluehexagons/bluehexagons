@@ -1,3 +1,9 @@
 /node_modules
 /dist
 /public/assets/thumbs
+
+# Go backend (server/)
+/server/bx-server
+/server/*.db
+/server/*.db-shm
+/server/*.db-wal

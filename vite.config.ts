@@ -2,8 +2,15 @@ import { defineConfig, type Plugin } from 'vite';
 import { resolve } from 'path';
 import { globSync } from 'glob';
 
+// The shop/account UI is optional: it is only built when VITE_SHOP=1. By
+// default `npm run build` excludes everything under src/shop/, so the static
+// site ships with no store or login UI in the output bundle.
+const includeShop = process.env.VITE_SHOP === '1';
+
 // Find all HTML files in src directory and subdirectories
-const htmlEntries = globSync('src/**/*.html').reduce((entries: Record<string, string>, path) => {
+const htmlEntries = globSync('src/**/*.html', {
+  ignore: includeShop ? [] : ['src/shop/**'],
+}).reduce((entries: Record<string, string>, path) => {
   const fileName = path.replace('src/', '').replace('.html', '');
   entries[fileName] = resolve(__dirname, path);
   return entries;

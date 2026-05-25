@@ -1,0 +1,35 @@
+# systemd unit for the bluehexagons shop/account API.
+# Install to /etc/systemd/system/bx-server.service, then:
+#   sudo systemctl daemon-reload && sudo systemctl enable --now bx-server
+[Unit]
+Description=bluehexagons shop/account API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=bxserver
+Group=bxserver
+WorkingDirectory=/opt/bx-server
+ExecStart=/opt/bx-server/bx-server
+EnvironmentFile=/opt/bx-server/.env
+Restart=on-failure
+RestartSec=2
+
+# Hardening: the process only needs to read its binary and write the SQLite DB.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+# DB_PATH must live under here (e.g. /opt/bx-server/data/bluehexagons.db).
+ReadWritePaths=/opt/bx-server/data
+
+[Install]
+WantedBy=multi-user.target
