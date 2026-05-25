@@ -536,356 +536,23 @@ render(
       <article slot="content">
         <h1 id="controllers">Controllers</h1>
         <p>
-          Currently officially supports GameCube (via Wii U/Switch adapter in native mode), 360/XB1 (and compatible), PS4, and keyboard
-        </p>
-        <p>
-          Button/key rebinding will be improved later in testing, as well as support for more controllers (e.g. Mayflash in PC mode,
-          Switch Pro)
+          Currently officially supports GameCube (via Wii U/Switch adapter in native mode), 360/XB1 (and compatible), PS4, and keyboard.
         </p>
         <p>
           To get GameCube controllers to work on Windows, Zadig can be used to install a generic driver; see{' '}
           <site-link href="https://wiki.dolphin-emu.org/index.php?title=How_to_use_the_Official_GameCube_Controller_Adapter_for_Wii_U_in_Dolphin">
             Dolphin's guide
           </site-link>{' '}
-          for detailed instructions. Mac/Linux seem to work without hassle.
-        </p>
-        <p>
-          If you can already use controllers in Dolphin, it should work in Antistatic too. In the future, this process might be an
-          automated option
+          for detailed instructions. Mac/Linux seem to work without hassle. If it works in Dolphin, it should work in Antistatic.
         </p>
 
         <h2 id="control-rebinding">Control rebinding</h2>
         <p>
-          Basic controller rebinding is available in the in-game controls menu, but is early in development and only changes default
-          controls. Keyboard rebinding still needs a lot of work.
+          Button and key rebinding is available in the in-game controls menu. Controls are saved per tag.
         </p>
-
-        <h2>Advanced</h2>
-        <expandable-section>
-          <p>
-            Advanced control rebinding can be accessed through the console (bound to <kbd>`</kbd>; close with <kbd>escape</kbd>,{' '}
-            <kbd>ctrl</kbd>+<kbd>d</kbd>, or <kbd>enter</kbd> with nothing entered).
-          </p>
-          <p>Basic help is provided by using <code>mapping</code> on its own:</p>
-          <pre>
-            <code>{`Usage: mapping [controller ID]
-  Prints mapping for controller ID, as well as lists available button/axis actions
-Usage: mapping [controller ID] bind [button/axis name] [button/axis action] [axis value (keyboard only)]
-  Binds button/axis to action for controller ID
-Usage: mapping [controller ID] save
-  Saves current mapping as the default for controller's kind
-Usage: mapping [controller ID] reset
-  Resets mapping to original values for controller's kind
-Usage: mapping [controller ID] default
-  Resets mapping to current default for controller's kind
-
-Usage: mapping list
-  Lists all default and saved mappings
-Usage: mapping list [controller kind]
-  Lists all default and saved mappings for controller kind (e.g. standard, gcn_native)
-
-See also: controller (all)
-  Lists active controllers; if all is specified, includes all connected controllers`}</code>
-          </pre>
-
-          <h2>Examples</h2>
-          <h3>Keyboard rebinding</h3>
-          <p>
-            Rebind the space bar to shield, and save as the default.
-            <br />
-            Note that all keys are case-sensitive right now; letters should be lowercase (e.g. <code>w</code>, not <code>W</code>), special
-            keys should be capitalized (e.g. <code>RETURN</code>), and numbers are either e.g. <code>A_0</code> (number row) or{' '}
-            <code>KP_0</code> (number pad)
-          </p>
-          <p>Press <kbd>`</kbd> to open the console.</p>
-          <pre>
-            <code>{`$ controller all      # list out all controllers
-0. keyboard: keyboard
-$ mapping 0 bind SPACE shield
-$ mapping 0 save      # saves as the default keyboard layout
-Saved mapping file`}</code>
-          </pre>
-
-          <h3>List of all SDL2 key names, until the rebinding UI is done...</h3>
-          <expandable-section>
-            <pre>
-              <code>{`RETURN
-ESCAPE
-BACKSPACE
-TAB
-SPACE
-EXCLAIM
-QUOTEDBL
-HASH
-PERCENT
-DOLLAR
-AMPERSAND
-QUOTE
-LEFTPAREN
-RIGHTPAREN
-ASTERISK
-PLUS
-COMMA
-MINUS
-PERIOD
-SLASH
-A_0
-A_1
-A_2
-A_3
-A_4
-A_5
-A_6
-A_7
-A_8
-A_9
-COLON
-SEMICOLON
-LESS
-EQUALS
-GREATER
-QUESTION
-AT
-LEFTBRACKET
-BACKSLASH
-RIGHTBRACKET
-CARET
-UNDERSCORE
-BACKQUOTE
-a
-b
-c
-d
-e
-f
-g
-h
-i
-j
-k
-l
-m
-n
-o
-p
-q
-r
-s
-t
-u
-v
-w
-x
-y
-z
-CAPSLOCK
-F1
-F2
-F3
-F4
-F5
-F6
-F7
-F8
-F9
-F10
-F11
-F12
-PRINTSCREEN
-SCROLLLOCK
-PAUSE
-INSERT
-HOME
-PAGEUP
-DELETE
-END
-PAGEDOWN
-RIGHT
-LEFT
-DOWN
-UP
-NUMLOCKCLEAR
-KP_DIVIDE
-KP_MULTIPLY
-KP_MINUS
-KP_PLUS
-KP_ENTER
-KP_1
-KP_2
-KP_3
-KP_4
-KP_5
-KP_6
-KP_7
-KP_8
-KP_9
-KP_0
-KP_PERIOD
-APPLICATION
-POWER
-KP_EQUALS
-F13
-F14
-F15
-F16
-F17
-F18
-F19
-F20
-F21
-F22
-F23
-F24
-EXECUTE
-HELP
-MENU
-SELECT
-STOP
-AGAIN
-UNDO
-CUT
-COPY
-PASTE
-FIND
-MUTE
-VOLUMEUP
-VOLUMEDOWN
-KP_COMMA
-KP_EQUALSAS400
-ALTERASE
-SYSREQ
-CANCEL
-CLEAR
-PRIOR
-RETURN2
-SEPARATOR
-OUT
-OPER
-CLEARAGAIN
-CRSEL
-EXSEL
-KP_00
-KP_000
-THOUSANDSSEPARATOR
-DECIMALSEPARATOR
-CURRENCYUNIT
-CURRENCYSUBUNIT
-KP_LEFTPAREN
-KP_RIGHTPAREN
-KP_LEFTBRACE
-KP_RIGHTBRACE
-KP_TAB
-KP_BACKSPACE
-KP_A
-KP_B
-KP_C
-KP_D
-KP_E
-KP_F
-KP_XOR
-KP_POWER
-KP_PERCENT
-KP_LESS
-KP_GREATER
-KP_AMPERSAND
-KP_DBLAMPERSAND
-KP_VERTICALBAR
-KP_DBLVERTICALBAR
-KP_COLON
-KP_HASH
-KP_SPACE
-KP_AT
-KP_EXCLAM
-KP_MEMSTORE
-KP_MEMRECALL
-KP_MEMCLEAR
-KP_MEMADD
-KP_MEMSUBTRACT
-KP_MEMMULTIPLY
-KP_MEMDIVIDE
-KP_PLUSMINUS
-KP_CLEAR
-KP_CLEARENTRY
-KP_BINARY
-KP_OCTAL
-KP_DECIMAL
-KP_HEXADECIMAL
-LCTRL
-LSHIFT
-LALT
-LGUI
-RCTRL
-RSHIFT
-RALT
-RGUI
-MODE
-AUDIONEXT
-AUDIOPREV
-AUDIOSTOP
-AUDIOPLAY
-AUDIOMUTE
-MEDIASELECT
-WWW
-MAIL
-CALCULATOR
-COMPUTER
-AC_SEARCH
-AC_HOME
-AC_BACK
-AC_FORWARD
-AC_STOP
-AC_REFRESH
-AC_BOOKMARKS
-BRIGHTNESSDOWN
-BRIGHTNESSUP
-DISPLAYSWITCH
-KBDILLUMTOGGLE
-KBDILLUMDOWN
-KBDILLUMUP
-EJECT
-SLEEP
-APP1
-APP2
-AUDIOREWIND
-AUDIOFASTFORWARD`}</code>
-            </pre>
-          </expandable-section>
-
-          <h3>XInput (e.g. XB1): rebind X to jump, B to special</h3>
-          <p>Press <kbd>`</kbd> to open the console.</p>
-          <pre>
-            <code>{`$ controller all    # list out all controllers
-0. keyboard: keyboard
-1. XInput Controller: standard
-$ mapping 1
-  A attack
-  B jump
-  ...
-$ mapping 1 bind X jump
-$ mapping 1 bind B special
-$ mapping 1 save
-Saved mapping file`}</code>
-          </pre>
-
-          <h3>Reset all saved mappings to original</h3>
-          <h4>Option 1, using <code>rm</code></h4>
-          <p>Press <kbd>`</kbd> to open the console.</p>
-          <pre>
-            <code>{`$ rm ~/mapping/standard.default`}</code>
-          </pre>
-
-          <h4>Option 2, also reset controller</h4>
-          <p>Press <kbd>`</kbd> to open the console.</p>
-          <pre>
-            <code>{`$ controller all    # list out all controllers
-0. keyboard: keyboard
-1. XInput Controller: standard
-$ mapping 1 reset
-Reset mapping
-$ mapping 1 save
-Saved mapping file`}</code>
-          </pre>
-        </expandable-section>
+        <p>
+          Tags also serve as your netplay nickname when entering a match.
+        </p>
       </article>
 
       <article slot="content">
@@ -939,10 +606,6 @@ Saved mapping file`}</code>
               <site-link href="https://github.com/bluehexagons/trace">trace</site-link>
             </li>
             <li>
-              Loader:{' '}
-              <site-link href="https://github.com/bluehexagons/antistatic-loader">antistatic-loader</site-link>
-            </li>
-            <li>
               Animator:{' '}
               <site-link href="https://github.com/bluehexagons/antistatic-animator">antistatic-animator</site-link>
             </li>
@@ -964,11 +627,15 @@ Saved mapping file`}</code>
               Runtime: <site-link href="https://nodejs.org">Node.js</site-link>
             </li>
             <li>
-              Window: <site-link href="https://www.libsdl.org/">SDL2</site-link>
+              Window: <site-link href="https://www.libsdl.org/">SDL3</site-link>
             </li>
-            <li>Gamepads: SDL2</li>
+            <li>Gamepads: SDL3</li>
             <li>
-              Fonts: <site-link href="https://github.com/freetype">Freetype</site-link>
+              Font rendering: <site-link href="https://github.com/freetype">Freetype</site-link>
+            </li>
+            <li>
+              Fonts: <site-link href="https://github.com/googlefonts/noto-fonts">Noto</site-link>,{' '}
+              <site-link href="https://github.com/IBM/plex">IBM Plex</site-link>
             </li>
             <li>
               USB: <site-link href="https://github.com/libusb/libusb">LibUSB</site-link>
@@ -993,25 +660,13 @@ Saved mapping file`}</code>
               <site-link href="https://github.com/nothings/stb">stb</site-link>
             </li>
             <li>
-              <site-link href="https://github.com/TooTallNate/node-bindings">node-bindings</site-link>
-            </li>
-            <li>
               <site-link href="https://github.com/toji/gl-matrix">gl-matrix</site-link>
-            </li>
-            <li>
-              <site-link href="https://github.com/andyearnshaw/Intl.js">intl</site-link>
             </li>
             <li>
               <site-link href="https://github.com/microsoft/node-jsonc-parser">jsonc-parser</site-link>
             </li>
             <li>
-              <site-link href="https://github.com/sindresorhus/open">open</site-link>
-            </li>
-            <li>
               <site-link href="https://github.com/sindresorhus/os-locale">os-locale</site-link>
-            </li>
-            <li>
-              <site-link href="https://github.com/ddopson/node-segfault-handler">node-segfault-handler</site-link>
             </li>
           </ul>
         </div>
@@ -1030,7 +685,7 @@ Saved mapping file`}</code>
           <p>
             The graphics engine is also split, with lower-level code written in C and OpenGL and much of the model manipulation, vertex
             rendering, and animation written in TypeScript. FreeType is used to render a dynamically-growing font atlas. Other libraries
-            used include: GLEW for OpenGL bindings, SDL2 for window management, and SDL2_image for image loading.
+            used include: GLEW for OpenGL bindings, SDL3 for window management, and SDL3_image for image loading.
           </p>
 
           <h2>Audio engine</h2>
