@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "components": [
+    {
+      "name": "site",
+      "type": "static",
+      "domain": "bluehexagons.com",
+      "build": "npm ci && npm run build",
+      "output": "dist"
+    },
+    {
+      "name": "shop-api",
+      "type": "service",
+      "domain": "api.bluehexagons.com",
+      "reverse_proxy": true,
+      "build": "server/deploy/build.sh",
+      "binary": "server/bx-server",
+      "systemd_unit": "server/deploy/bx-server.service",
+      "env_file": "/opt/bx-server/.env",
+      "port": 8080,
+      "health": "/api/health"
+    }
+  ]
+}
