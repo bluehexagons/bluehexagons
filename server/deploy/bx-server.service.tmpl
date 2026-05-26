@@ -14,6 +14,9 @@ Group={{web_group}}
 WorkingDirectory={{release_dir}}/server
 ExecStart={{binary}}
 EnvironmentFile={{env_file}}
+# infra_tools owns the data dir; inject its path so the operator's env file holds
+# only secrets/config and never hard-codes the managed location.
+Environment=DB_PATH={{data_dir}}/bluehexagons.db
 Restart=on-failure
 RestartSec=2
 
@@ -29,9 +32,9 @@ RestrictAddressFamilies=AF_INET AF_INET6
 RestrictSUIDSGID=true
 LockPersonality=true
 MemoryDenyWriteExecute=true
-# The SQLite DB must live outside the release dir (which is replaced on each
-# deploy). Keep DB_PATH in the env file pointed under here.
-ReadWritePaths=/opt/bx-server/data
+# Only the managed data dir is writable (it lives outside the release dir, which
+# is replaced on each deploy). infra_tools creates it and owns it as this user.
+ReadWritePaths={{data_dir}}
 
 [Install]
 WantedBy=multi-user.target

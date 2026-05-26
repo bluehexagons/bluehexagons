@@ -73,14 +73,21 @@ stripe listen --forward-to localhost:8080/api/webhooks/stripe
 The repo-root `infra.json` lets [infra_tools](../../infra_tools) deploy both the
 static site and this service from one `setup ... --deploy` run. In that path
 infra_tools installs `deploy/bx-server.service.tmpl` as the systemd unit,
-substituting `{{...}}` placeholders (release dir, resolved binary, `web_user`,
-`{{env_file}}`, `{{port}}`) at deploy time, and reverse-proxies
-`api.bluehexagons.com` → `127.0.0.1:8080` via nginx. The non-templated
-`deploy/bx-server.service` and `deploy/Caddyfile` are the **manual**-path
-reference (they target `/opt/bx-server`), not used by infra_tools. Either way the
-service reads its config from the env file, so `LISTEN_ADDR` there must match the
-manifest's `port` (`8080`), and `DB_PATH` must point under `/opt/bx-server/data`
-(outside the release dir, which infra_tools replaces on each deploy).
+substituting `{{...}}` placeholders at deploy time, and reverse-proxies
+`api.bluehexagons.com` → `127.0.0.1:8080` via nginx. Specifically it:
+
+- runs the service as a **dedicated, isolated** `--system` user (`app-<app>-shop-api`),
+  not a shared deploy user;
+- creates and owns a **managed data dir** at
+  `/var/www/.infra_tools_shared/<app>/shop-api/data` (the `{{data_dir}}`), which
+  persists across deploys; the unit injects `DB_PATH` there and restricts writes
+  to it (`ReadWritePaths`);
+- reads the operator env file from the managed shared dir
+  (`.../shop-api/.env`, the `{{env_file}}`) — secrets live there, never in the repo.
+
+The non-templated `deploy/bx-server.service` and `deploy/Caddyfile` are the
+**manual**-path reference (they target `/opt/bx-server`), not used by infra_tools.
+Either way, `LISTEN_ADDR` in the env file must match the manifest's `port` (`8080`).
 
 ### Backups
 
