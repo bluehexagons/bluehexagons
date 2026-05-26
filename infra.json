@@ -15,7 +15,7 @@
       "reverse_proxy": true,
       "build": "server/deploy/build.sh",
       "binary": "server/bx-server",
-      "systemd_unit": "server/deploy/bx-server.service",
+      "systemd_unit": "server/deploy/bx-server.service.tmpl",
       "env_file": "/opt/bx-server/.env",
       "port": 8080,
       "health": "/api/health"

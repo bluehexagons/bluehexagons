@@ -1,0 +1,37 @@
+# Templated systemd unit for infra_tools (infra.json) deploys.
+# infra_tools substitutes the placeholder values at deploy time and installs the
+# result as app-shop-api.service. The non-templated bx-server.service alongside
+# is for the manual /opt/bx-server install documented in README.md.
+[Unit]
+Description=bluehexagons shop/account API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{web_user}}
+Group={{web_group}}
+WorkingDirectory={{release_dir}}/server
+ExecStart={{binary}}
+EnvironmentFile={{env_file}}
+Restart=on-failure
+RestartSec=2
+
+# Hardening: the process only needs to read its binary and write the SQLite DB.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+# The SQLite DB must live outside the release dir (which is replaced on each
+# deploy). Keep DB_PATH in the env file pointed under here.
+ReadWritePaths=/opt/bx-server/data
+
+[Install]
+WantedBy=multi-user.target

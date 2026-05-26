@@ -72,12 +72,15 @@ stripe listen --forward-to localhost:8080/api/webhooks/stripe
 
 The repo-root `infra.json` lets [infra_tools](../../infra_tools) deploy both the
 static site and this service from one `setup ... --deploy` run. In that path
-infra_tools **generates** the systemd unit from the manifest (resolved binary
-path, `working_dir`, `EnvironmentFile=/opt/bx-server/.env`) and reverse-proxies
-`api.bluehexagons.com` → `127.0.0.1:8080` via nginx — so `deploy/bx-server.service`
-and `deploy/Caddyfile` here are the manual-path reference, not used by infra_tools.
-The service still reads its own config from the env file, so `LISTEN_ADDR` there
-must match the manifest's `port` (`8080`).
+infra_tools installs `deploy/bx-server.service.tmpl` as the systemd unit,
+substituting `{{...}}` placeholders (release dir, resolved binary, `web_user`,
+`{{env_file}}`, `{{port}}`) at deploy time, and reverse-proxies
+`api.bluehexagons.com` → `127.0.0.1:8080` via nginx. The non-templated
+`deploy/bx-server.service` and `deploy/Caddyfile` are the **manual**-path
+reference (they target `/opt/bx-server`), not used by infra_tools. Either way the
+service reads its config from the env file, so `LISTEN_ADDR` there must match the
+manifest's `port` (`8080`), and `DB_PATH` must point under `/opt/bx-server/data`
+(outside the release dir, which infra_tools replaces on each deploy).
 
 ### Backups
 
