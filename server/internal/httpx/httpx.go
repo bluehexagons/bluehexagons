@@ -6,6 +6,7 @@ package httpx
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"log/slog"
 	"net/http"
 )
@@ -79,7 +80,8 @@ func DecodeJSON(w http.ResponseWriter, r *http.Request, v any) error {
 	if err := dec.Decode(v); err != nil {
 		return Errorf(http.StatusBadRequest, "invalid request body")
 	}
-	if dec.More() {
+	var extra any
+	if err := dec.Decode(&extra); !errors.Is(err, io.EOF) {
 		return Errorf(http.StatusBadRequest, "request body must contain a single JSON value")
 	}
 	return nil

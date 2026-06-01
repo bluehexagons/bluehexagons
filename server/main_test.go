@@ -187,6 +187,57 @@ func TestCrossOriginRejected(t *testing.T) {
 	}
 }
 
+func TestAllowedOriginGetsCredentialedCORS(t *testing.T) {
+	database, err := db.Open(filepath.Join(t.TempDir(), "test.db"))
+	if err != nil {
+		t.Fatalf("open db: %v", err)
+	}
+	defer database.Close()
+
+	cfg := config.Config{FrontendOrigin: "http://front.test"}
+	srv := httptest.NewServer(newRouter(database, cfg, slog.New(slog.NewTextHandler(io.Discard, nil)), &fakeGateway{}))
+	defer srv.Close()
+
+	req, _ := http.NewRequest(http.MethodOptions, srv.URL+"/api/login", nil)
+	req.Header.Set("Origin", cfg.FrontendOrigin)
+	req.Header.Set("Access-Control-Request-Method", http.MethodPost)
+	req.Header.Set("Access-Control-Request-Headers", "Content-Type")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("preflight: %v", err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusNoContent {
+		t.Fatalf("preflight: want 204, got %d", resp.StatusCode)
+	}
+	assertCORS(t, resp, cfg.FrontendOrigin)
+	if got := resp.Header.Get("Access-Control-Allow-Headers"); got != "Content-Type" {
+		t.Fatalf("preflight allow headers = %q, want Content-Type", got)
+	}
+
+	req, _ = http.NewRequest(http.MethodGet, srv.URL+"/api/products", nil)
+	req.Header.Set("Origin", cfg.FrontendOrigin)
+	resp, err = http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("products: %v", err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("products: want 200, got %d", resp.StatusCode)
+	}
+	assertCORS(t, resp, cfg.FrontendOrigin)
+}
+
+func assertCORS(t *testing.T, resp *http.Response, origin string) {
+	t.Helper()
+	if got := resp.Header.Get("Access-Control-Allow-Origin"); got != origin {
+		t.Fatalf("Access-Control-Allow-Origin = %q, want %q", got, origin)
+	}
+	if got := resp.Header.Get("Access-Control-Allow-Credentials"); got != "true" {
+		t.Fatalf("Access-Control-Allow-Credentials = %q, want true", got)
+	}
+}
+
 func signStripe(secret string, t time.Time, payload []byte) string {
 	mac := hmac.New(sha256.New, []byte(secret))
 	mac.Write([]byte(strconv.FormatInt(t.Unix(), 10)))
