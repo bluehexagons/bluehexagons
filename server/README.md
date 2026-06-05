@@ -70,11 +70,12 @@ stripe listen --forward-to localhost:8080/api/webhooks/stripe
 
 ### Automated deploy (infra_tools)
 
-The repo-root `infra.json` lets [infra_tools](../../infra_tools) deploy both the
-static site and this service from one `setup ... --deploy` run. In that path
-infra_tools installs `deploy/bx-server.service.tmpl` as the systemd unit,
-substituting `{{...}}` placeholders at deploy time, and reverse-proxies
-`api.bluehexagons.com` → `127.0.0.1:8080` via nginx. Specifically it:
+The repo-root `infra.json` deploys only the static site by default; it does not
+build or install this optional backend. For an explicit backend deployment, use
+a service manifest component with `path: "/api"`. In that path infra_tools
+installs `deploy/bx-server.service.tmpl` as the systemd unit, substituting
+`{{...}}` placeholders at deploy time, and reverse-proxies same-origin `/api` →
+`127.0.0.1:8080` via nginx. Specifically it:
 
 - runs the service as a **dedicated, isolated** `--system` user (`app-<app>-shop-api`),
   not a shared deploy user;

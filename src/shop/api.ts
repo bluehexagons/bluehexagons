@@ -1,7 +1,7 @@
 // Typed client for the shop/account API. All requests send credentials so the
 // session cookie flows; the API base is configurable per build via VITE_API_BASE
-// (e.g. https://api.bluehexagons.com). Without an explicit override, local dev
-// talks to the local API while production talks to the deployed API subdomain.
+// (e.g. http://localhost:8080). Without an explicit override, local dev talks
+// to the local API while production uses the same-origin /api path.
 const configuredApiBase = import.meta.env.VITE_API_BASE?.trim();
 const API_BASE = normalizeApiBase(configuredApiBase || defaultApiBase());
 
@@ -40,9 +40,6 @@ function defaultApiBase(): string {
   const { hostname, protocol } = window.location;
   if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') {
     return 'http://localhost:8080';
-  }
-  if (hostname === 'bluehexagons.com' || hostname === 'www.bluehexagons.com') {
-    return 'https://api.bluehexagons.com';
   }
   return window.location.origin;
 }

@@ -1,11 +1,12 @@
 # Caddy reverse proxy with automatic HTTPS (Let's Encrypt). The API binds to
-# loopback; Caddy terminates TLS and forwards to it. Hosting the API on a
-# subdomain of the site keeps session cookies same-site (SameSite=Lax works).
-api.bluehexagons.com {
+# loopback; Caddy terminates TLS and forwards same-origin /api requests to it.
+bluehexagons.com {
 	encode gzip
 
 	# Stripe webhooks post here; everything else is the JSON API.
-	reverse_proxy 127.0.0.1:8080
+	handle /api/* {
+		reverse_proxy 127.0.0.1:8080
+	}
 
 	header {
 		# Defense-in-depth response headers (API returns JSON only).
