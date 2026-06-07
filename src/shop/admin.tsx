@@ -44,12 +44,15 @@ let authEmail = '';
 let authPassword = '';
 let form = emptyForm();
 let keyText = '';
+let assetSource: 'file' | 'link' = 'file';
 let assetRole: 'preview' | 'download' = 'download';
 let assetSort = '0';
 let assetFile: File | null = null;
+let assetLinkFilename = '';
+let assetLinkURL = '';
 
 const errMessage = (err: unknown): string => {
-  if (err instanceof ApiError && err.status === 403) return 'This account is not in SHOP_ADMIN_EMAILS.';
+  if (err instanceof ApiError && err.status === 403) return 'This account does not have shop admin rights.';
   if (err instanceof ApiError && err.status === 401) return 'Sign in with an admin account.';
   return err instanceof Error ? err.message : 'Something went wrong';
 };
@@ -165,6 +168,8 @@ async function selectProduct(id: number): Promise<void> {
     form = formFromProduct(selected);
     keyText = '';
     assetFile = null;
+    assetLinkFilename = '';
+    assetLinkURL = '';
     setState({ selected });
   } catch (err) {
     setState({ error: errMessage(err) });
@@ -175,6 +180,8 @@ function newProduct(): void {
   form = emptyForm();
   keyText = '';
   assetFile = null;
+  assetLinkFilename = '';
+  assetLinkURL = '';
   setState({ selected: null, error: '', notice: 'Drafting a new listing.' });
 }
 
@@ -191,19 +198,34 @@ async function saveProduct(): Promise<void> {
 
 async function uploadAsset(): Promise<void> {
   if (!state.selected || state.uploadBusy) return;
-  if (!assetFile) {
+  if (assetSource === 'file' && !assetFile) {
     setState({ error: 'Choose a file to upload.' });
     return;
   }
-  const data = new FormData();
-  data.set('role', assetRole);
-  data.set('sort_order', assetSort || '0');
-  data.set('file', assetFile);
+  if (assetSource === 'link' && (!assetLinkFilename.trim() || !assetLinkURL.trim())) {
+    setState({ error: 'Enter a filename and URL for the linked asset.' });
+    return;
+  }
   setState({ uploadBusy: true, error: '', notice: '' });
   try {
-    await api.uploadProductAsset(state.selected.id, data);
+    if (assetSource === 'file') {
+      const data = new FormData();
+      data.set('role', assetRole);
+      data.set('sort_order', assetSort || '0');
+      data.set('file', assetFile!);
+      await api.uploadProductAsset(state.selected.id, data);
+    } else {
+      await api.addProductAssetLink(state.selected.id, {
+        role: assetRole,
+        filename: assetLinkFilename,
+        url: assetLinkURL,
+        sort_order: Number(assetSort) || 0,
+      });
+    }
     assetFile = null;
-    await loadProducts(state.selected.id, 'Asset uploaded.');
+    assetLinkFilename = '';
+    assetLinkURL = '';
+    await loadProducts(state.selected.id, assetSource === 'file' ? 'Asset uploaded.' : 'Asset link added.');
   } catch (err) {
     setState({ uploadBusy: false, error: errMessage(err) });
   }
@@ -253,7 +275,7 @@ function authPanel(): Node {
       <div class="shop__auth">
         <div>
           Admin session <strong>{state.user.email}</strong>
-          <div class="shop__muted">Access is controlled by SHOP_ADMIN_EMAILS.</div>
+          <div class="shop__muted">Access is granted by the configured primary admin email or admin list.</div>
         </div>
         <button class="shop__button shop__button--ghost" onClick={() => void logout()} disabled={state.authBusy}>
           {state.authBusy ? 'Signing out...' : 'Log out'}
@@ -265,7 +287,7 @@ function authPanel(): Node {
     <div class="shop__auth">
       <div>
         <strong>Admin account required</strong>
-        <div class="shop__muted">Sign in with an email listed in SHOP_ADMIN_EMAILS.</div>
+        <div class="shop__muted">Sign in or create the configured primary admin account.</div>
       </div>
       <form
         class="shop__form"
@@ -449,29 +471,37 @@ function assetList(title: string, assets: ProductAsset[]): Node {
       <h3>{title}</h3>
       {assets.length === 0 ? <div class="shop__muted">None uploaded.</div> : null}
       <ul class="shop__asset-list">
-        {assets.map((asset) => (
-          <li>
-            {asset.role === 'preview' && asset.content_type.startsWith('image/') ? (
-              <img class="shop__asset-thumb" src={apiURL(asset.url)} alt="" loading="lazy" />
-            ) : (
-              <span class="shop__asset-thumb shop__asset-thumb--empty">{asset.role}</span>
-            )}
-            <span>
-              <strong>{asset.filename}</strong>
-              <small>
-                {asset.content_type} · {fileSize(asset.size_bytes)}
-              </small>
-            </span>
-            {asset.role === 'preview' ? (
-              <a class="shop__button shop__button--ghost" href={apiURL(asset.url)} target="_blank" rel="noreferrer">
-                Open
-              </a>
-            ) : null}
-            <button class="shop__icon-button" onClick={() => void deleteAsset(asset)} aria-label={`Delete ${asset.filename}`}>
-              -
-            </button>
-          </li>
-        ))}
+        {assets.map((asset) => {
+          const size = asset.size_bytes > 0 ? fileSize(asset.size_bytes) : 'unknown size';
+          return (
+            <li>
+              {asset.role === 'preview' && asset.content_type.startsWith('image/') ? (
+                <img class="shop__asset-thumb" src={apiURL(asset.url)} alt="" loading="lazy" />
+              ) : (
+                <span class="shop__asset-thumb shop__asset-thumb--empty">{asset.source_url ? 'link' : asset.role}</span>
+              )}
+              <span>
+                <strong>{asset.filename}</strong>
+                <small>
+                  {asset.content_type} · {size}{asset.source_url ? ' · linked' : ''}
+                </small>
+              </span>
+              {asset.role === 'preview' ? (
+                <a class="shop__button shop__button--ghost" href={apiURL(asset.url)} target="_blank" rel="noreferrer">
+                  Open
+                </a>
+              ) : null}
+              {asset.source_url ? (
+                <a class="shop__button shop__button--ghost" href={asset.source_url} target="_blank" rel="noreferrer">
+                  Source
+                </a>
+              ) : null}
+              <button class="shop__icon-button" onClick={() => void deleteAsset(asset)} aria-label={`Delete ${asset.filename}`}>
+                -
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
@@ -493,11 +523,25 @@ function assetManager(): Node {
         }}
       >
         <label>
+          <span>Source</span>
+          <select
+            value={assetSource}
+            onInput={(event: Event) => {
+              assetSource = (event.currentTarget as HTMLSelectElement).value as 'file' | 'link';
+              renderAll();
+            }}
+          >
+            <option value="file">Upload file</option>
+            <option value="link">External link</option>
+          </select>
+        </label>
+        <label>
           <span>Role</span>
           <select
             value={assetRole}
             onInput={(event: Event) => {
               assetRole = (event.currentTarget as HTMLSelectElement).value as 'preview' | 'download';
+              renderAll();
             }}
           >
             <option value="download">Purchase download</option>
@@ -515,17 +559,45 @@ function assetManager(): Node {
             }}
           />
         </label>
-        <label class="shop__field-wide">
-          <span>File</span>
-          <input
-            type="file"
-            onChange={(event: Event) => {
-              assetFile = (event.currentTarget as HTMLInputElement).files?.[0] ?? null;
-            }}
-          />
-        </label>
+        {assetSource === 'file' ? (
+          <label class="shop__field-wide">
+            <span>File</span>
+            <input
+              type="file"
+              onChange={(event: Event) => {
+                assetFile = (event.currentTarget as HTMLInputElement).files?.[0] ?? null;
+              }}
+            />
+          </label>
+        ) : (
+          <>
+            <label>
+              <span>Display filename</span>
+              <input
+                value={assetLinkFilename}
+                placeholder={assetRole === 'preview' ? 'cover.jpg' : 'soundtrack.zip'}
+                onInput={(event: Event) => {
+                  assetLinkFilename = (event.currentTarget as HTMLInputElement).value;
+                }}
+              />
+            </label>
+            <label class="shop__field-wide">
+              <span>URL</span>
+              <input
+                value={assetLinkURL}
+                placeholder="https://cdn.example.com/file.zip"
+                onInput={(event: Event) => {
+                  assetLinkURL = (event.currentTarget as HTMLInputElement).value;
+                }}
+              />
+            </label>
+          </>
+        )}
+        {assetSource === 'link' && assetRole === 'preview' ? (
+          <div class="shop__muted shop__field-wide">Preview image links are fetched once and converted into local thumbnails.</div>
+        ) : null}
         <button class="shop__button" type="submit" disabled={state.uploadBusy}>
-          {state.uploadBusy ? 'Uploading...' : 'Upload asset'}
+          {state.uploadBusy ? 'Working...' : assetSource === 'file' ? 'Upload asset' : 'Add linked asset'}
         </button>
       </form>
       <div class="shop__asset-grid">

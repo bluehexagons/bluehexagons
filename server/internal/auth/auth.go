@@ -65,8 +65,9 @@ type credentials struct {
 }
 
 type userResponse struct {
-	ID    int64  `json:"id"`
-	Email string `json:"email"`
+	ID      int64  `json:"id"`
+	Email   string `json:"email"`
+	IsAdmin bool   `json:"is_admin"`
 }
 
 func (h *Handler) register(w http.ResponseWriter, r *http.Request) error {
@@ -151,7 +152,11 @@ func (h *Handler) me(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	httpx.WriteJSON(w, http.StatusOK, userResponse{ID: uid, Email: email})
+	isAdmin, err := UserIsAdmin(r.Context(), h.db, h.cfg, uid)
+	if err != nil {
+		return err
+	}
+	httpx.WriteJSON(w, http.StatusOK, userResponse{ID: uid, Email: email, IsAdmin: isAdmin})
 	return nil
 }
 
@@ -160,8 +165,12 @@ func (h *Handler) startSession(w http.ResponseWriter, r *http.Request, userID in
 	if err != nil {
 		return err
 	}
+	isAdmin, err := UserIsAdmin(r.Context(), h.db, h.cfg, userID)
+	if err != nil {
+		return err
+	}
 	h.setSessionCookie(w, token, exp)
-	httpx.WriteJSON(w, http.StatusOK, userResponse{ID: userID, Email: email})
+	httpx.WriteJSON(w, http.StatusOK, userResponse{ID: userID, Email: email, IsAdmin: isAdmin})
 	return nil
 }
 

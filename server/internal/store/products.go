@@ -30,6 +30,7 @@ type ProductAsset struct {
 	Filename    string `json:"filename"`
 	ContentType string `json:"content_type"`
 	SizeBytes   int64  `json:"size_bytes"`
+	SourceURL   string `json:"source_url,omitempty"`
 	SortOrder   int64  `json:"sort_order"`
 	URL         string `json:"url"`
 }
@@ -102,7 +103,7 @@ func (h *Handler) getProduct(w http.ResponseWriter, r *http.Request) error {
 
 func (h *Handler) productAssets(ctx context.Context, productID int64, role string) ([]ProductAsset, error) {
 	rows, err := h.db.QueryContext(ctx,
-		`SELECT id, product_id, role, filename, content_type, size_bytes, sort_order
+		`SELECT id, product_id, role, filename, content_type, size_bytes, COALESCE(source_url, ''), sort_order
 		 FROM product_assets
 		 WHERE product_id = ? AND role = ?
 		 ORDER BY sort_order, id`, productID, role)
@@ -114,7 +115,7 @@ func (h *Handler) productAssets(ctx context.Context, productID int64, role strin
 	assets := []ProductAsset{}
 	for rows.Next() {
 		var a ProductAsset
-		if err := rows.Scan(&a.ID, &a.ProductID, &a.Role, &a.Filename, &a.ContentType, &a.SizeBytes, &a.SortOrder); err != nil {
+		if err := rows.Scan(&a.ID, &a.ProductID, &a.Role, &a.Filename, &a.ContentType, &a.SizeBytes, &a.SourceURL, &a.SortOrder); err != nil {
 			return nil, err
 		}
 		a.URL = assetURL(a.ID, a.Role)

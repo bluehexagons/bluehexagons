@@ -566,7 +566,7 @@
 
 .shop__asset-list li {
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) auto auto;
+  grid-template-columns: 56px minmax(0, 1fr) auto auto auto;
   gap: 10px;
   align-items: center;
   padding: 10px;

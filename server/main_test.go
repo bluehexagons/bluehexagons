@@ -9,6 +9,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"image"
+	"image/color"
+	"image/png"
 	"io"
 	"log/slog"
 	"mime/multipart"
@@ -20,6 +23,7 @@ import (
 	"testing"
 	"time"
 
+	"bluehexagons.com/server/internal/auth"
 	"bluehexagons.com/server/internal/config"
 	"bluehexagons.com/server/internal/db"
 	"bluehexagons.com/server/internal/payment"
@@ -417,6 +421,302 @@ func TestAdminDigitalDeliveryFlow(t *testing.T) {
 	}
 	if product.Keys[1].ClaimedOrderItemID == nil || product.Keys[1].ClaimedUserEmail != "buyer@example.com" {
 		t.Fatalf("admin key redemption missing: %+v", product.Keys)
+	}
+}
+
+func TestPrimaryAdminGrantFlows(t *testing.T) {
+	t.Run("existing user granted on setup", func(t *testing.T) {
+		database, err := db.Open(filepath.Join(t.TempDir(), "test.db"))
+		if err != nil {
+			t.Fatalf("open db: %v", err)
+		}
+		defer database.Close()
+
+		hash, err := auth.HashPassword("hunter2pass")
+		if err != nil {
+			t.Fatalf("hash: %v", err)
+		}
+		if _, err := database.Exec(
+			`INSERT INTO users (email, password_hash, created_at) VALUES ('owner@example.com', ?, ?)`,
+			hash, time.Now().Unix()); err != nil {
+			t.Fatalf("seed owner: %v", err)
+		}
+
+		cfg := config.Config{FrontendOrigin: "http://front.test", PrimaryAdminEmail: "owner@example.com", CookieSecure: false}
+		srv := httptest.NewServer(newRouter(database, cfg, slog.New(slog.NewTextHandler(io.Discard, nil)), &fakeGateway{}))
+		defer srv.Close()
+
+		jar, _ := cookiejar.New(nil)
+		client := &http.Client{Jar: jar}
+		do := func(method, path, body string) (*http.Response, []byte) {
+			t.Helper()
+			req, err := http.NewRequest(method, srv.URL+path, bytes.NewBufferString(body))
+			if err != nil {
+				t.Fatalf("request: %v", err)
+			}
+			if method == http.MethodPost {
+				req.Header.Set("Origin", cfg.FrontendOrigin)
+			}
+			if body != "" {
+				req.Header.Set("Content-Type", "application/json")
+			}
+			resp, err := client.Do(req)
+			if err != nil {
+				t.Fatalf("do %s %s: %v", method, path, err)
+			}
+			data, _ := io.ReadAll(resp.Body)
+			resp.Body.Close()
+			return resp, data
+		}
+
+		if resp, body := do(http.MethodPost, "/api/login", `{"email":"owner@example.com","password":"hunter2pass"}`); resp.StatusCode != http.StatusOK {
+			t.Fatalf("login owner: status %d body %s", resp.StatusCode, body)
+		}
+		resp, body := do(http.MethodGet, "/api/me", "")
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("me owner: status %d body %s", resp.StatusCode, body)
+		}
+		var me struct {
+			IsAdmin bool `json:"is_admin"`
+		}
+		if err := json.Unmarshal(body, &me); err != nil {
+			t.Fatalf("decode me: %v", err)
+		}
+		if !me.IsAdmin {
+			t.Fatalf("owner was not marked admin: %s", body)
+		}
+		if resp, body := do(http.MethodGet, "/api/admin/products", ""); resp.StatusCode != http.StatusOK {
+			t.Fatalf("admin products: status %d body %s", resp.StatusCode, body)
+		}
+	})
+
+	t.Run("future signup granted immediately", func(t *testing.T) {
+		database, err := db.Open(filepath.Join(t.TempDir(), "test.db"))
+		if err != nil {
+			t.Fatalf("open db: %v", err)
+		}
+		defer database.Close()
+
+		cfg := config.Config{FrontendOrigin: "http://front.test", PrimaryAdminEmail: "future@example.com", CookieSecure: false}
+		srv := httptest.NewServer(newRouter(database, cfg, slog.New(slog.NewTextHandler(io.Discard, nil)), &fakeGateway{}))
+		defer srv.Close()
+
+		jar, _ := cookiejar.New(nil)
+		client := &http.Client{Jar: jar}
+		do := func(method, path, body string) (*http.Response, []byte) {
+			t.Helper()
+			req, err := http.NewRequest(method, srv.URL+path, bytes.NewBufferString(body))
+			if err != nil {
+				t.Fatalf("request: %v", err)
+			}
+			if method == http.MethodPost {
+				req.Header.Set("Origin", cfg.FrontendOrigin)
+			}
+			if body != "" {
+				req.Header.Set("Content-Type", "application/json")
+			}
+			resp, err := client.Do(req)
+			if err != nil {
+				t.Fatalf("do %s %s: %v", method, path, err)
+			}
+			data, _ := io.ReadAll(resp.Body)
+			resp.Body.Close()
+			return resp, data
+		}
+
+		resp, body := do(http.MethodPost, "/api/register", `{"email":"future@example.com","password":"hunter2pass"}`)
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("register future admin: status %d body %s", resp.StatusCode, body)
+		}
+		var me struct {
+			IsAdmin bool `json:"is_admin"`
+		}
+		if err := json.Unmarshal(body, &me); err != nil {
+			t.Fatalf("decode register: %v", err)
+		}
+		if !me.IsAdmin {
+			t.Fatalf("registered primary admin was not marked admin: %s", body)
+		}
+		if resp, body := do(http.MethodGet, "/api/admin/products", ""); resp.StatusCode != http.StatusOK {
+			t.Fatalf("admin products after register: status %d body %s", resp.StatusCode, body)
+		}
+	})
+}
+
+func TestLinkedAssetFlow(t *testing.T) {
+	var linkedPNG bytes.Buffer
+	img := image.NewRGBA(image.Rect(0, 0, 24, 16))
+	for y := 0; y < 16; y++ {
+		for x := 0; x < 24; x++ {
+			img.Set(x, y, color.RGBA{R: uint8(10 * x), G: uint8(12 * y), B: 180, A: 255})
+		}
+	}
+	if err := png.Encode(&linkedPNG, img); err != nil {
+		t.Fatalf("encode png: %v", err)
+	}
+	linkedSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/cover.png":
+			w.Header().Set("Content-Type", "image/png")
+			w.WriteHeader(http.StatusOK)
+			if r.Method != http.MethodHead {
+				_, _ = w.Write(linkedPNG.Bytes())
+			}
+		case "/download.zip":
+			w.Header().Set("Content-Type", "application/zip")
+			w.Header().Set("Content-Length", strconv.Itoa(len("remote download")))
+			w.WriteHeader(http.StatusOK)
+			if r.Method != http.MethodHead {
+				_, _ = w.Write([]byte("remote download"))
+			}
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer linkedSrv.Close()
+
+	database, err := db.Open(filepath.Join(t.TempDir(), "test.db"))
+	if err != nil {
+		t.Fatalf("open db: %v", err)
+	}
+	defer database.Close()
+
+	cfg := config.Config{
+		FrontendOrigin:    "http://front.test",
+		PrimaryAdminEmail: "admin@example.com",
+		UploadDir:         filepath.Join(t.TempDir(), "uploads"),
+		CookieSecure:      false,
+	}
+	srv := httptest.NewServer(newRouter(database, cfg, slog.New(slog.NewTextHandler(io.Discard, nil)), &fakeGateway{}))
+	defer srv.Close()
+
+	newClient := func(followRedirects bool) *http.Client {
+		jar, _ := cookiejar.New(nil)
+		client := &http.Client{Jar: jar}
+		if !followRedirects {
+			client.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
+		}
+		return client
+	}
+	adminClient := newClient(true)
+	buyerClient := newClient(true)
+	do := func(client *http.Client, method, path, body string) (*http.Response, []byte) {
+		t.Helper()
+		req, err := http.NewRequest(method, srv.URL+path, bytes.NewBufferString(body))
+		if err != nil {
+			t.Fatalf("request: %v", err)
+		}
+		if method == http.MethodPost || method == http.MethodPatch || method == http.MethodDelete {
+			req.Header.Set("Origin", cfg.FrontendOrigin)
+		}
+		if body != "" {
+			req.Header.Set("Content-Type", "application/json")
+		}
+		resp, err := client.Do(req)
+		if err != nil {
+			t.Fatalf("do %s %s: %v", method, path, err)
+		}
+		data, _ := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		return resp, data
+	}
+
+	if resp, body := do(adminClient, http.MethodPost, "/api/register", `{"email":"admin@example.com","password":"hunter2pass"}`); resp.StatusCode != http.StatusOK {
+		t.Fatalf("admin register: status %d body %s", resp.StatusCode, body)
+	}
+	resp, body := do(adminClient, http.MethodPost, "/api/admin/products", `{
+		"sku":"linked-pack",
+		"title":"Linked Pack",
+		"description":"Uses linked assets.",
+		"price_cents":500,
+		"currency":"usd",
+		"kind":"digital",
+		"post_purchase_text":"Linked delivery.",
+		"active":true
+	}`)
+	if resp.StatusCode != http.StatusCreated {
+		t.Fatalf("create product: status %d body %s", resp.StatusCode, body)
+	}
+	var product struct {
+		ID int64 `json:"id"`
+	}
+	if err := json.Unmarshal(body, &product); err != nil {
+		t.Fatalf("decode product: %v", err)
+	}
+
+	resp, body = do(adminClient, http.MethodPost, fmt.Sprintf("/api/admin/products/%d/asset-links", product.ID), fmt.Sprintf(`{
+		"role":"preview",
+		"filename":"cover.png",
+		"url":"%s/cover.png",
+		"sort_order":0
+	}`, linkedSrv.URL))
+	if resp.StatusCode != http.StatusCreated {
+		t.Fatalf("add preview link: status %d body %s", resp.StatusCode, body)
+	}
+	var preview struct {
+		URL         string `json:"url"`
+		SourceURL   string `json:"source_url"`
+		ContentType string `json:"content_type"`
+		SizeBytes   int64  `json:"size_bytes"`
+	}
+	if err := json.Unmarshal(body, &preview); err != nil {
+		t.Fatalf("decode preview: %v", err)
+	}
+	if preview.SourceURL != linkedSrv.URL+"/cover.png" || preview.ContentType != "image/jpeg" || preview.SizeBytes == 0 {
+		t.Fatalf("bad preview link response: %s", body)
+	}
+	resp, body = do(adminClient, http.MethodGet, preview.URL, "")
+	if resp.StatusCode != http.StatusOK || resp.Header.Get("Content-Type") != "image/jpeg" || len(body) == 0 {
+		t.Fatalf("preview thumbnail: status %d type %q len %d", resp.StatusCode, resp.Header.Get("Content-Type"), len(body))
+	}
+
+	resp, body = do(adminClient, http.MethodPost, fmt.Sprintf("/api/admin/products/%d/asset-links", product.ID), fmt.Sprintf(`{
+		"role":"download",
+		"filename":"remote.zip",
+		"url":"%s/download.zip",
+		"sort_order":0
+	}`, linkedSrv.URL))
+	if resp.StatusCode != http.StatusCreated {
+		t.Fatalf("add download link: status %d body %s", resp.StatusCode, body)
+	}
+	var download struct {
+		URL         string `json:"url"`
+		SourceURL   string `json:"source_url"`
+		ContentType string `json:"content_type"`
+		SizeBytes   int64  `json:"size_bytes"`
+	}
+	if err := json.Unmarshal(body, &download); err != nil {
+		t.Fatalf("decode download: %v", err)
+	}
+	if download.SourceURL != linkedSrv.URL+"/download.zip" || download.ContentType != "application/zip" || download.SizeBytes != int64(len("remote download")) {
+		t.Fatalf("bad download link response: %s", body)
+	}
+
+	resp, body = do(buyerClient, http.MethodPost, "/api/register", `{"email":"buyer-linked@example.com","password":"hunter2pass"}`)
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("buyer register: status %d body %s", resp.StatusCode, body)
+	}
+	var buyer struct {
+		ID int64 `json:"id"`
+	}
+	if err := json.Unmarshal(body, &buyer); err != nil {
+		t.Fatalf("decode buyer: %v", err)
+	}
+	res, err := database.Exec(
+		`INSERT INTO orders (user_id, status, total_cents, currency, created_at) VALUES (?, 'paid', 500, 'usd', ?)`,
+		buyer.ID, time.Now().Unix())
+	if err != nil {
+		t.Fatalf("insert paid order: %v", err)
+	}
+	orderID, _ := res.LastInsertId()
+	if _, err := database.Exec(
+		`INSERT INTO order_items (order_id, product_id, quantity, unit_price_cents) VALUES (?, ?, 1, 500)`,
+		orderID, product.ID); err != nil {
+		t.Fatalf("insert order item: %v", err)
+	}
+	resp, body = do(buyerClient, http.MethodGet, download.URL, "")
+	if resp.StatusCode != http.StatusOK || string(body) != "remote download" {
+		t.Fatalf("linked download: status %d body %q", resp.StatusCode, body)
 	}
 }
 

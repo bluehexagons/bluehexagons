@@ -54,7 +54,46 @@ func Open(path string) (*sql.DB, error) {
 		pool.Close()
 		return nil, fmt.Errorf("apply schema: %w", err)
 	}
+	if err := migrate(ctx, pool); err != nil {
+		pool.Close()
+		return nil, fmt.Errorf("migrate schema: %w", err)
+	}
 	return pool, nil
+}
+
+func migrate(ctx context.Context, pool *sql.DB) error {
+	hasSourceURL, err := tableHasColumn(ctx, pool, "product_assets", "source_url")
+	if err != nil {
+		return err
+	}
+	if !hasSourceURL {
+		if _, err := pool.ExecContext(ctx, `ALTER TABLE product_assets ADD COLUMN source_url TEXT NOT NULL DEFAULT ''`); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func tableHasColumn(ctx context.Context, pool *sql.DB, table, column string) (bool, error) {
+	rows, err := pool.QueryContext(ctx, `PRAGMA table_info(`+table+`)`)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var cid int
+		var name, typ string
+		var notNull int
+		var defaultValue any
+		var pk int
+		if err := rows.Scan(&cid, &name, &typ, &notNull, &defaultValue, &pk); err != nil {
+			return false, err
+		}
+		if name == column {
+			return true, nil
+		}
+	}
+	return false, rows.Err()
 }
 
 // IsUniqueViolation reports whether err is a SQLite UNIQUE/PRIMARY KEY

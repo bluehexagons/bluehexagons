@@ -96,6 +96,11 @@ func newRouter(database *sql.DB, cfg config.Config, logger *slog.Logger, pay sto
 	})
 
 	authHandler := auth.NewHandler(database, cfg, logger)
+	adminCtx, cancelAdmin := context.WithTimeout(context.Background(), 5*time.Second)
+	if err := auth.EnsureConfiguredAdmins(adminCtx, database, cfg); err != nil {
+		logger.Error("grant configured admins", "err", err)
+	}
+	cancelAdmin()
 	authHandler.Routes(mux)
 
 	store.NewHandler(database, cfg, logger, pay, authHandler.RequireUser).Routes(mux)

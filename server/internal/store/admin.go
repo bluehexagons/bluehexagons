@@ -72,17 +72,13 @@ func (h *Handler) requireAdmin(next http.Handler) http.Handler {
 			httpx.WriteError(w, httpx.Errorf(http.StatusUnauthorized, "not authenticated"))
 			return
 		}
-		var email string
-		if err := h.db.QueryRowContext(r.Context(), `SELECT email FROM users WHERE id = ?`, uid).Scan(&email); err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				httpx.WriteError(w, httpx.Errorf(http.StatusUnauthorized, "not authenticated"))
-				return
-			}
+		isAdmin, err := auth.UserIsAdmin(r.Context(), h.db, h.cfg, uid)
+		if err != nil {
 			h.log.Error("admin lookup", "err", err)
 			httpx.WriteError(w, httpx.Errorf(http.StatusInternalServerError, "internal error"))
 			return
 		}
-		if !h.cfg.IsAdminEmail(email) {
+		if !isAdmin {
 			httpx.WriteError(w, httpx.Errorf(http.StatusForbidden, "admin access required"))
 			return
 		}

@@ -8,6 +8,7 @@ const API_BASE = normalizeApiBase(configuredApiBase || defaultApiBase());
 export interface User {
   id: number;
   email: string;
+  is_admin: boolean;
 }
 
 export interface Product {
@@ -29,8 +30,16 @@ export interface ProductAsset {
   filename: string;
   content_type: string;
   size_bytes: number;
+  source_url?: string;
   sort_order: number;
   url: string;
+}
+
+export interface AssetLinkInput {
+  role: 'preview' | 'download';
+  filename: string;
+  url: string;
+  sort_order: number;
 }
 
 export interface CheckoutItem {
@@ -182,6 +191,8 @@ export const api = {
     request<AdminProduct>('PATCH', `/api/admin/products/${id}`, product),
   uploadProductAsset: (productId: number, form: FormData) =>
     request<ProductAsset>('POST', `/api/admin/products/${productId}/assets`, form),
+  addProductAssetLink: (productId: number, link: AssetLinkInput) =>
+    request<ProductAsset>('POST', `/api/admin/products/${productId}/asset-links`, link),
   addProductKeys: (productId: number, text: string) => request<AdminProduct>('POST', `/api/admin/products/${productId}/keys`, { text }),
   deleteAdminAsset: (id: number) => request<{ status: string }>('DELETE', `/api/admin/assets/${id}`),
   deleteAdminKey: (id: number) => request<{ status: string }>('DELETE', `/api/admin/keys/${id}`),

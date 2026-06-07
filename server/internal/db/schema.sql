@@ -19,6 +19,15 @@ CREATE TABLE IF NOT EXISTS sessions (
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
 
+CREATE TABLE IF NOT EXISTS admin_users (
+    user_id    INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    email      TEXT    NOT NULL,
+    source     TEXT    NOT NULL DEFAULT 'configured'
+                     CHECK (source IN ('configured','manual')),
+    granted_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_admin_users_email ON admin_users(email);
+
 CREATE TABLE IF NOT EXISTS products (
     id          INTEGER PRIMARY KEY,
     sku         TEXT    NOT NULL UNIQUE,
@@ -46,6 +55,7 @@ CREATE TABLE IF NOT EXISTS product_assets (
     content_type TEXT    NOT NULL,
     size_bytes   INTEGER NOT NULL CHECK (size_bytes >= 0),
     storage_name TEXT    NOT NULL UNIQUE,
+    source_url   TEXT    NOT NULL DEFAULT '',
     sort_order   INTEGER NOT NULL DEFAULT 0,
     created_at   INTEGER NOT NULL
 );

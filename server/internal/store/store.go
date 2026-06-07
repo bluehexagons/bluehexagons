@@ -63,6 +63,7 @@ func (h *Handler) Routes(mux *http.ServeMux) {
 	mux.Handle("GET /api/admin/products/{id}", h.requireAdmin(httpx.Logged(h.log, h.adminGetProduct)))
 	mux.Handle("PATCH /api/admin/products/{id}", h.requireAdmin(httpx.Logged(h.log, h.adminUpdateProduct)))
 	mux.Handle("POST /api/admin/products/{id}/assets", h.requireAdmin(httpx.Logged(h.log, h.adminUploadAsset)))
+	mux.Handle("POST /api/admin/products/{id}/asset-links", h.requireAdmin(httpx.Logged(h.log, h.adminAddAssetLink)))
 	mux.Handle("DELETE /api/admin/assets/{id}", h.requireAdmin(httpx.Logged(h.log, h.adminDeleteAsset)))
 	mux.Handle("POST /api/admin/products/{id}/keys", h.requireAdmin(httpx.Logged(h.log, h.adminAddKeys)))
 	mux.Handle("DELETE /api/admin/keys/{id}", h.requireAdmin(httpx.Logged(h.log, h.adminDeleteKey)))

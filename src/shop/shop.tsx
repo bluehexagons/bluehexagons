@@ -173,6 +173,11 @@ function authPanel(): Node {
       <div class="shop__auth">
         <div>
           Signed in as <strong>{state.user.email}</strong>
+          {state.user.is_admin ? (
+            <div class="shop__muted">
+              <site-link href="/shop/admin.html">Open shop admin</site-link>
+            </div>
+          ) : null}
         </div>
         <button class="shop__button shop__button--ghost" onClick={() => void logout()} disabled={state.authBusy}>
           {state.authBusy ? 'Signing out...' : 'Log out'}

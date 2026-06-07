@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const DefaultPrimaryAdminEmail = "loren@bluehexagons.com"
+
 type Config struct {
 	ListenAddr     string // host:port to bind, e.g. 127.0.0.1:8080 (front with a TLS proxy)
 	DBPath         string // SQLite file path
@@ -16,6 +18,7 @@ type Config struct {
 
 	StripeSecretKey     string              // sk_... (required only for checkout)
 	StripeWebhookSecret string              // whsec_... (required only for the webhook)
+	PrimaryAdminEmail   string              // configured bootstrap admin account email
 	AdminEmails         map[string]struct{} // lower-case emails allowed into /api/admin
 	UploadDir           string              // local private storage for shop assets
 
@@ -33,6 +36,7 @@ func Load() Config {
 		FrontendOrigin:      env("FRONTEND_ORIGIN", "http://localhost:3000"),
 		StripeSecretKey:     os.Getenv("STRIPE_SECRET_KEY"),
 		StripeWebhookSecret: os.Getenv("STRIPE_WEBHOOK_SECRET"),
+		PrimaryAdminEmail:   normalizeEmail(env("SHOP_PRIMARY_ADMIN_EMAIL", DefaultPrimaryAdminEmail)),
 		AdminEmails:         parseAdminEmails(os.Getenv("SHOP_ADMIN_EMAILS")),
 		UploadDir:           env("SHOP_UPLOAD_DIR", "shop_uploads"),
 		CookieSecure:        env("COOKIE_SECURE", "true") != "false",
@@ -40,11 +44,32 @@ func Load() Config {
 }
 
 func (c Config) IsAdminEmail(email string) bool {
-	if len(c.AdminEmails) == 0 {
+	email = normalizeEmail(email)
+	if email == "" {
 		return false
 	}
-	_, ok := c.AdminEmails[strings.ToLower(strings.TrimSpace(email))]
+	if c.PrimaryAdminEmail != "" && email == normalizeEmail(c.PrimaryAdminEmail) {
+		return true
+	}
+	_, ok := c.AdminEmails[email]
 	return ok
+}
+
+func (c Config) ConfiguredAdminEmails() []string {
+	seen := map[string]struct{}{}
+	emails := []string{}
+	for _, email := range append([]string{c.PrimaryAdminEmail}, keys(c.AdminEmails)...) {
+		email = normalizeEmail(email)
+		if email == "" {
+			continue
+		}
+		if _, ok := seen[email]; ok {
+			continue
+		}
+		seen[email] = struct{}{}
+		emails = append(emails, email)
+	}
+	return emails
 }
 
 func (c Config) ShopUploadDir() string {
@@ -64,10 +89,22 @@ func env(key, def string) string {
 func parseAdminEmails(raw string) map[string]struct{} {
 	admins := map[string]struct{}{}
 	for _, part := range strings.Split(raw, ",") {
-		email := strings.ToLower(strings.TrimSpace(part))
+		email := normalizeEmail(part)
 		if email != "" {
 			admins[email] = struct{}{}
 		}
 	}
 	return admins
+}
+
+func normalizeEmail(raw string) string {
+	return strings.ToLower(strings.TrimSpace(raw))
+}
+
+func keys(m map[string]struct{}) []string {
+	out := make([]string, 0, len(m))
+	for k := range m {
+		out = append(out, k)
+	}
+	return out
 }

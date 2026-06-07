@@ -7,9 +7,15 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"errors"
+	"image"
+	_ "image/gif"
+	"image/jpeg"
+	_ "image/png"
 	"io"
+	"math"
 	"mime"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -20,7 +26,21 @@ import (
 	"bluehexagons.com/server/internal/httpx"
 )
 
-const maxUploadBytes int64 = 10 << 30 // large enough for game archives; proxies should set tighter operator limits.
+const (
+	maxUploadBytes        int64 = 10 << 30 // large enough for game archives; proxies should set tighter operator limits.
+	maxLinkedPreviewBytes int64 = 20 << 20
+	linkedHTTPTimeout           = 15 * time.Second
+	previewThumbMaxWidth        = 960
+	previewThumbMaxHeight       = 540
+	maxSourceURLLen             = 2048
+)
+
+type addAssetLinkRequest struct {
+	Role      string `json:"role"`
+	Filename  string `json:"filename"`
+	URL       string `json:"url"`
+	SortOrder int64  `json:"sort_order"`
+}
 
 type storedAsset struct {
 	ProductAsset
@@ -96,8 +116,8 @@ func (h *Handler) adminUploadAsset(w http.ResponseWriter, r *http.Request) error
 	}
 
 	res, err := h.db.ExecContext(r.Context(),
-		`INSERT INTO product_assets (product_id, role, filename, content_type, size_bytes, storage_name, sort_order, created_at)
-		 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+		`INSERT INTO product_assets (product_id, role, filename, content_type, size_bytes, storage_name, source_url, sort_order, created_at)
+		 VALUES (?, ?, ?, ?, ?, ?, '', ?, ?)`,
 		productID, role, filename, contentType, written, storageName, sortOrder, time.Now().Unix())
 	if err != nil {
 		_ = os.Remove(destPath)
@@ -110,6 +130,79 @@ func (h *Handler) adminUploadAsset(w http.ResponseWriter, r *http.Request) error
 	httpx.WriteJSON(w, http.StatusCreated, ProductAsset{
 		ID: id, ProductID: productID, Role: role, Filename: filename, ContentType: contentType,
 		SizeBytes: written, SortOrder: sortOrder, URL: assetURL(id, role),
+	})
+	return nil
+}
+
+func (h *Handler) adminAddAssetLink(w http.ResponseWriter, r *http.Request) error {
+	productID, err := pathID(r, "id")
+	if err != nil {
+		return err
+	}
+	if err := ensureProductExists(r.Context(), h.db, productID); err != nil {
+		return err
+	}
+	var req addAssetLinkRequest
+	if err := httpx.DecodeJSON(w, r, &req); err != nil {
+		return err
+	}
+	role := strings.ToLower(strings.TrimSpace(req.Role))
+	if role != "preview" && role != "download" {
+		return httpx.Errorf(http.StatusBadRequest, "asset role must be preview or download")
+	}
+	if strings.TrimSpace(req.Filename) == "" {
+		return httpx.Errorf(http.StatusBadRequest, "filename is required")
+	}
+	filename := cleanFilename(req.Filename)
+	sourceURL, err := cleanSourceURL(req.URL)
+	if err != nil {
+		return err
+	}
+
+	storageName, contentType := "", "application/octet-stream"
+	var sizeBytes int64
+	if role == "preview" {
+		thumb, err := h.fetchPreviewThumbnail(r.Context(), sourceURL)
+		if err != nil {
+			return err
+		}
+		storageName, err = randomStorageName("preview.jpg")
+		if err != nil {
+			return err
+		}
+		if err := os.MkdirAll(h.cfg.ShopUploadDir(), 0o700); err != nil {
+			return err
+		}
+		if err := os.WriteFile(h.assetPath(storageName), thumb, 0o600); err != nil {
+			return err
+		}
+		contentType = "image/jpeg"
+		sizeBytes = int64(len(thumb))
+	} else {
+		storageName, err = randomLinkStorageName()
+		if err != nil {
+			return err
+		}
+		contentType, sizeBytes = h.linkMetadata(r.Context(), sourceURL, filename)
+	}
+
+	res, err := h.db.ExecContext(r.Context(),
+		`INSERT INTO product_assets (product_id, role, filename, content_type, size_bytes, storage_name, source_url, sort_order, created_at)
+		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		productID, role, filename, contentType, sizeBytes, storageName, sourceURL, req.SortOrder, time.Now().Unix())
+	if err != nil {
+		if role == "preview" && storageName != "" {
+			_ = os.Remove(h.assetPath(storageName))
+		}
+		return err
+	}
+	id, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+	httpx.WriteJSON(w, http.StatusCreated, ProductAsset{
+		ID: id, ProductID: productID, Role: role, Filename: filename, ContentType: contentType,
+		SizeBytes: sizeBytes, SourceURL: sourceURL, SortOrder: req.SortOrder, URL: assetURL(id, role),
 	})
 	return nil
 }
@@ -187,9 +280,9 @@ func (h *Handler) downloadAsset(w http.ResponseWriter, r *http.Request) error {
 func (h *Handler) loadAsset(ctx context.Context, id int64) (storedAsset, error) {
 	var a storedAsset
 	err := h.db.QueryRowContext(ctx,
-		`SELECT id, product_id, role, filename, content_type, size_bytes, storage_name, sort_order
+		`SELECT id, product_id, role, filename, content_type, size_bytes, storage_name, COALESCE(source_url, ''), sort_order
 		 FROM product_assets
-		 WHERE id = ?`, id).Scan(&a.ID, &a.ProductID, &a.Role, &a.Filename, &a.ContentType, &a.SizeBytes, &a.StorageName, &a.SortOrder)
+		 WHERE id = ?`, id).Scan(&a.ID, &a.ProductID, &a.Role, &a.Filename, &a.ContentType, &a.SizeBytes, &a.StorageName, &a.SourceURL, &a.SortOrder)
 	if errors.Is(err, sql.ErrNoRows) {
 		return storedAsset{}, httpx.Errorf(http.StatusNotFound, "asset not found")
 	}
@@ -201,8 +294,16 @@ func (h *Handler) loadAsset(ctx context.Context, id int64) (storedAsset, error) 
 }
 
 func (h *Handler) serveAssetFile(w http.ResponseWriter, r *http.Request, asset storedAsset, attachment bool) error {
+	if attachment && asset.SourceURL != "" {
+		http.Redirect(w, r, asset.SourceURL, http.StatusFound)
+		return nil
+	}
 	path := h.assetPath(asset.StorageName)
 	file, err := os.Open(path)
+	if errors.Is(err, os.ErrNotExist) && asset.SourceURL != "" {
+		http.Redirect(w, r, asset.SourceURL, http.StatusFound)
+		return nil
+	}
 	if errors.Is(err, os.ErrNotExist) {
 		return httpx.Errorf(http.StatusNotFound, "asset file not found")
 	}
@@ -266,4 +367,122 @@ func randomStorageName(filename string) (string, error) {
 		ext = ""
 	}
 	return base64.RawURLEncoding.EncodeToString(b) + ext, nil
+}
+
+func randomLinkStorageName() (string, error) {
+	b := make([]byte, 24)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+	return "__link__" + base64.RawURLEncoding.EncodeToString(b), nil
+}
+
+func cleanSourceURL(raw string) (string, error) {
+	raw = strings.TrimSpace(raw)
+	if raw == "" || len(raw) > maxSourceURLLen {
+		return "", httpx.Errorf(http.StatusBadRequest, "asset URL is required")
+	}
+	u, err := url.Parse(raw)
+	if err != nil || u.Host == "" || (u.Scheme != "https" && u.Scheme != "http") {
+		return "", httpx.Errorf(http.StatusBadRequest, "asset URL must be http or https")
+	}
+	if u.User != nil {
+		return "", httpx.Errorf(http.StatusBadRequest, "asset URL cannot include credentials")
+	}
+	return u.String(), nil
+}
+
+func (h *Handler) fetchPreviewThumbnail(ctx context.Context, sourceURL string) ([]byte, error) {
+	ctx, cancel := context.WithTimeout(ctx, linkedHTTPTimeout)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, sourceURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, httpx.Errorf(http.StatusBadGateway, "could not fetch linked preview image")
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return nil, httpx.Errorf(http.StatusBadGateway, "linked preview image could not be fetched")
+	}
+	if resp.ContentLength > maxLinkedPreviewBytes {
+		return nil, httpx.Errorf(http.StatusBadRequest, "linked preview image is too large")
+	}
+	raw, err := io.ReadAll(io.LimitReader(resp.Body, maxLinkedPreviewBytes+1))
+	if err != nil {
+		return nil, err
+	}
+	if int64(len(raw)) > maxLinkedPreviewBytes {
+		return nil, httpx.Errorf(http.StatusBadRequest, "linked preview image is too large")
+	}
+	contentType := strings.ToLower(resp.Header.Get("Content-Type"))
+	if contentType != "" && !strings.HasPrefix(contentType, "image/") {
+		return nil, httpx.Errorf(http.StatusBadRequest, "linked preview must be an image")
+	}
+	img, _, err := image.Decode(bytes.NewReader(raw))
+	if err != nil {
+		return nil, httpx.Errorf(http.StatusBadRequest, "linked preview image format is not supported")
+	}
+	thumb := resizeImage(img, previewThumbMaxWidth, previewThumbMaxHeight)
+	var out bytes.Buffer
+	if err := jpeg.Encode(&out, thumb, &jpeg.Options{Quality: 86}); err != nil {
+		return nil, err
+	}
+	return out.Bytes(), nil
+}
+
+func (h *Handler) linkMetadata(ctx context.Context, sourceURL, filename string) (string, int64) {
+	ctx, cancel := context.WithTimeout(ctx, linkedHTTPTimeout)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, http.MethodHead, sourceURL, nil)
+	if err == nil {
+		if resp, err := http.DefaultClient.Do(req); err == nil {
+			resp.Body.Close()
+			if resp.StatusCode >= 200 && resp.StatusCode < 400 {
+				contentType := strings.TrimSpace(resp.Header.Get("Content-Type"))
+				if i := strings.IndexByte(contentType, ';'); i >= 0 {
+					contentType = strings.TrimSpace(contentType[:i])
+				}
+				if contentType == "" {
+					contentType = mime.TypeByExtension(filepath.Ext(filename))
+				}
+				if contentType == "" {
+					contentType = "application/octet-stream"
+				}
+				if resp.ContentLength > 0 {
+					return contentType, resp.ContentLength
+				}
+				return contentType, 0
+			}
+		}
+	}
+	if contentType := mime.TypeByExtension(filepath.Ext(filename)); contentType != "" {
+		return contentType, 0
+	}
+	return "application/octet-stream", 0
+}
+
+func resizeImage(src image.Image, maxW, maxH int) image.Image {
+	b := src.Bounds()
+	sw, sh := b.Dx(), b.Dy()
+	if sw <= 0 || sh <= 0 {
+		return src
+	}
+	scale := math.Min(float64(maxW)/float64(sw), float64(maxH)/float64(sh))
+	if scale >= 1 {
+		return src
+	}
+	dw := max(1, int(math.Round(float64(sw)*scale)))
+	dh := max(1, int(math.Round(float64(sh)*scale)))
+	dst := image.NewRGBA(image.Rect(0, 0, dw, dh))
+	for y := 0; y < dh; y++ {
+		sy := b.Min.Y + y*sh/dh
+		for x := 0; x < dw; x++ {
+			sx := b.Min.X + x*sw/dw
+			dst.Set(x, y, src.At(sx, sy))
+		}
+	}
+	return dst
 }
