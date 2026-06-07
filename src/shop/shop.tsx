@@ -252,7 +252,7 @@ function productCard(p: Product): Node {
   const title = p.title || p.name;
   return (
     <article class="shop__product">
-      {preview ? <img class="shop__product-preview" src={apiURL(preview.url)} alt="" loading="lazy" /> : null}
+      {preview ? <img class="shop__product-preview" src={apiURL(preview.url)} alt={`${title} preview`} loading="lazy" decoding="async" /> : null}
       <div class="shop__product-head">
         <strong>{title}</strong>
         <span>{p.sku}</span>

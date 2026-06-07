@@ -14,7 +14,9 @@ import (
 	"io"
 	"math"
 	"mime"
+	"net"
 	"net/http"
+	"net/netip"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -34,6 +36,35 @@ const (
 	previewThumbMaxHeight       = 540
 	maxSourceURLLen             = 2048
 )
+
+var errUnsafeAssetURL = errors.New("unsafe linked asset URL")
+
+var blockedAssetURLPrefixes = []netip.Prefix{
+	mustPrefix("0.0.0.0/8"),
+	mustPrefix("10.0.0.0/8"),
+	mustPrefix("100.64.0.0/10"),
+	mustPrefix("127.0.0.0/8"),
+	mustPrefix("169.254.0.0/16"),
+	mustPrefix("172.16.0.0/12"),
+	mustPrefix("192.0.0.0/24"),
+	mustPrefix("192.0.2.0/24"),
+	mustPrefix("192.168.0.0/16"),
+	mustPrefix("198.18.0.0/15"),
+	mustPrefix("198.51.100.0/24"),
+	mustPrefix("203.0.113.0/24"),
+	mustPrefix("224.0.0.0/4"),
+	mustPrefix("240.0.0.0/4"),
+	mustPrefix("::/128"),
+	mustPrefix("::1/128"),
+	mustPrefix("64:ff9b::/96"),
+	mustPrefix("100::/64"),
+	mustPrefix("2001::/32"),
+	mustPrefix("2001:2::/48"),
+	mustPrefix("2001:db8::/32"),
+	mustPrefix("fc00::/7"),
+	mustPrefix("fe80::/10"),
+	mustPrefix("ff00::/8"),
+}
 
 type addAssetLinkRequest struct {
 	Role      string `json:"role"`
@@ -154,7 +185,7 @@ func (h *Handler) adminAddAssetLink(w http.ResponseWriter, r *http.Request) erro
 		return httpx.Errorf(http.StatusBadRequest, "filename is required")
 	}
 	filename := cleanFilename(req.Filename)
-	sourceURL, err := cleanSourceURL(req.URL)
+	sourceURL, err := cleanSourceURL(req.URL, h.cfg.AllowUnsafeAssetURLs)
 	if err != nil {
 		return err
 	}
@@ -183,7 +214,10 @@ func (h *Handler) adminAddAssetLink(w http.ResponseWriter, r *http.Request) erro
 		if err != nil {
 			return err
 		}
-		contentType, sizeBytes = h.linkMetadata(r.Context(), sourceURL, filename)
+		contentType, sizeBytes, err = h.linkMetadata(r.Context(), sourceURL, filename)
+		if err != nil {
+			return err
+		}
 	}
 
 	res, err := h.db.ExecContext(r.Context(),
@@ -295,12 +329,14 @@ func (h *Handler) loadAsset(ctx context.Context, id int64) (storedAsset, error) 
 
 func (h *Handler) serveAssetFile(w http.ResponseWriter, r *http.Request, asset storedAsset, attachment bool) error {
 	if attachment && asset.SourceURL != "" {
+		w.Header().Set("Referrer-Policy", "no-referrer")
 		http.Redirect(w, r, asset.SourceURL, http.StatusFound)
 		return nil
 	}
 	path := h.assetPath(asset.StorageName)
 	file, err := os.Open(path)
 	if errors.Is(err, os.ErrNotExist) && asset.SourceURL != "" {
+		w.Header().Set("Referrer-Policy", "no-referrer")
 		http.Redirect(w, r, asset.SourceURL, http.StatusFound)
 		return nil
 	}
@@ -319,6 +355,8 @@ func (h *Handler) serveAssetFile(w http.ResponseWriter, r *http.Request, asset s
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	if attachment {
 		w.Header().Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": asset.Filename}))
+	} else {
+		w.Header().Set("Content-Security-Policy", "default-src 'none'; img-src 'self' data: blob:; media-src 'self' data: blob:; style-src 'unsafe-inline'; sandbox")
 	}
 	http.ServeContent(w, r, asset.Filename, info.ModTime(), file)
 	return nil
@@ -377,17 +415,25 @@ func randomLinkStorageName() (string, error) {
 	return "__link__" + base64.RawURLEncoding.EncodeToString(b), nil
 }
 
-func cleanSourceURL(raw string) (string, error) {
+func cleanSourceURL(raw string, allowUnsafe bool) (string, error) {
 	raw = strings.TrimSpace(raw)
 	if raw == "" || len(raw) > maxSourceURLLen {
 		return "", httpx.Errorf(http.StatusBadRequest, "asset URL is required")
 	}
 	u, err := url.Parse(raw)
-	if err != nil || u.Host == "" || (u.Scheme != "https" && u.Scheme != "http") {
-		return "", httpx.Errorf(http.StatusBadRequest, "asset URL must be http or https")
+	if err != nil || u.Host == "" {
+		return "", httpx.Errorf(http.StatusBadRequest, "asset URL must be absolute")
+	}
+	if u.Scheme != "https" && !(allowUnsafe && u.Scheme == "http") {
+		return "", httpx.Errorf(http.StatusBadRequest, "asset URL must use https")
 	}
 	if u.User != nil {
 		return "", httpx.Errorf(http.StatusBadRequest, "asset URL cannot include credentials")
+	}
+	if !allowUnsafe {
+		if ip := net.ParseIP(u.Hostname()); ip != nil && !isPublicIP(ip) {
+			return "", httpx.Errorf(http.StatusBadRequest, "asset URL must resolve to a public address")
+		}
 	}
 	return u.String(), nil
 }
@@ -399,8 +445,11 @@ func (h *Handler) fetchPreviewThumbnail(ctx context.Context, sourceURL string) (
 	if err != nil {
 		return nil, err
 	}
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := h.linkedHTTPClient().Do(req)
 	if err != nil {
+		if errors.Is(err, errUnsafeAssetURL) {
+			return nil, httpx.Errorf(http.StatusBadRequest, "asset URL must resolve to a public address")
+		}
 		return nil, httpx.Errorf(http.StatusBadGateway, "could not fetch linked preview image")
 	}
 	defer resp.Body.Close()
@@ -433,12 +482,12 @@ func (h *Handler) fetchPreviewThumbnail(ctx context.Context, sourceURL string) (
 	return out.Bytes(), nil
 }
 
-func (h *Handler) linkMetadata(ctx context.Context, sourceURL, filename string) (string, int64) {
+func (h *Handler) linkMetadata(ctx context.Context, sourceURL, filename string) (string, int64, error) {
 	ctx, cancel := context.WithTimeout(ctx, linkedHTTPTimeout)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodHead, sourceURL, nil)
 	if err == nil {
-		if resp, err := http.DefaultClient.Do(req); err == nil {
+		if resp, err := h.linkedHTTPClient().Do(req); err == nil {
 			resp.Body.Close()
 			if resp.StatusCode >= 200 && resp.StatusCode < 400 {
 				contentType := strings.TrimSpace(resp.Header.Get("Content-Type"))
@@ -452,16 +501,91 @@ func (h *Handler) linkMetadata(ctx context.Context, sourceURL, filename string) 
 					contentType = "application/octet-stream"
 				}
 				if resp.ContentLength > 0 {
-					return contentType, resp.ContentLength
+					return contentType, resp.ContentLength, nil
 				}
-				return contentType, 0
+				return contentType, 0, nil
 			}
+		} else if errors.Is(err, errUnsafeAssetURL) {
+			return "", 0, httpx.Errorf(http.StatusBadRequest, "asset URL must resolve to a public address")
 		}
 	}
 	if contentType := mime.TypeByExtension(filepath.Ext(filename)); contentType != "" {
-		return contentType, 0
+		return contentType, 0, nil
 	}
-	return "application/octet-stream", 0
+	return "application/octet-stream", 0, nil
+}
+
+func (h *Handler) linkedHTTPClient() *http.Client {
+	client := &http.Client{Timeout: linkedHTTPTimeout}
+	if h.cfg.AllowUnsafeAssetURLs {
+		return client
+	}
+	client.Transport = &http.Transport{
+		DialContext:           safeAssetDialContext,
+		ForceAttemptHTTP2:     true,
+		TLSHandshakeTimeout:   5 * time.Second,
+		ResponseHeaderTimeout: 10 * time.Second,
+		IdleConnTimeout:       30 * time.Second,
+	}
+	client.CheckRedirect = func(req *http.Request, _ []*http.Request) error {
+		if req.URL.Scheme != "https" {
+			return errUnsafeAssetURL
+		}
+		return nil
+	}
+	return client
+}
+
+func safeAssetDialContext(ctx context.Context, network, address string) (net.Conn, error) {
+	host, port, err := net.SplitHostPort(address)
+	if err != nil {
+		return nil, err
+	}
+	addrs, err := net.DefaultResolver.LookupIPAddr(ctx, host)
+	if err != nil {
+		return nil, err
+	}
+	dialer := &net.Dialer{Timeout: 10 * time.Second}
+	var lastErr error
+	for _, addr := range addrs {
+		if !isPublicIP(addr.IP) {
+			continue
+		}
+		conn, err := dialer.DialContext(ctx, network, net.JoinHostPort(addr.IP.String(), port))
+		if err == nil {
+			return conn, nil
+		}
+		lastErr = err
+	}
+	if lastErr != nil {
+		return nil, lastErr
+	}
+	return nil, errUnsafeAssetURL
+}
+
+func isPublicIP(ip net.IP) bool {
+	addr, ok := netip.AddrFromSlice(ip)
+	if !ok {
+		return false
+	}
+	addr = addr.Unmap()
+	if !addr.IsGlobalUnicast() || addr.IsPrivate() || addr.IsLoopback() || addr.IsLinkLocalUnicast() || addr.IsMulticast() || addr.IsUnspecified() {
+		return false
+	}
+	for _, prefix := range blockedAssetURLPrefixes {
+		if prefix.Contains(addr) {
+			return false
+		}
+	}
+	return true
+}
+
+func mustPrefix(raw string) netip.Prefix {
+	prefix, err := netip.ParsePrefix(raw)
+	if err != nil {
+		panic(err)
+	}
+	return prefix
 }
 
 func resizeImage(src image.Image, maxW, maxH int) image.Image {

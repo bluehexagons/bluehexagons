@@ -202,6 +202,7 @@ func TestAdminDigitalDeliveryFlow(t *testing.T) {
 		StripeSecretKey:     "sk_test",
 		StripeWebhookSecret: "whsec_test",
 		AdminEmails:         map[string]struct{}{"admin@example.com": {}},
+		AdminSignupToken:    "setup-token",
 		UploadDir:           filepath.Join(t.TempDir(), "uploads"),
 		CookieSecure:        false,
 	}
@@ -241,7 +242,7 @@ func TestAdminDigitalDeliveryFlow(t *testing.T) {
 		return do(client, method, path, "application/json", bytes.NewBufferString(body))
 	}
 
-	if resp, body := jsonDo(adminClient, http.MethodPost, "/api/register", `{"email":"admin@example.com","password":"hunter2pass"}`); resp.StatusCode != 200 {
+	if resp, body := jsonDo(adminClient, http.MethodPost, "/api/register", `{"email":"admin@example.com","password":"hunter2pass","admin_token":"setup-token"}`); resp.StatusCode != 200 {
 		t.Fatalf("admin register: status %d body %s", resp.StatusCode, body)
 	}
 
@@ -490,14 +491,14 @@ func TestPrimaryAdminGrantFlows(t *testing.T) {
 		}
 	})
 
-	t.Run("future signup granted immediately", func(t *testing.T) {
+	t.Run("future signup granted with setup token", func(t *testing.T) {
 		database, err := db.Open(filepath.Join(t.TempDir(), "test.db"))
 		if err != nil {
 			t.Fatalf("open db: %v", err)
 		}
 		defer database.Close()
 
-		cfg := config.Config{FrontendOrigin: "http://front.test", PrimaryAdminEmail: "future@example.com", CookieSecure: false}
+		cfg := config.Config{FrontendOrigin: "http://front.test", PrimaryAdminEmail: "future@example.com", AdminSignupToken: "setup-token", CookieSecure: false}
 		srv := httptest.NewServer(newRouter(database, cfg, slog.New(slog.NewTextHandler(io.Discard, nil)), &fakeGateway{}))
 		defer srv.Close()
 
@@ -524,7 +525,7 @@ func TestPrimaryAdminGrantFlows(t *testing.T) {
 			return resp, data
 		}
 
-		resp, body := do(http.MethodPost, "/api/register", `{"email":"future@example.com","password":"hunter2pass"}`)
+		resp, body := do(http.MethodPost, "/api/register", `{"email":"future@example.com","password":"hunter2pass","admin_token":"setup-token"}`)
 		if resp.StatusCode != http.StatusOK {
 			t.Fatalf("register future admin: status %d body %s", resp.StatusCode, body)
 		}
@@ -539,6 +540,33 @@ func TestPrimaryAdminGrantFlows(t *testing.T) {
 		}
 		if resp, body := do(http.MethodGet, "/api/admin/products", ""); resp.StatusCode != http.StatusOK {
 			t.Fatalf("admin products after register: status %d body %s", resp.StatusCode, body)
+		}
+	})
+
+	t.Run("future signup requires setup token", func(t *testing.T) {
+		database, err := db.Open(filepath.Join(t.TempDir(), "test.db"))
+		if err != nil {
+			t.Fatalf("open db: %v", err)
+		}
+		defer database.Close()
+
+		cfg := config.Config{FrontendOrigin: "http://front.test", PrimaryAdminEmail: "future@example.com", AdminSignupToken: "setup-token", CookieSecure: false}
+		srv := httptest.NewServer(newRouter(database, cfg, slog.New(slog.NewTextHandler(io.Discard, nil)), &fakeGateway{}))
+		defer srv.Close()
+
+		req, err := http.NewRequest(http.MethodPost, srv.URL+"/api/register", bytes.NewBufferString(`{"email":"future@example.com","password":"hunter2pass"}`))
+		if err != nil {
+			t.Fatalf("request: %v", err)
+		}
+		req.Header.Set("Origin", cfg.FrontendOrigin)
+		req.Header.Set("Content-Type", "application/json")
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			t.Fatalf("register without token: %v", err)
+		}
+		resp.Body.Close()
+		if resp.StatusCode != http.StatusUnauthorized {
+			t.Fatalf("register configured admin without token: want 401, got %d", resp.StatusCode)
 		}
 	})
 }
@@ -582,10 +610,12 @@ func TestLinkedAssetFlow(t *testing.T) {
 	defer database.Close()
 
 	cfg := config.Config{
-		FrontendOrigin:    "http://front.test",
-		PrimaryAdminEmail: "admin@example.com",
-		UploadDir:         filepath.Join(t.TempDir(), "uploads"),
-		CookieSecure:      false,
+		FrontendOrigin:       "http://front.test",
+		PrimaryAdminEmail:    "admin@example.com",
+		AdminSignupToken:     "setup-token",
+		UploadDir:            filepath.Join(t.TempDir(), "uploads"),
+		AllowUnsafeAssetURLs: true,
+		CookieSecure:         false,
 	}
 	srv := httptest.NewServer(newRouter(database, cfg, slog.New(slog.NewTextHandler(io.Discard, nil)), &fakeGateway{}))
 	defer srv.Close()
@@ -621,7 +651,7 @@ func TestLinkedAssetFlow(t *testing.T) {
 		return resp, data
 	}
 
-	if resp, body := do(adminClient, http.MethodPost, "/api/register", `{"email":"admin@example.com","password":"hunter2pass"}`); resp.StatusCode != http.StatusOK {
+	if resp, body := do(adminClient, http.MethodPost, "/api/register", `{"email":"admin@example.com","password":"hunter2pass","admin_token":"setup-token"}`); resp.StatusCode != http.StatusOK {
 		t.Fatalf("admin register: status %d body %s", resp.StatusCode, body)
 	}
 	resp, body := do(adminClient, http.MethodPost, "/api/admin/products", `{
@@ -668,6 +698,9 @@ func TestLinkedAssetFlow(t *testing.T) {
 	resp, body = do(adminClient, http.MethodGet, preview.URL, "")
 	if resp.StatusCode != http.StatusOK || resp.Header.Get("Content-Type") != "image/jpeg" || len(body) == 0 {
 		t.Fatalf("preview thumbnail: status %d type %q len %d", resp.StatusCode, resp.Header.Get("Content-Type"), len(body))
+	}
+	if resp.Header.Get("Content-Security-Policy") == "" {
+		t.Fatalf("preview thumbnail missing CSP header")
 	}
 
 	resp, body = do(adminClient, http.MethodPost, fmt.Sprintf("/api/admin/products/%d/asset-links", product.ID), fmt.Sprintf(`{
@@ -720,6 +753,82 @@ func TestLinkedAssetFlow(t *testing.T) {
 	}
 }
 
+func TestLinkedAssetRejectsUnsafeURLByDefault(t *testing.T) {
+	database, err := db.Open(filepath.Join(t.TempDir(), "test.db"))
+	if err != nil {
+		t.Fatalf("open db: %v", err)
+	}
+	defer database.Close()
+
+	cfg := config.Config{
+		FrontendOrigin:    "http://front.test",
+		PrimaryAdminEmail: "admin@example.com",
+		AdminSignupToken:  "setup-token",
+		UploadDir:         filepath.Join(t.TempDir(), "uploads"),
+		CookieSecure:      false,
+	}
+	srv := httptest.NewServer(newRouter(database, cfg, slog.New(slog.NewTextHandler(io.Discard, nil)), &fakeGateway{}))
+	defer srv.Close()
+
+	jar, _ := cookiejar.New(nil)
+	client := &http.Client{Jar: jar}
+	do := func(method, path, body string) (*http.Response, []byte) {
+		t.Helper()
+		req, err := http.NewRequest(method, srv.URL+path, bytes.NewBufferString(body))
+		if err != nil {
+			t.Fatalf("request: %v", err)
+		}
+		if method == http.MethodPost || method == http.MethodPatch || method == http.MethodDelete {
+			req.Header.Set("Origin", cfg.FrontendOrigin)
+		}
+		if body != "" {
+			req.Header.Set("Content-Type", "application/json")
+		}
+		resp, err := client.Do(req)
+		if err != nil {
+			t.Fatalf("do %s %s: %v", method, path, err)
+		}
+		data, _ := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		return resp, data
+	}
+
+	if resp, body := do(http.MethodPost, "/api/register", `{"email":"admin@example.com","password":"hunter2pass","admin_token":"setup-token"}`); resp.StatusCode != http.StatusOK {
+		t.Fatalf("admin register: status %d body %s", resp.StatusCode, body)
+	}
+	resp, body := do(http.MethodPost, "/api/admin/products", `{
+		"sku":"unsafe-link-test",
+		"title":"Unsafe Link Test",
+		"description":"Reject unsafe linked URLs.",
+		"price_cents":500,
+		"currency":"usd",
+		"kind":"digital",
+		"post_purchase_text":"",
+		"active":true
+	}`)
+	if resp.StatusCode != http.StatusCreated {
+		t.Fatalf("create product: status %d body %s", resp.StatusCode, body)
+	}
+	var product struct {
+		ID int64 `json:"id"`
+	}
+	if err := json.Unmarshal(body, &product); err != nil {
+		t.Fatalf("decode product: %v", err)
+	}
+
+	for _, rawURL := range []string{"http://example.com/file.zip", "https://127.0.0.1/file.zip"} {
+		resp, body := do(http.MethodPost, fmt.Sprintf("/api/admin/products/%d/asset-links", product.ID), fmt.Sprintf(`{
+			"role":"download",
+			"filename":"file.zip",
+			"url":"%s",
+			"sort_order":0
+		}`, rawURL))
+		if resp.StatusCode != http.StatusBadRequest {
+			t.Fatalf("unsafe asset URL %q: want 400, got %d body %s", rawURL, resp.StatusCode, body)
+		}
+	}
+}
+
 func TestCrossOriginRejected(t *testing.T) {
 	database, err := db.Open(filepath.Join(t.TempDir(), "test.db"))
 	if err != nil {
@@ -769,6 +878,9 @@ func TestAllowedOriginGetsCredentialedCORS(t *testing.T) {
 	assertCORS(t, resp, cfg.FrontendOrigin)
 	if got := resp.Header.Get("Access-Control-Allow-Headers"); got != "Content-Type" {
 		t.Fatalf("preflight allow headers = %q, want Content-Type", got)
+	}
+	if got := resp.Header.Get("Access-Control-Allow-Methods"); got != "GET, POST, PATCH, DELETE, OPTIONS" {
+		t.Fatalf("preflight allow methods = %q", got)
 	}
 
 	req, _ = http.NewRequest(http.MethodGet, srv.URL+"/api/products", nil)

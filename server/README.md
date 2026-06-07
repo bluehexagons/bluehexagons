@@ -52,20 +52,24 @@ deploy/                 build script, systemd unit, Caddyfile, .env.example
 
 Admin sessions use the normal account cookie. `SHOP_PRIMARY_ADMIN_EMAIL`
 defaults to `loren@bluehexagons.com`; existing users with that exact stored
-email are granted admin rights on setup, and future signups/logins with that
-email are granted immediately. `SHOP_ADMIN_EMAILS` can add extra comma-separated
-admin emails. Uploaded shop assets are stored under `SHOP_UPLOAD_DIR`; preview
-assets are public, while download assets require a paid/fulfilled order
-containing that product. Admins can also add named external asset links. Linked
-download assets redirect to the third-party URL after purchase authorization;
-linked preview images are fetched once and converted into local JPEG thumbnails.
+email are granted admin rights on setup. Creating a configured admin account
+through `/shop/admin.html` requires `SHOP_ADMIN_SIGNUP_TOKEN`, which should be
+set for bootstrap and removed or rotated after setup. `SHOP_ADMIN_EMAILS` can
+add extra comma-separated admin emails. Uploaded shop assets are stored under
+`SHOP_UPLOAD_DIR`; preview assets are public, while download assets require a
+paid/fulfilled order containing that product. Admins can also add named external
+asset links. In production these links must be HTTPS and resolve to public IPs;
+`SHOP_ALLOW_UNSAFE_ASSET_URLS=true` is available only for local/private testing.
+Linked download assets redirect to the third-party URL after purchase
+authorization; linked preview images are fetched once and converted into local
+JPEG thumbnails.
 
 ## Run locally
 
 ```bash
 go run .                                   # serves on 127.0.0.1:8080
 SEED_DEMO=1 COOKIE_SECURE=false go run .    # with example products, http cookies
-SHOP_PRIMARY_ADMIN_EMAIL=you@example.com COOKIE_SECURE=false go run . # enables /shop/admin.html locally
+SHOP_PRIMARY_ADMIN_EMAIL=you@example.com SHOP_ADMIN_SIGNUP_TOKEN=dev-token COOKIE_SECURE=false go run . # enables /shop/admin.html locally
 go test ./...                               # unit/handler tests
 ```
 

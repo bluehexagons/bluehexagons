@@ -18,23 +18,9 @@ func EnsureConfiguredAdmins(ctx context.Context, database *sql.DB, cfg config.Co
 	return nil
 }
 
-func UserIsAdmin(ctx context.Context, database *sql.DB, cfg config.Config, userID int64) (bool, error) {
-	var email string
-	err := database.QueryRowContext(ctx, `SELECT email FROM users WHERE id = ?`, userID).Scan(&email)
-	if errors.Is(err, sql.ErrNoRows) {
-		return false, nil
-	}
-	if err != nil {
-		return false, err
-	}
-	if cfg.IsAdminEmail(email) {
-		if err := grantConfiguredAdmin(ctx, database, userID, email); err != nil {
-			return false, err
-		}
-		return true, nil
-	}
+func UserIsAdmin(ctx context.Context, database *sql.DB, _ config.Config, userID int64) (bool, error) {
 	var exists int
-	err = database.QueryRowContext(ctx, `SELECT 1 FROM admin_users WHERE user_id = ?`, userID).Scan(&exists)
+	err := database.QueryRowContext(ctx, `SELECT 1 FROM admin_users WHERE user_id = ?`, userID).Scan(&exists)
 	if errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	}

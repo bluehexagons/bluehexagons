@@ -6,6 +6,7 @@ package auth
 
 import (
 	"context"
+	"crypto/subtle"
 	"database/sql"
 	"errors"
 	"log/slog"
@@ -60,8 +61,9 @@ func (h *Handler) Routes(mux *http.ServeMux) {
 }
 
 type credentials struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email      string `json:"email"`
+	Password   string `json:"password"`
+	AdminToken string `json:"admin_token,omitempty"`
 }
 
 type userResponse struct {
@@ -82,6 +84,9 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) error {
 	if len(in.Password) < minPasswordLen || len(in.Password) > maxPasswordLen {
 		return httpx.Errorf(http.StatusBadRequest, "password must be 8–256 characters")
 	}
+	if err := h.requireAdminSignupToken(email, in.AdminToken); err != nil {
+		return err
+	}
 	hash, err := HashPassword(in.Password)
 	if err != nil {
 		return err
@@ -96,6 +101,11 @@ func (h *Handler) register(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	userID, _ := res.LastInsertId()
+	if h.cfg.IsAdminEmail(email) {
+		if err := grantConfiguredAdmin(r.Context(), h.db, userID, email); err != nil {
+			return err
+		}
+	}
 	return h.startSession(w, r, userID, email)
 }
 
@@ -106,6 +116,9 @@ func (h *Handler) login(w http.ResponseWriter, r *http.Request) error {
 	}
 	email, err := normalizeEmail(in.Email)
 	if err != nil {
+		return httpx.Errorf(http.StatusUnauthorized, "invalid email or password")
+	}
+	if len(in.Password) > maxPasswordLen {
 		return httpx.Errorf(http.StatusUnauthorized, "invalid email or password")
 	}
 	var userID int64
@@ -171,6 +184,19 @@ func (h *Handler) startSession(w http.ResponseWriter, r *http.Request, userID in
 	}
 	h.setSessionCookie(w, token, exp)
 	httpx.WriteJSON(w, http.StatusOK, userResponse{ID: userID, Email: email, IsAdmin: isAdmin})
+	return nil
+}
+
+func (h *Handler) requireAdminSignupToken(email, token string) error {
+	if !h.cfg.IsAdminEmail(email) {
+		return nil
+	}
+	if h.cfg.AdminSignupToken == "" {
+		return httpx.Errorf(http.StatusBadRequest, "admin signup token is not configured")
+	}
+	if subtle.ConstantTimeCompare([]byte(token), []byte(h.cfg.AdminSignupToken)) != 1 {
+		return httpx.Errorf(http.StatusUnauthorized, "invalid admin signup token")
+	}
 	return nil
 }
 

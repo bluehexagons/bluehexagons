@@ -176,7 +176,8 @@ export function apiURL(path: string): string {
 }
 
 export const api = {
-  register: (email: string, password: string) => request<User>('POST', '/api/register', { email, password }),
+  register: (email: string, password: string, adminToken = '') =>
+    request<User>('POST', '/api/register', { email, password, ...(adminToken ? { admin_token: adminToken } : {}) }),
   login: (email: string, password: string) => request<User>('POST', '/api/login', { email, password }),
   logout: () => request<{ status: string }>('POST', '/api/logout'),
   me: () => request<User>('GET', '/api/me'),

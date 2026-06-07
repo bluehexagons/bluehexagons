@@ -42,6 +42,7 @@ const state: State = {
 
 let authEmail = '';
 let authPassword = '';
+let authAdminToken = '';
 let form = emptyForm();
 let keyText = '';
 let assetSource: 'file' | 'link' = 'file';
@@ -136,10 +137,15 @@ async function submitAuth(kind: 'login' | 'register'): Promise<void> {
     setState({ error: 'Enter an email and password.' });
     return;
   }
+  if (kind === 'register' && authPassword.length < 8) {
+    setState({ error: 'Password must be at least 8 characters.' });
+    return;
+  }
   setState({ authBusy: true, error: '', notice: '' });
   try {
-    const user = kind === 'login' ? await api.login(email, authPassword) : await api.register(email, authPassword);
+    const user = kind === 'login' ? await api.login(email, authPassword) : await api.register(email, authPassword, authAdminToken.trim());
     authPassword = '';
+    authAdminToken = '';
     state.user = user;
     state.authBusy = false;
     await loadProducts();
@@ -157,6 +163,7 @@ async function logout(): Promise<void> {
     /* local state reset is enough */
   }
   authPassword = '';
+  authAdminToken = '';
   form = emptyForm();
   setState({ user: null, selected: null, products: [], authBusy: false, error: '', notice: '' });
 }
@@ -287,7 +294,7 @@ function authPanel(): Node {
     <div class="shop__auth">
       <div>
         <strong>Admin account required</strong>
-        <div class="shop__muted">Sign in or create the configured primary admin account.</div>
+        <div class="shop__muted">Creating a configured admin account requires the setup token from the server env.</div>
       </div>
       <form
         class="shop__form"
@@ -317,6 +324,19 @@ function authPanel(): Node {
             disabled={state.authBusy}
             onInput={(event: Event) => {
               authPassword = (event.currentTarget as HTMLInputElement).value;
+            }}
+          />
+        </label>
+        <label class="shop__field-wide">
+          <span>Admin setup token</span>
+          <input
+            type="password"
+            autocomplete="off"
+            placeholder="Only needed when creating the configured admin account"
+            value={authAdminToken}
+            disabled={state.authBusy}
+            onInput={(event: Event) => {
+              authAdminToken = (event.currentTarget as HTMLInputElement).value;
             }}
           />
         </label>
@@ -476,7 +496,7 @@ function assetList(title: string, assets: ProductAsset[]): Node {
           return (
             <li>
               {asset.role === 'preview' && asset.content_type.startsWith('image/') ? (
-                <img class="shop__asset-thumb" src={apiURL(asset.url)} alt="" loading="lazy" />
+                <img class="shop__asset-thumb" src={apiURL(asset.url)} alt={`${asset.filename} preview`} loading="lazy" decoding="async" />
               ) : (
                 <span class="shop__asset-thumb shop__asset-thumb--empty">{asset.source_url ? 'link' : asset.role}</span>
               )}
@@ -487,12 +507,12 @@ function assetList(title: string, assets: ProductAsset[]): Node {
                 </small>
               </span>
               {asset.role === 'preview' ? (
-                <a class="shop__button shop__button--ghost" href={apiURL(asset.url)} target="_blank" rel="noreferrer">
+                <a class="shop__button shop__button--ghost" href={apiURL(asset.url)} target="_blank" rel="noopener noreferrer">
                   Open
                 </a>
               ) : null}
               {asset.source_url ? (
-                <a class="shop__button shop__button--ghost" href={asset.source_url} target="_blank" rel="noreferrer">
+                <a class="shop__button shop__button--ghost" href={asset.source_url} target="_blank" rel="noopener noreferrer">
                   Source
                 </a>
               ) : null}
