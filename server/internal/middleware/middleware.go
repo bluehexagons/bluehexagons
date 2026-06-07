@@ -6,6 +6,7 @@ package middleware
 import (
 	"log/slog"
 	"net/http"
+	"net/url"
 	"runtime/debug"
 	"strings"
 
@@ -41,8 +42,8 @@ func CORS(allowedOrigin string) func(http.Handler) http.Handler {
 	}
 }
 
-// OriginCheck is defense-in-depth against CSRF: for state-changing methods it
-// rejects requests whose Origin header is present but not the allowed origin.
+// OriginCheck is defense-in-depth against CSRF: for state-changing browser
+// requests it requires either a matching Origin or same-origin Referer.
 // SameSite=Lax cookies already block cross-site sends; this is a second layer.
 // Webhook paths are exempt — they are server-to-server, signature-authenticated,
 // and carry no Origin header.
@@ -50,14 +51,32 @@ func OriginCheck(allowedOrigin string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if isStateChanging(r.Method) && !strings.HasPrefix(r.URL.Path, "/api/webhooks/") {
-				if origin := r.Header.Get("Origin"); origin != "" && origin != allowedOrigin {
+				origin := r.Header.Get("Origin")
+				if origin == allowedOrigin || (origin == "" && sameOriginReferer(r.Header.Get("Referer"), allowedOrigin)) {
+					next.ServeHTTP(w, r)
+					return
+				}
+				if origin != "" || r.Header.Get("Referer") != "" {
 					httpx.WriteError(w, httpx.Errorf(http.StatusForbidden, "cross-origin request rejected"))
 					return
 				}
+				httpx.WriteError(w, httpx.Errorf(http.StatusForbidden, "same-origin request required"))
+				return
 			}
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+func sameOriginReferer(referer, allowedOrigin string) bool {
+	if referer == "" || allowedOrigin == "" {
+		return false
+	}
+	u, err := url.Parse(referer)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		return false
+	}
+	return u.Scheme+"://"+u.Host == allowedOrigin
 }
 
 // Recover converts panics into 500s and logs the stack, so a single bad request

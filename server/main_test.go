@@ -68,6 +68,9 @@ func TestShopFlow(t *testing.T) {
 		if err != nil {
 			t.Fatalf("request: %v", err)
 		}
+		if method == http.MethodPost {
+			req.Header.Set("Origin", cfg.FrontendOrigin)
+		}
 		if body != "" {
 			req.Header.Set("Content-Type", "application/json")
 		}
@@ -91,6 +94,9 @@ func TestShopFlow(t *testing.T) {
 	// --- checkout: unknown product is rejected ---
 	if resp, _ := do(http.MethodPost, "/api/checkout", `{"items":[{"product_id":999,"quantity":1}]}`); resp.StatusCode != 400 {
 		t.Fatalf("checkout unknown product: want 400, got %d", resp.StatusCode)
+	}
+	if resp, _ := do(http.MethodPost, "/api/checkout", `{"items":[{"product_id":1,"quantity":1},{"product_id":1,"quantity":1}]}`); resp.StatusCode != 400 {
+		t.Fatalf("checkout duplicate product: want 400, got %d", resp.StatusCode)
 	}
 
 	// --- checkout: valid, quantity 2 ---
@@ -122,11 +128,13 @@ func TestShopFlow(t *testing.T) {
 	}
 
 	// --- webhook fulfillment + idempotency ---
-	event := fmt.Sprintf(`{"id":"evt_1","type":"checkout.session.completed","data":{"object":`+
-		`{"id":"cs_test_123","client_reference_id":"%d","payment_status":"paid","amount_total":%d,"currency":"usd"}}}`,
-		co.OrderID, priceCents*2)
+	eventPayload := func(eventID string, orderID int64, sessionID string, amount int, currency string) string {
+		return fmt.Sprintf(`{"id":"%s","type":"checkout.session.completed","data":{"object":`+
+			`{"id":"%s","client_reference_id":"%d","payment_status":"paid","amount_total":%d,"currency":"%s"}}}`,
+			eventID, sessionID, orderID, amount, currency)
+	}
 
-	postWebhook := func() int {
+	postWebhook := func(event string) int {
 		req, _ := http.NewRequest(http.MethodPost, srv.URL+"/api/webhooks/stripe", bytes.NewBufferString(event))
 		req.Header.Set("Stripe-Signature", signStripe(cfg.StripeWebhookSecret, time.Now(), []byte(event)))
 		resp, err := client.Do(req)
@@ -137,14 +145,27 @@ func TestShopFlow(t *testing.T) {
 		return resp.StatusCode
 	}
 
-	if code := postWebhook(); code != 200 {
+	badSession := eventPayload("evt_bad_session", co.OrderID, "cs_test_other", priceCents*2, "usd")
+	if code := postWebhook(badSession); code != 500 {
+		t.Fatalf("webhook wrong session: want 500, got %d", code)
+	}
+	badAmount := eventPayload("evt_bad_amount", co.OrderID, "cs_test_123", priceCents, "usd")
+	if code := postWebhook(badAmount); code != 500 {
+		t.Fatalf("webhook wrong amount: want 500, got %d", code)
+	}
+	if got := orderStatus(t, database, co.OrderID); got != "pending" {
+		t.Fatalf("order status after bad webhook = %q, want pending", got)
+	}
+
+	event := eventPayload("evt_1", co.OrderID, "cs_test_123", priceCents*2, "usd")
+	if code := postWebhook(event); code != 200 {
 		t.Fatalf("webhook: status %d", code)
 	}
 	if got := orderStatus(t, database, co.OrderID); got != "paid" {
 		t.Fatalf("order status after webhook = %q, want paid", got)
 	}
 	// Redelivery of the same event must not reprocess.
-	if code := postWebhook(); code != 200 {
+	if code := postWebhook(event); code != 200 {
 		t.Fatalf("webhook redelivery: status %d", code)
 	}
 	var events int

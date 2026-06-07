@@ -3,6 +3,7 @@ package middleware
 import (
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -86,12 +87,37 @@ func (rl *RateLimiter) Limit(next http.Handler) http.Handler {
 	})
 }
 
-// clientIP returns the remote IP without the port. Behind a reverse proxy you
-// may want to derive this from a trusted X-Forwarded-For instead.
+// clientIP returns the remote IP without the port. When the direct peer is
+// loopback, trust the proxy headers emitted by the local TLS/reverse proxy.
 func clientIP(r *http.Request) string {
 	host, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
-		return r.RemoteAddr
+		host = r.RemoteAddr
+	}
+	if ip := net.ParseIP(host); ip != nil && ip.IsLoopback() {
+		if forwarded := firstForwardedIP(r.Header.Get("X-Forwarded-For")); forwarded != "" {
+			return forwarded
+		}
+		if real := parseIP(r.Header.Get("X-Real-IP")); real != "" {
+			return real
+		}
 	}
 	return host
+}
+
+func firstForwardedIP(header string) string {
+	for _, part := range strings.Split(header, ",") {
+		if ip := parseIP(part); ip != "" {
+			return ip
+		}
+	}
+	return ""
+}
+
+func parseIP(raw string) string {
+	ip := net.ParseIP(strings.TrimSpace(raw))
+	if ip == nil {
+		return ""
+	}
+	return ip.String()
 }

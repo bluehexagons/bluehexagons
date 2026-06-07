@@ -12,6 +12,7 @@ import (
 
 	"bluehexagons.com/server/internal/config"
 	"bluehexagons.com/server/internal/httpx"
+	"bluehexagons.com/server/internal/middleware"
 	"bluehexagons.com/server/internal/payment"
 )
 
@@ -33,10 +34,16 @@ type Handler struct {
 	log         *slog.Logger
 	pay         CheckoutGateway
 	requireUser Middleware
+	limiter     *middleware.RateLimiter
 }
 
 func NewHandler(database *sql.DB, cfg config.Config, log *slog.Logger, pay CheckoutGateway, requireUser Middleware) *Handler {
-	return &Handler{db: database, cfg: cfg, log: log, pay: pay, requireUser: requireUser}
+	return &Handler{
+		db: database, cfg: cfg, log: log, pay: pay, requireUser: requireUser,
+		// Avoid accidental double-submits or checkout spam while still allowing a
+		// small burst for retries.
+		limiter: middleware.NewRateLimiter(0.1, 5),
+	}
 }
 
 // Routes registers the store endpoints. /api/checkout requires a session;
@@ -44,7 +51,7 @@ func NewHandler(database *sql.DB, cfg config.Config, log *slog.Logger, pay Check
 func (h *Handler) Routes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/products", httpx.Logged(h.log, h.listProducts))
 	mux.HandleFunc("GET /api/products/{id}", httpx.Logged(h.log, h.getProduct))
-	mux.Handle("POST /api/checkout", h.requireUser(httpx.Logged(h.log, h.checkout)))
+	mux.Handle("POST /api/checkout", h.limiter.Limit(h.requireUser(httpx.Logged(h.log, h.checkout))))
 	mux.HandleFunc("POST /api/webhooks/stripe", httpx.Logged(h.log, h.webhook))
 }
 

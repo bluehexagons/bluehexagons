@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"bluehexagons.com/server/internal/auth"
@@ -55,6 +56,13 @@ func (h *Handler) checkout(w http.ResponseWriter, r *http.Request) error {
 			return httpx.Errorf(http.StatusBadRequest, "invalid quantity")
 		}
 	}
+	seen := make(map[int64]struct{}, len(req.Items))
+	for _, it := range req.Items {
+		if _, ok := seen[it.ProductID]; ok {
+			return httpx.Errorf(http.StatusBadRequest, "cart contains duplicate products")
+		}
+		seen[it.ProductID] = struct{}{}
+	}
 
 	orderID, lines, err := h.createOrder(r.Context(), uid, req.Items)
 	if err != nil {
@@ -77,10 +85,15 @@ func (h *Handler) checkout(w http.ResponseWriter, r *http.Request) error {
 		return httpx.Errorf(http.StatusBadGateway, "could not start checkout")
 	}
 
-	if _, err := h.db.ExecContext(r.Context(),
-		`UPDATE orders SET stripe_session_id = ? WHERE id = ?`, sess.ID, orderID); err != nil {
-		// Non-fatal: the webhook resolves the order by client_reference_id too.
+	res, err := h.db.ExecContext(r.Context(),
+		`UPDATE orders SET stripe_session_id = ? WHERE id = ?`, sess.ID, orderID)
+	if err != nil {
 		h.log.Error("record stripe session", "order", orderID, "err", err)
+		return httpx.Errorf(http.StatusBadGateway, "could not start checkout")
+	}
+	if n, _ := res.RowsAffected(); n != 1 {
+		h.log.Error("record stripe session", "order", orderID, "rows", n)
+		return httpx.Errorf(http.StatusBadGateway, "could not start checkout")
 	}
 
 	httpx.WriteJSON(w, http.StatusOK, map[string]any{
@@ -189,14 +202,39 @@ func (h *Handler) fulfill(ctx context.Context, eventID string, obj payment.Check
 		return err
 	}
 
+	var status, currency, stripeSessionID string
+	var totalCents int64
+	err = tx.QueryRowContext(ctx,
+		`SELECT status, total_cents, currency, COALESCE(stripe_session_id, '') FROM orders WHERE id = ?`,
+		orderID).Scan(&status, &totalCents, &currency, &stripeSessionID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return fmt.Errorf("order %d not found for fulfillment", orderID)
+	}
+	if err != nil {
+		return err
+	}
+	if stripeSessionID == "" || obj.ID != stripeSessionID {
+		return fmt.Errorf("stripe session mismatch for order %d", orderID)
+	}
+	if obj.AmountTotal != totalCents {
+		return fmt.Errorf("stripe amount mismatch for order %d", orderID)
+	}
+	if !strings.EqualFold(obj.Currency, currency) {
+		return fmt.Errorf("stripe currency mismatch for order %d", orderID)
+	}
+	if status != "pending" {
+		// Order missing or not pending (already paid/cancelled). Record the
+		// event anyway so we don't reprocess; just note it.
+		h.log.Warn("order not updated on fulfillment", "order", orderID, "session", obj.ID, "status", status)
+		return tx.Commit()
+	}
+
 	res, err := tx.ExecContext(ctx,
 		`UPDATE orders SET status = 'paid' WHERE id = ? AND status = 'pending'`, orderID)
 	if err != nil {
 		return err
 	}
 	if n, _ := res.RowsAffected(); n == 0 {
-		// Order missing or not pending (already paid/cancelled). Record the
-		// event anyway so we don't reprocess; just note it.
 		h.log.Warn("order not updated on fulfillment", "order", orderID, "session", obj.ID)
 	}
 
