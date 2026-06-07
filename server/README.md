@@ -42,14 +42,25 @@ deploy/                 build script, systemd unit, Caddyfile, .env.example
 | GET    | `/api/me`               | session         | Current user                         |
 | GET    | `/api/products`         | none            | List active products                 |
 | GET    | `/api/products/{id}`    | none            | One product                          |
+| GET    | `/api/assets/{id}/preview` | none         | Public listing preview asset         |
+| GET    | `/api/assets/{id}/download` | session + purchase | Download unlocked asset       |
+| GET    | `/api/orders/{id}/deliverables` | session + owner | Post-purchase text/files/keys |
+| POST   | `/api/order-items/{id}/claim-key` | session + owner | Claim one deferred key        |
 | POST   | `/api/checkout`         | session         | Create order + Stripe Checkout URL   |
 | POST   | `/api/webhooks/stripe`  | Stripe signature| Fulfill paid orders (idempotent)     |
+| `*`    | `/api/admin/*`          | admin session   | Manage listings, uploads, and keys   |
+
+Admin sessions use the normal account cookie, but the account email must be in
+`SHOP_ADMIN_EMAILS` (comma-separated). Uploaded shop assets are stored under
+`SHOP_UPLOAD_DIR`; preview assets are public, while download assets require a
+paid/fulfilled order containing that product.
 
 ## Run locally
 
 ```bash
 go run .                                   # serves on 127.0.0.1:8080
 SEED_DEMO=1 COOKIE_SECURE=false go run .    # with example products, http cookies
+SHOP_ADMIN_EMAILS=you@example.com COOKIE_SECURE=false go run . # enables /shop/admin.html locally
 go test ./...                               # unit/handler tests
 ```
 

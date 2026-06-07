@@ -1,7 +1,7 @@
 import '../bootstrap';
 import './shop.css';
 import { render } from '../render';
-import { api, ApiError, type Product, type User } from './api';
+import { api, apiURL, ApiError, type Product, type User } from './api';
 
 // A small, dependency-free shop UI: it loads the catalog and current user,
 // keeps a client-side cart, and hands off to Stripe's hosted Checkout. There is
@@ -243,12 +243,16 @@ function authPanel(): Node {
 
 function productCard(p: Product): Node {
   const quantity = state.cart.get(p.id) ?? 0;
+  const preview = p.previews.find((asset) => asset.content_type.startsWith('image/'));
+  const title = p.title || p.name;
   return (
     <article class="shop__product">
+      {preview ? <img class="shop__product-preview" src={apiURL(preview.url)} alt="" loading="lazy" /> : null}
       <div class="shop__product-head">
-        <strong>{p.name}</strong>
+        <strong>{title}</strong>
         <span>{p.sku}</span>
       </div>
+      <div class="shop__product-kind">{p.kind === 'physical' ? 'Physical item' : 'Digital delivery'}</div>
       <div class="shop__muted">{p.description || 'Digital delivery after checkout.'}</div>
       <div class="shop__price">{money(p.price_cents, p.currency)}</div>
       <button class="shop__button" onClick={() => addToCart(p.id)} disabled={quantity >= MAX_CART_QUANTITY}>
@@ -284,14 +288,14 @@ function cartView(): Node {
             return (
               <li class="shop__cart-row">
                 <span>
-                  {product.name} <span class="shop__muted">x {quantity}</span>
+                  {product.title || product.name} <span class="shop__muted">x {quantity}</span>
                 </span>
                 <span class="shop__cart-price">
                   {money(product.price_cents * quantity, product.currency)}{' '}
                   <button
                     class="shop__icon-button"
                     onClick={() => removeFromCart(product.id)}
-                    aria-label={`Remove one ${product.name}`}
+                    aria-label={`Remove one ${product.title || product.name}`}
                   >
                     -
                   </button>
