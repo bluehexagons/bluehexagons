@@ -51,8 +51,21 @@ func NewHandler(database *sql.DB, cfg config.Config, log *slog.Logger, pay Check
 func (h *Handler) Routes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/products", httpx.Logged(h.log, h.listProducts))
 	mux.HandleFunc("GET /api/products/{id}", httpx.Logged(h.log, h.getProduct))
+	mux.HandleFunc("GET /api/assets/{id}/preview", httpx.Logged(h.log, h.previewAsset))
+	mux.Handle("GET /api/assets/{id}/download", h.requireUser(httpx.Logged(h.log, h.downloadAsset)))
+	mux.Handle("GET /api/orders/{id}/deliverables", h.requireUser(httpx.Logged(h.log, h.orderDeliverables)))
+	mux.Handle("POST /api/order-items/{id}/claim-key", h.requireUser(httpx.Logged(h.log, h.claimProductKey)))
 	mux.Handle("POST /api/checkout", h.limiter.Limit(h.requireUser(httpx.Logged(h.log, h.checkout))))
 	mux.HandleFunc("POST /api/webhooks/stripe", httpx.Logged(h.log, h.webhook))
+
+	mux.Handle("GET /api/admin/products", h.requireAdmin(httpx.Logged(h.log, h.adminListProducts)))
+	mux.Handle("POST /api/admin/products", h.requireAdmin(httpx.Logged(h.log, h.adminCreateProduct)))
+	mux.Handle("GET /api/admin/products/{id}", h.requireAdmin(httpx.Logged(h.log, h.adminGetProduct)))
+	mux.Handle("PATCH /api/admin/products/{id}", h.requireAdmin(httpx.Logged(h.log, h.adminUpdateProduct)))
+	mux.Handle("POST /api/admin/products/{id}/assets", h.requireAdmin(httpx.Logged(h.log, h.adminUploadAsset)))
+	mux.Handle("DELETE /api/admin/assets/{id}", h.requireAdmin(httpx.Logged(h.log, h.adminDeleteAsset)))
+	mux.Handle("POST /api/admin/products/{id}/keys", h.requireAdmin(httpx.Logged(h.log, h.adminAddKeys)))
+	mux.Handle("DELETE /api/admin/keys/{id}", h.requireAdmin(httpx.Logged(h.log, h.adminDeleteKey)))
 }
 
 // SeedDemo inserts example products if the catalog is empty. Intended for local

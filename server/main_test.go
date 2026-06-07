@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"mime/multipart"
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
@@ -182,6 +183,240 @@ func TestShopFlow(t *testing.T) {
 	}
 	if resp, _ := do(http.MethodGet, "/api/me", ""); resp.StatusCode != 401 {
 		t.Fatalf("me after logout: want 401, got %d", resp.StatusCode)
+	}
+}
+
+func TestAdminDigitalDeliveryFlow(t *testing.T) {
+	database, err := db.Open(filepath.Join(t.TempDir(), "test.db"))
+	if err != nil {
+		t.Fatalf("open db: %v", err)
+	}
+	defer database.Close()
+
+	cfg := config.Config{
+		FrontendOrigin:      "http://front.test",
+		StripeSecretKey:     "sk_test",
+		StripeWebhookSecret: "whsec_test",
+		AdminEmails:         map[string]struct{}{"admin@example.com": {}},
+		UploadDir:           filepath.Join(t.TempDir(), "uploads"),
+		CookieSecure:        false,
+	}
+	gw := &fakeGateway{}
+	srv := httptest.NewServer(newRouter(database, cfg, slog.New(slog.NewTextHandler(io.Discard, nil)), gw))
+	defer srv.Close()
+
+	newClient := func() *http.Client {
+		jar, _ := cookiejar.New(nil)
+		return &http.Client{Jar: jar}
+	}
+	adminClient := newClient()
+	buyerClient := newClient()
+
+	do := func(client *http.Client, method, path, contentType string, body io.Reader) (*http.Response, []byte) {
+		t.Helper()
+		req, err := http.NewRequest(method, srv.URL+path, body)
+		if err != nil {
+			t.Fatalf("request: %v", err)
+		}
+		if method == http.MethodPost || method == http.MethodPatch || method == http.MethodDelete {
+			req.Header.Set("Origin", cfg.FrontendOrigin)
+		}
+		if contentType != "" {
+			req.Header.Set("Content-Type", contentType)
+		}
+		resp, err := client.Do(req)
+		if err != nil {
+			t.Fatalf("do %s %s: %v", method, path, err)
+		}
+		data, _ := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		return resp, data
+	}
+	jsonDo := func(client *http.Client, method, path, body string) (*http.Response, []byte) {
+		t.Helper()
+		return do(client, method, path, "application/json", bytes.NewBufferString(body))
+	}
+
+	if resp, body := jsonDo(adminClient, http.MethodPost, "/api/register", `{"email":"admin@example.com","password":"hunter2pass"}`); resp.StatusCode != 200 {
+		t.Fatalf("admin register: status %d body %s", resp.StatusCode, body)
+	}
+
+	var product struct {
+		ID               int64  `json:"id"`
+		Title            string `json:"title"`
+		PostPurchaseText string `json:"post_purchase_text"`
+		KeyStats         struct {
+			Total     int64 `json:"total"`
+			Remaining int64 `json:"remaining"`
+			Claimed   int64 `json:"claimed"`
+		} `json:"key_stats"`
+		Previews []struct {
+			ID  int64  `json:"id"`
+			URL string `json:"url"`
+		} `json:"previews"`
+		Downloads []struct {
+			ID  int64  `json:"id"`
+			URL string `json:"url"`
+		} `json:"downloads"`
+		Keys []struct {
+			ID                 int64  `json:"id"`
+			KeyText            string `json:"key_text"`
+			ClaimedOrderItemID *int64 `json:"claimed_order_item_id"`
+			ClaimedUserEmail   string `json:"claimed_user_email"`
+		} `json:"keys"`
+	}
+	resp, body := jsonDo(adminClient, http.MethodPost, "/api/admin/products", `{
+		"sku":"antistatic-steam",
+		"title":"Antistatic Steam Key",
+		"description":"A Steam key for Antistatic.",
+		"price_cents":1999,
+		"currency":"usd",
+		"kind":"digital",
+		"post_purchase_text":"Thanks for supporting Antistatic. Claim the key when you are ready.",
+		"active":true
+	}`)
+	if resp.StatusCode != http.StatusCreated {
+		t.Fatalf("create product: status %d body %s", resp.StatusCode, body)
+	}
+	if err := json.Unmarshal(body, &product); err != nil {
+		t.Fatalf("decode product: %v", err)
+	}
+	if product.ID == 0 || product.Title != "Antistatic Steam Key" || product.PostPurchaseText == "" {
+		t.Fatalf("bad product response: %s", body)
+	}
+
+	upload := func(role, filename, contents string) []byte {
+		t.Helper()
+		var buf bytes.Buffer
+		mw := multipart.NewWriter(&buf)
+		if err := mw.WriteField("role", role); err != nil {
+			t.Fatalf("write role: %v", err)
+		}
+		part, err := mw.CreateFormFile("file", filename)
+		if err != nil {
+			t.Fatalf("form file: %v", err)
+		}
+		if _, err := part.Write([]byte(contents)); err != nil {
+			t.Fatalf("write file: %v", err)
+		}
+		if err := mw.Close(); err != nil {
+			t.Fatalf("close multipart: %v", err)
+		}
+		resp, body := do(adminClient, http.MethodPost, fmt.Sprintf("/api/admin/products/%d/assets", product.ID), mw.FormDataContentType(), &buf)
+		if resp.StatusCode != http.StatusCreated {
+			t.Fatalf("upload %s: status %d body %s", role, resp.StatusCode, body)
+		}
+		return body
+	}
+	upload("preview", "cover.png", "not really a png")
+	upload("download", "bonus.txt", "download payload")
+
+	resp, body = jsonDo(adminClient, http.MethodPost, fmt.Sprintf("/api/admin/products/%d/keys", product.ID), `{"text":"KEY-ONE\nKEY-TWO"}`)
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("add keys: status %d body %s", resp.StatusCode, body)
+	}
+	if err := json.Unmarshal(body, &product); err != nil {
+		t.Fatalf("decode keys product: %v", err)
+	}
+	if product.KeyStats.Total != 2 || product.KeyStats.Remaining != 2 || len(product.Keys) != 2 {
+		t.Fatalf("key stats after add = %+v len %d body %s", product.KeyStats, len(product.Keys), body)
+	}
+
+	if resp, body := jsonDo(buyerClient, http.MethodPost, "/api/register", `{"email":"buyer@example.com","password":"hunter2pass"}`); resp.StatusCode != 200 {
+		t.Fatalf("buyer register: status %d body %s", resp.StatusCode, body)
+	}
+	if resp, _ := do(buyerClient, http.MethodGet, "/api/admin/products", "", nil); resp.StatusCode != http.StatusForbidden {
+		t.Fatalf("buyer admin list: want 403, got %d", resp.StatusCode)
+	}
+
+	resp, body = jsonDo(buyerClient, http.MethodPost, "/api/checkout", fmt.Sprintf(`{"items":[{"product_id":%d,"quantity":1}]}`, product.ID))
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("checkout: status %d body %s", resp.StatusCode, body)
+	}
+	var co struct {
+		OrderID int64 `json:"order_id"`
+	}
+	if err := json.Unmarshal(body, &co); err != nil {
+		t.Fatalf("decode checkout: %v", err)
+	}
+
+	event := fmt.Sprintf(`{"id":"evt_delivery","type":"checkout.session.completed","data":{"object":`+
+		`{"id":"cs_test_123","client_reference_id":"%d","payment_status":"paid","amount_total":1999,"currency":"usd"}}}`,
+		co.OrderID)
+	req, _ := http.NewRequest(http.MethodPost, srv.URL+"/api/webhooks/stripe", bytes.NewBufferString(event))
+	req.Header.Set("Stripe-Signature", signStripe(cfg.StripeWebhookSecret, time.Now(), []byte(event)))
+	webhookResp, err := buyerClient.Do(req)
+	if err != nil {
+		t.Fatalf("webhook: %v", err)
+	}
+	webhookResp.Body.Close()
+	if webhookResp.StatusCode != http.StatusOK {
+		t.Fatalf("webhook status = %d", webhookResp.StatusCode)
+	}
+
+	resp, body = do(buyerClient, http.MethodGet, fmt.Sprintf("/api/orders/%d/deliverables", co.OrderID), "", nil)
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("deliverables: status %d body %s", resp.StatusCode, body)
+	}
+	var delivery struct {
+		Status string `json:"status"`
+		Items  []struct {
+			OrderItemID      int64  `json:"order_item_id"`
+			PostPurchaseText string `json:"post_purchase_text"`
+			Downloads        []struct {
+				URL string `json:"url"`
+			} `json:"downloads"`
+			Keys struct {
+				Total     int64 `json:"total"`
+				Remaining int64 `json:"remaining"`
+				Claimable int64 `json:"claimable"`
+			} `json:"keys"`
+		} `json:"items"`
+	}
+	if err := json.Unmarshal(body, &delivery); err != nil {
+		t.Fatalf("decode deliverables: %v", err)
+	}
+	if delivery.Status != "paid" || len(delivery.Items) != 1 || delivery.Items[0].PostPurchaseText == "" {
+		t.Fatalf("bad deliverables: %s", body)
+	}
+	if len(delivery.Items[0].Downloads) != 1 || delivery.Items[0].Keys.Total != 2 || delivery.Items[0].Keys.Claimable != 1 {
+		t.Fatalf("bad delivery assets/keys: %s", body)
+	}
+
+	resp, body = do(buyerClient, http.MethodGet, delivery.Items[0].Downloads[0].URL, "", nil)
+	if resp.StatusCode != http.StatusOK || string(body) != "download payload" {
+		t.Fatalf("download: status %d body %q", resp.StatusCode, body)
+	}
+
+	resp, body = do(buyerClient, http.MethodPost, fmt.Sprintf("/api/order-items/%d/claim-key", delivery.Items[0].OrderItemID), "", nil)
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("claim key: status %d body %s", resp.StatusCode, body)
+	}
+	var claim struct {
+		KeyText string `json:"key_text"`
+	}
+	if err := json.Unmarshal(body, &claim); err != nil {
+		t.Fatalf("decode claim: %v", err)
+	}
+	if claim.KeyText != "KEY-ONE" {
+		t.Fatalf("claimed key = %q, want KEY-ONE", claim.KeyText)
+	}
+	if resp, _ := do(buyerClient, http.MethodPost, fmt.Sprintf("/api/order-items/%d/claim-key", delivery.Items[0].OrderItemID), "", nil); resp.StatusCode != http.StatusConflict {
+		t.Fatalf("second claim: want 409, got %d", resp.StatusCode)
+	}
+
+	resp, body = do(adminClient, http.MethodGet, fmt.Sprintf("/api/admin/products/%d", product.ID), "", nil)
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("admin get after claim: status %d body %s", resp.StatusCode, body)
+	}
+	if err := json.Unmarshal(body, &product); err != nil {
+		t.Fatalf("decode product after claim: %v", err)
+	}
+	if product.KeyStats.Claimed != 1 || product.KeyStats.Remaining != 1 {
+		t.Fatalf("key stats after claim = %+v", product.KeyStats)
+	}
+	if product.Keys[1].ClaimedOrderItemID == nil || product.Keys[1].ClaimedUserEmail != "buyer@example.com" {
+		t.Fatalf("admin key redemption missing: %+v", product.Keys)
 	}
 }
 
