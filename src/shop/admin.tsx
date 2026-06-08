@@ -5,6 +5,7 @@ import {
   api,
   apiURL,
   ApiError,
+  apiErrorMessage,
   type AdminProduct,
   type AdminProductInput,
   type ProductAsset,
@@ -63,7 +64,7 @@ let assetLinkURL = '';
 const errMessage = (err: unknown): string => {
   if (err instanceof ApiError && err.status === 403) return 'This account does not have shop admin rights.';
   if (err instanceof ApiError && err.status === 401) return 'Sign in with an admin account.';
-  return err instanceof Error ? err.message : 'Something went wrong';
+  return apiErrorMessage(err);
 };
 
 const money = (cents: number, currency: string) => {

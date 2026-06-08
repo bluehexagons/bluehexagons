@@ -126,6 +126,11 @@ export class ApiError extends Error {
   }
 }
 
+export function apiErrorMessage(err: unknown): string {
+  if (err instanceof TypeError) return 'Could not reach the shop API. Check your connection and try again.';
+  return err instanceof Error ? err.message : 'Something went wrong';
+}
+
 function defaultApiBase(): string {
   const { hostname, protocol } = window.location;
   if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') {

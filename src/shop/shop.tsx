@@ -1,7 +1,7 @@
 import '../bootstrap';
 import './shop.css';
 import { render } from '../render';
-import { api, apiURL, ApiError, type Product, type User } from './api';
+import { api, apiURL, ApiError, apiErrorMessage, type Product, type User } from './api';
 
 // A small, dependency-free shop UI: it loads the catalog and current user,
 // keeps a client-side cart, and hands off to Stripe's hosted Checkout. There is
@@ -11,6 +11,7 @@ const app = document.getElementById('app');
 if (!app) throw new Error('Missing #app container');
 
 const MAX_CART_QUANTITY = 100;
+const CART_STORAGE_KEY = 'bluehexagons.shop.cart.v1';
 const STRIPE_CHECKOUT_HOST = 'checkout.stripe.com';
 
 interface State {
@@ -46,11 +47,45 @@ const money = (cents: number, currency: string) => {
   }
 };
 
-const errMessage = (err: unknown): string => (err instanceof Error ? err.message : 'Something went wrong');
+const errMessage = (err: unknown): string => apiErrorMessage(err);
 const cartItemCount = (): number => [...state.cart.values()].reduce((sum, quantity) => sum + quantity, 0);
+
+function readStoredCart(products: Product[]): Map<number, number> {
+  const available = new Set(products.map((product) => product.id));
+  const cart = new Map<number, number>();
+  try {
+    const raw = window.localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return cart;
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return cart;
+    for (const entry of parsed) {
+      if (!Array.isArray(entry) || entry.length !== 2) continue;
+      const [rawID, rawQuantity] = entry;
+      const id = Number(rawID);
+      const quantity = Math.min(MAX_CART_QUANTITY, Math.trunc(Number(rawQuantity)));
+      if (Number.isInteger(id) && id > 0 && quantity > 0 && available.has(id)) cart.set(id, quantity);
+    }
+  } catch {
+    return new Map();
+  }
+  return cart;
+}
+
+function writeStoredCart(cart: Map<number, number>): void {
+  try {
+    if (cart.size === 0) {
+      window.localStorage.removeItem(CART_STORAGE_KEY);
+      return;
+    }
+    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify([...cart.entries()]));
+  } catch {
+    /* ignore storage failures; the in-memory cart still works */
+  }
+}
 
 function setState(patch: Partial<State>): void {
   Object.assign(state, patch);
+  if (patch.cart) writeStoredCart(patch.cart);
   renderAll();
 }
 
@@ -62,6 +97,8 @@ async function init(): Promise<void> {
   }
   try {
     state.products = await api.products();
+    state.cart = readStoredCart(state.products);
+    writeStoredCart(state.cart);
   } catch (err) {
     state.cartError = errMessage(err);
   }
