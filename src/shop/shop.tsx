@@ -47,6 +47,7 @@ const money = (cents: number, currency: string) => {
 };
 
 const errMessage = (err: unknown): string => (err instanceof Error ? err.message : 'Something went wrong');
+const cartItemCount = (): number => [...state.cart.values()].reduce((sum, quantity) => sum + quantity, 0);
 
 function setState(patch: Partial<State>): void {
   Object.assign(state, patch);
@@ -123,6 +124,12 @@ function removeFromCart(id: number): void {
   setState({ cart, cartError: '' });
 }
 
+function removeProductFromCart(id: number): void {
+  const cart = new Map(state.cart);
+  cart.delete(id);
+  setState({ cart, cartError: '' });
+}
+
 function checkoutDestination(raw: string): string {
   let url: URL;
   try {
@@ -175,7 +182,7 @@ function authPanel(): Node {
           Signed in as <strong>{state.user.email}</strong>
           {state.user.is_admin ? (
             <div class="shop__muted">
-              <site-link href="/shop/admin.html">Open shop admin</site-link>
+              Need to manage listings? <site-link href="/shop/admin.html">Open shop admin</site-link>
             </div>
           ) : null}
         </div>
@@ -189,7 +196,7 @@ function authPanel(): Node {
     <div class="shop__auth">
       <div>
         <strong>Account required</strong>
-        <div class="shop__muted">Sign in or create an account before checkout.</div>
+        <div class="shop__muted">Sign in or create an account before checkout. Your cart stays here while you do.</div>
       </div>
       <form
         class="shop__form"
@@ -250,6 +257,8 @@ function productCard(p: Product): Node {
   const quantity = state.cart.get(p.id) ?? 0;
   const preview = p.previews.find((asset) => asset.content_type.startsWith('image/'));
   const title = p.title || p.name;
+  const delivery = p.kind === 'physical' ? 'Physical item' : 'Digital delivery';
+  const descriptionFallback = p.kind === 'physical' ? 'Fulfillment details are provided after checkout.' : 'Digital delivery after checkout.';
   return (
     <article class="shop__product">
       {preview ? <img class="shop__product-preview" src={apiURL(preview.url)} alt={`${title} preview`} loading="lazy" decoding="async" /> : null}
@@ -257,8 +266,8 @@ function productCard(p: Product): Node {
         <strong>{title}</strong>
         <span>{p.sku}</span>
       </div>
-      <div class="shop__product-kind">{p.kind === 'physical' ? 'Physical item' : 'Digital delivery'}</div>
-      <div class="shop__muted">{p.description || 'Digital delivery after checkout.'}</div>
+      <div class="shop__product-kind">{delivery}</div>
+      <div class="shop__muted">{p.description || descriptionFallback}</div>
       <div class="shop__price">{money(p.price_cents, p.currency)}</div>
       <button class="shop__button" onClick={() => addToCart(p.id)} disabled={quantity >= MAX_CART_QUANTITY}>
         {quantity > 0 ? `Add another (${quantity} in cart)` : 'Add to cart'}
@@ -279,32 +288,63 @@ function cartView(): Node {
   const hasMixedCurrencies = currencies.size > 1;
   const currency = lines[0]?.product.currency ?? 'usd';
   const total = lines.reduce((sum, { product, quantity }) => sum + product.price_cents * quantity, 0);
+  const itemCount = lines.reduce((sum, { quantity }) => sum + quantity, 0);
   const checkoutDisabled =
     entries.length === 0 || state.checkoutBusy || hasUnavailableItems || hasMixedCurrencies || state.products.length === 0;
+  const checkoutLabel = state.checkoutBusy
+    ? 'Opening Stripe...'
+    : entries.length === 0
+      ? 'Add an item to checkout'
+      : !state.user
+        ? 'Sign in to checkout'
+        : 'Checkout securely';
 
   return (
     <aside class="shop__cart" aria-labelledby="shop-cart-heading">
-      <h2 id="shop-cart-heading">Cart</h2>
+      <div class="shop__cart-head">
+        <h2 id="shop-cart-heading">Cart</h2>
+        {itemCount > 0 ? (
+          <span class="shop__cart-count" aria-live="polite">
+            {itemCount} {itemCount === 1 ? 'item' : 'items'}
+          </span>
+        ) : null}
+      </div>
       {entries.length === 0 ? (
-        <div class="shop__empty">Your cart is empty.</div>
+        <div class="shop__empty shop__empty--cart">Choose something from the catalog and your checkout summary will appear here.</div>
       ) : (
         <ul class="shop__cart-list">
           {lines.map(({ product, quantity }) => {
+            const title = product.title || product.name;
             return (
               <li class="shop__cart-row">
-                <span>
-                  {product.title || product.name} <span class="shop__muted">x {quantity}</span>
-                </span>
-                <span class="shop__cart-price">
-                  {money(product.price_cents * quantity, product.currency)}{' '}
+                <div class="shop__cart-item">
+                  <strong>{title}</strong>
+                  <span class="shop__muted">{money(product.price_cents, product.currency)} each</span>
+                </div>
+                <div class="shop__cart-controls" aria-label={`${title} quantity controls`}>
                   <button
                     class="shop__icon-button"
                     onClick={() => removeFromCart(product.id)}
-                    aria-label={`Remove one ${product.title || product.name}`}
+                    aria-label={`Remove one ${title}`}
                   >
                     -
                   </button>
-                </span>
+                  <span class="shop__cart-quantity" aria-label={`${quantity} in cart`}>
+                    {quantity}
+                  </span>
+                  <button
+                    class="shop__icon-button"
+                    onClick={() => addToCart(product.id)}
+                    disabled={quantity >= MAX_CART_QUANTITY}
+                    aria-label={`Add one ${title}`}
+                  >
+                    +
+                  </button>
+                  <button class="shop__button shop__button--ghost shop__button--compact" onClick={() => removeProductFromCart(product.id)}>
+                    Remove
+                  </button>
+                </div>
+                <span class="shop__cart-price">{money(product.price_cents * quantity, product.currency)}</span>
               </li>
             );
           })}
@@ -320,7 +360,7 @@ function cartView(): Node {
         {state.cartError}
       </div>
       <button class="shop__button shop__checkout" onClick={() => void checkout()} disabled={checkoutDisabled}>
-        {state.checkoutBusy ? 'Opening Stripe...' : 'Checkout securely'}
+        {checkoutLabel}
       </button>
       <p class="shop__security-note">Payments are handled on Stripe-hosted checkout. Card details never touch this site.</p>
     </aside>
@@ -347,11 +387,11 @@ function buildTree(): Node {
                 <div class="shop__section-head">
                   <h2 id="shop-catalog-heading">Catalog</h2>
                   <span>
-                    {state.products.length} {state.products.length === 1 ? 'item' : 'items'}
+                    {state.products.length} {state.products.length === 1 ? 'listing' : 'listings'} · {cartItemCount()} in cart
                   </span>
                 </div>
                 {state.products.length === 0 ? (
-                  <div class="shop__empty">No products are available right now.</div>
+                  <div class="shop__empty">No products are available right now. Check back after the next shop update.</div>
                 ) : (
                   <div class="shop__products">{state.products.map(productCard)}</div>
                 )}
