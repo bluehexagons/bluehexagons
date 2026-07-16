@@ -6,7 +6,6 @@ const findThumbs = /thumbs\//g;
 export class ImageScrollerElement extends BaseElement {
   container: HTMLDivElement | null = null;
   gallery: HTMLDivElement | null = null;
-  imageElements: HTMLImageElement[] = [];
   currentImage: HTMLElement | null = null;
   description: HTMLDivElement | null = null;
   private mutationObserver: MutationObserver | null = null;
@@ -61,8 +60,12 @@ export class ImageScrollerElement extends BaseElement {
     if (!imgElement.hasAttribute('alt')) {
       imgElement.alt = imgElement.title;
     }
-
-    this.imageElements.push(imgElement);
+    if (!imgElement.hasAttribute('loading')) {
+      imgElement.loading = 'lazy';
+    }
+    if (!imgElement.hasAttribute('decoding')) {
+      imgElement.decoding = 'async';
+    }
 
     if (!this.currentImage) {
       this.selectImage(imgElement);
@@ -92,7 +95,6 @@ export class ImageScrollerElement extends BaseElement {
 
   connectedCallback() {
     this.mutationObserver?.disconnect();
-    this.imageElements = [];
     this.currentImage = null;
 
     let container: HTMLDivElement | null = null;

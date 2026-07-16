@@ -8,7 +8,7 @@ export class PageHeader extends BaseElement {
 
   connectedCallback() {
     this.render(
-      <nav class="navbar">
+      <nav class="navbar" aria-label="Primary navigation">
         <span class="nav">
           <a href="/">bluehexagons</a>
           <a href="/antistatic">Antistatic</a>

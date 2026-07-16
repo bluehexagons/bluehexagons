@@ -36,6 +36,8 @@ export class IconElement extends BaseElement {
       >
         <img
           width={16}
+          height={16}
+          alt=""
           ref={(el: Element) => {
             image = el as HTMLImageElement;
           }}
