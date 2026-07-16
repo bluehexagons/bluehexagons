@@ -16,10 +16,11 @@ export class Link extends BaseElement {
       : this.hasAttribute('title')
         ? this.getAttribute('title')
         : null;
+    const accessibleLabel = isExternal && ariaLabel ? `${ariaLabel} (opens in a new tab)` : ariaLabel;
 
     const passthroughAttrs: Record<string, string> = {};
     for (const attr of Array.from(this.attributes)) {
-      if (attr.name === 'href') continue;
+      if (attr.name === 'href' || attr.name === 'aria-label') continue;
       passthroughAttrs[attr.name] = attr.value;
     }
 
@@ -28,10 +29,11 @@ export class Link extends BaseElement {
         href={href}
         target={isExternal ? '_blank' : undefined}
         rel={isExternal ? 'noopener noreferrer' : undefined}
-        aria-label={ariaLabel || undefined}
+        aria-label={accessibleLabel || undefined}
         {...passthroughAttrs}
       >
         <slot></slot>
+        {isExternal ? <span class="link__new-tab"> (opens in a new tab)</span> : null}
       </a>
     );
   }

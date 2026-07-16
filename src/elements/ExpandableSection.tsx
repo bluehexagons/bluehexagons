@@ -25,6 +25,17 @@ export class ExpandableSection extends BaseElement {
         <div
           id={contentId}
           class="expandable-content"
+          onFocusin={(event: FocusEvent) => {
+            if (!contentContainer || contentContainer.classList.contains('expanded')) return;
+            const target = event.target;
+            if (!(target instanceof Element)) return;
+
+            const contentBounds = contentContainer.getBoundingClientRect();
+            const targetBounds = target.getBoundingClientRect();
+            if (targetBounds.top < contentBounds.top || targetBounds.bottom > contentBounds.bottom) {
+              this.toggle(true);
+            }
+          }}
           ref={(el: Element) => {
             contentContainer = el as HTMLDivElement;
           }}

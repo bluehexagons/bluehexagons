@@ -300,7 +300,7 @@ function productCard(p: Product): Node {
     <article class="shop__product">
       {preview ? <img class="shop__product-preview" src={apiURL(preview.url)} alt={`${title} preview`} loading="lazy" decoding="async" /> : null}
       <div class="shop__product-head">
-        <strong>{title}</strong>
+        <h3>{title}</h3>
         <span>{p.sku}</span>
       </div>
       <div class="shop__product-kind">{delivery}</div>

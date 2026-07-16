@@ -37,6 +37,13 @@
     color: var(--antistatic, rgb(255, 110, 0));
   }
 
+  > a:focus-visible {
+    outline: 2px solid var(--highlight, rgb(0, 223, 252));
+    outline-offset: 2px;
+    background: var(--bg, #29292f);
+    color: var(--antistatic, rgb(255, 110, 0));
+  }
+
   > a:active {
     filter: brightness(0.8);
   }
