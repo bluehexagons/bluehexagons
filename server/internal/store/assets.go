@@ -131,9 +131,15 @@ func (h *Handler) adminUploadAsset(w http.ResponseWriter, r *http.Request) error
 		_ = os.Remove(destPath)
 		return readErr
 	}
-	contentType := strings.TrimSpace(header.Header.Get("Content-Type"))
-	if contentType == "" || contentType == "application/octet-stream" {
-		contentType = http.DetectContentType(probe[:n])
+	// Never trust the multipart MIME type: it is supplied by the browser and is
+	// later used when serving the file. Preview assets are rendered as images,
+	// so reject non-images early instead of storing a broken (or misleading)
+	// preview.
+	contentType := http.DetectContentType(probe[:n])
+	if role == "preview" && !strings.HasPrefix(contentType, "image/") {
+		dest.Close()
+		_ = os.Remove(destPath)
+		return httpx.Errorf(http.StatusBadRequest, "preview assets must be images")
 	}
 	written, copyErr := io.Copy(dest, io.MultiReader(bytes.NewReader(probe[:n]), file))
 	closeErr := dest.Close()

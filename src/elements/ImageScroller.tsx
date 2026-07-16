@@ -9,7 +9,7 @@ export class ImageScrollerElement extends BaseElement {
   imageElements: HTMLImageElement[] = [];
   currentImage: HTMLElement | null = null;
   description: HTMLDivElement | null = null;
-  resizeObserver: ResizeObserver | null = null;
+  private mutationObserver: MutationObserver | null = null;
 
   constructor() {
     super(imageScrollerStyles);
@@ -56,13 +56,19 @@ export class ImageScrollerElement extends BaseElement {
       return;
     }
 
+    // Existing pages use title as the gallery caption. Reuse it as a sensible
+    // fallback alternative for older markup that omitted alt text.
+    if (!imgElement.hasAttribute('alt')) {
+      imgElement.alt = imgElement.title;
+    }
+
     this.imageElements.push(imgElement);
 
     if (!this.currentImage) {
       this.selectImage(imgElement);
     }
 
-    imgElement.addEventListener('mouseenter', () => {
+    const selectAndReveal = () => {
       if (this.currentImage === imgElement) {
         return;
       }
@@ -73,16 +79,22 @@ export class ImageScrollerElement extends BaseElement {
         block: 'nearest',
         inline: 'nearest',
       });
-    });
+    };
+
+    imgElement.addEventListener('mouseenter', selectAndReveal);
 
     imgElement.addEventListener('touchstart', () => {
       this.selectImage(imgElement);
-    });
+    }, { passive: true });
 
-    this.resizeObserver?.observe(imgElement);
+    imgElement.closest('a')?.addEventListener('focus', selectAndReveal);
   }
 
   connectedCallback() {
+    this.mutationObserver?.disconnect();
+    this.imageElements = [];
+    this.currentImage = null;
+
     let container: HTMLDivElement | null = null;
     let gallery: HTMLDivElement | null = null;
     let description: HTMLDivElement | null = null;
@@ -105,6 +117,7 @@ export class ImageScrollerElement extends BaseElement {
           <div class="image_scroller__description_container">
             <div
               class="image_scroller__description"
+              aria-live="polite"
               ref={(el: Element) => {
                 description = el as HTMLDivElement;
               }}
@@ -119,7 +132,7 @@ export class ImageScrollerElement extends BaseElement {
     this.description = description;
 
     // watch for added nodes and move them to the shadow DOM
-    const observer = new MutationObserver(mutations => {
+    this.mutationObserver = new MutationObserver(mutations => {
       for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {
           this.appendNode(node);
@@ -127,23 +140,17 @@ export class ImageScrollerElement extends BaseElement {
       }
     });
 
-    observer.observe(this, { childList: true });
+    this.mutationObserver.observe(this, { childList: true });
 
-    this.resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.target !== this.currentImage) {
-          return;
-        }
-      }
-    });
-    
     Array.from(this.childNodes).forEach(node => {
       this.appendNode(node.cloneNode(true));
       this.removeChild(node);
     });
   }
 
-  attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) { }
+  disconnectedCallback() {
+    this.mutationObserver?.disconnect();
+    this.mutationObserver = null;
+  }
 }
-
 customElements.define('image-scroller', ImageScrollerElement);

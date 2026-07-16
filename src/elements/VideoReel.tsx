@@ -1,6 +1,13 @@
 import { BaseElement } from './BaseElement';
 import videoReelStyles from './VideoReel.css?inline';
 
+const defaultVideos = ['carbon1.mp4', 'xenon1.mp4', 'silicon1.mp4', 'helium1.mp4', 'xenon2.mp4'];
+
+const dimension = (value: string | null, fallback: number): number => {
+  const parsed = Number.parseInt(value ?? '', 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+};
+
 export class VideoReelElement extends BaseElement {
   static observedAttributes = ['video-dir', 'width', 'height'];
   
@@ -10,6 +17,7 @@ export class VideoReelElement extends BaseElement {
   private videoIndex = 0;
   private swapping = false;
   private videoDir = '/etc/antistatic/clips/';
+  private preloadLink: HTMLLinkElement | null = null;
   
   constructor() {
     super(videoReelStyles);
@@ -18,20 +26,23 @@ export class VideoReelElement extends BaseElement {
   private getVideos(): string[] {
     const videoList = this.getAttribute('videos');
     if (videoList) {
-      return videoList.split(',').map(v => v.trim());
+      const videos = videoList.split(',').map(v => v.trim()).filter(Boolean);
+      if (videos.length > 0) return videos;
     }
-    
-    return ['carbon1.mp4', 'xenon1.mp4', 'silicon1.mp4', 'helium1.mp4', 'xenon2.mp4'];
+
+    return defaultVideos;
   }
 
   private preloadNextVideo(): void {
     const nextIndex = (this.videoIndex + 1) % this.videos.length;
+    this.preloadLink?.remove();
     const link = document.createElement('link');
     link.rel = 'preload';
     link.href = `${this.videoDir}${this.videos[nextIndex]}`;
     link.as = 'video';
     link.type = 'video/mp4';
     document.head.appendChild(link);
+    this.preloadLink = link;
   }
 
   private playNextVideo(): void {
@@ -44,8 +55,8 @@ export class VideoReelElement extends BaseElement {
   }
 
   connectedCallback() {
-    const width = this.getAttribute('width') || '480';
-    const height = this.getAttribute('height') || '270';
+    const width = dimension(this.getAttribute('width'), 480);
+    const height = dimension(this.getAttribute('height'), 270);
 
     let videoContainer: HTMLDivElement | null = null;
     let videoElement: HTMLVideoElement | null = null;
@@ -58,9 +69,10 @@ export class VideoReelElement extends BaseElement {
         }}
       >
         <video
-          width={parseInt(width)}
-          height={parseInt(height)}
+          width={width}
+          height={height}
           muted={true}
+          playsInline={true}
           ref={(el: Element) => {
             videoElement = el as HTMLVideoElement;
           }}
@@ -155,15 +167,17 @@ export class VideoReelElement extends BaseElement {
         this.videoDir = newValue;
         break;
       case 'width':
-        this.videoElement.width = parseInt(newValue);
+        this.videoElement.width = dimension(newValue, 480);
         break;
       case 'height':
-        this.videoElement.height = parseInt(newValue);
+        this.videoElement.height = dimension(newValue, 270);
         break;
     }
   }
 
   disconnectedCallback() {
+    this.preloadLink?.remove();
+    this.preloadLink = null;
     if (this.videoElement) {
       this.videoElement.pause();
       this.videoElement.src = '';

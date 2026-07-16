@@ -290,7 +290,7 @@ func TestAdminDigitalDeliveryFlow(t *testing.T) {
 		t.Fatalf("bad product response: %s", body)
 	}
 
-	upload := func(role, filename, contents string) []byte {
+	upload := func(role, filename string, contents []byte) []byte {
 		t.Helper()
 		var buf bytes.Buffer
 		mw := multipart.NewWriter(&buf)
@@ -301,7 +301,7 @@ func TestAdminDigitalDeliveryFlow(t *testing.T) {
 		if err != nil {
 			t.Fatalf("form file: %v", err)
 		}
-		if _, err := part.Write([]byte(contents)); err != nil {
+		if _, err := part.Write(contents); err != nil {
 			t.Fatalf("write file: %v", err)
 		}
 		if err := mw.Close(); err != nil {
@@ -313,8 +313,12 @@ func TestAdminDigitalDeliveryFlow(t *testing.T) {
 		}
 		return body
 	}
-	upload("preview", "cover.png", "not really a png")
-	upload("download", "bonus.txt", "download payload")
+	var previewPNG bytes.Buffer
+	if err := png.Encode(&previewPNG, image.NewRGBA(image.Rect(0, 0, 1, 1))); err != nil {
+		t.Fatalf("encode preview png: %v", err)
+	}
+	upload("preview", "cover.png", previewPNG.Bytes())
+	upload("download", "bonus.txt", []byte("download payload"))
 
 	resp, body = jsonDo(adminClient, http.MethodPost, fmt.Sprintf("/api/admin/products/%d/keys", product.ID), `{"text":"KEY-ONE\nKEY-TWO"}`)
 	if resp.StatusCode != http.StatusOK {
