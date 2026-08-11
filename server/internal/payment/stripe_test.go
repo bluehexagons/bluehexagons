@@ -58,4 +58,10 @@ func TestVerifyWebhook(t *testing.T) {
 			t.Fatalf("want ErrInvalidSignature, got %v", err)
 		}
 	})
+
+	t.Run("empty secret", func(t *testing.T) {
+		if _, err := VerifyWebhook(payload, sign("", time.Now(), payload), ""); err != ErrInvalidSignature {
+			t.Fatalf("want ErrInvalidSignature for empty secret, got %v", err)
+		}
+	})
 }

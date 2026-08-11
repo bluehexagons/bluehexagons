@@ -5,6 +5,7 @@ package config
 
 import (
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -62,7 +63,13 @@ func (c Config) IsAdminEmail(email string) bool {
 func (c Config) ConfiguredAdminEmails() []string {
 	seen := map[string]struct{}{}
 	emails := []string{}
-	for _, email := range append([]string{c.PrimaryAdminEmail}, keys(c.AdminEmails)...) {
+	configured := make([]string, 0, len(c.AdminEmails))
+	for email := range c.AdminEmails {
+		configured = append(configured, email)
+	}
+	sort.Strings(configured)
+	configured = append([]string{c.PrimaryAdminEmail}, configured...)
+	for _, email := range configured {
 		email = normalizeEmail(email)
 		if email == "" {
 			continue
@@ -103,12 +110,4 @@ func parseAdminEmails(raw string) map[string]struct{} {
 
 func normalizeEmail(raw string) string {
 	return strings.ToLower(strings.TrimSpace(raw))
-}
-
-func keys(m map[string]struct{}) []string {
-	out := make([]string, 0, len(m))
-	for k := range m {
-		out = append(out, k)
-	}
-	return out
 }

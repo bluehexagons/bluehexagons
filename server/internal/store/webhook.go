@@ -28,6 +28,9 @@ func (h *Handler) webhook(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return httpx.Errorf(http.StatusBadRequest, "invalid signature")
 	}
+	if ev.ID == "" || ev.Type == "" {
+		return httpx.Errorf(http.StatusBadRequest, "invalid event payload")
+	}
 
 	if ev.Type == "checkout.session.completed" {
 		var obj payment.CheckoutSessionObject

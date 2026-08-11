@@ -6,6 +6,7 @@ package httpx
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -25,7 +26,9 @@ type Error struct {
 func (e *Error) Error() string { return e.Message }
 
 // Errorf builds an *Error with the given status and client-safe message.
-func Errorf(status int, msg string) *Error { return &Error{Status: status, Message: msg} }
+func Errorf(status int, format string, args ...any) *Error {
+	return &Error{Status: status, Message: fmt.Sprintf(format, args...)}
+}
 
 // HandlerFunc is an http handler that returns an error for centralized
 // rendering and logging. Adapt it with Logged.

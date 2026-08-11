@@ -129,8 +129,7 @@ func (h *Handler) createOrder(ctx context.Context, userID int64, items []cartIte
 			`SELECT name, price_cents, currency FROM products WHERE id = ? AND active = 1`,
 			it.ProductID).Scan(&name, &price, &cur)
 		if errors.Is(err, sql.ErrNoRows) {
-			return 0, nil, httpx.Errorf(http.StatusBadRequest,
-				fmt.Sprintf("product %d is unavailable", it.ProductID))
+			return 0, nil, httpx.Errorf(http.StatusBadRequest, "product %d is unavailable", it.ProductID)
 		}
 		if err != nil {
 			return 0, nil, err

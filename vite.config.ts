@@ -1,20 +1,44 @@
 import { defineConfig, type Plugin } from 'vite';
-import { resolve } from 'path';
-import { globSync } from 'glob';
+import { readdirSync } from 'node:fs';
+import { dirname, relative, resolve, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const projectRoot = dirname(fileURLToPath(import.meta.url));
+const sourceRoot = resolve(projectRoot, 'src');
+
+function findHtmlEntries(directory = sourceRoot): Record<string, string> {
+  const entries: Record<string, string> = {};
+
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const fullPath = resolve(directory, entry.name);
+    if (entry.isDirectory()) {
+      Object.assign(entries, findHtmlEntries(fullPath));
+      continue;
+    }
+    if (!entry.isFile() || !entry.name.endsWith('.html')) continue;
+
+    const entryName = relative(sourceRoot, fullPath)
+      .split(sep)
+      .join('/')
+      .replace(/\.html$/, '');
+    entries[entryName] = fullPath;
+  }
+
+  return entries;
+}
 
 // The shop/account UI is optional: it is only built when VITE_SHOP=1. By
 // default `npm run build` excludes everything under src/shop/, so the static
 // site ships with no store or login UI in the output bundle.
 const includeShop = process.env.VITE_SHOP === '1';
 
-// Find all HTML files in src directory and subdirectories
-const htmlEntries = globSync('src/**/*.html', {
-  ignore: includeShop ? [] : ['src/shop/**'],
-}).reduce((entries: Record<string, string>, path) => {
-  const fileName = path.replace('src/', '').replace('.html', '');
-  entries[fileName] = resolve(__dirname, path);
-  return entries;
-}, {});
+// Find all HTML files in src directory and subdirectories.
+const htmlEntries = findHtmlEntries();
+if (!includeShop) {
+  for (const entryName of Object.keys(htmlEntries)) {
+    if (entryName === 'shop' || entryName.startsWith('shop/')) delete htmlEntries[entryName];
+  }
+}
 
 const jsxInjectPlugin: Plugin = {
   name: 'jsx-inject',
@@ -39,7 +63,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         // Include all HTML files as entry points
-        ...htmlEntries
+          ...htmlEntries,
       }
     }
   },
@@ -55,8 +79,8 @@ export default defineConfig({
   // Explicitly configure asset handling
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
-      '/assets': resolve(__dirname, 'public/assets'),
+      '@': sourceRoot,
+      '/assets': resolve(projectRoot, 'public/assets'),
     }
   },
 

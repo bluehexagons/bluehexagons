@@ -14,11 +14,12 @@ import (
 // use. It is meant for sensitive endpoints (login, register) to slow brute
 // force and bound the cost of expensive work like password hashing.
 type RateLimiter struct {
-	mu       sync.Mutex
-	visitors map[string]*bucket
-	rate     float64       // tokens added per second
-	burst    float64       // bucket capacity
-	ttl      time.Duration // idle entries older than this are pruned
+	mu        sync.Mutex
+	visitors  map[string]*bucket
+	rate      float64       // tokens added per second
+	burst     float64       // bucket capacity
+	ttl       time.Duration // idle entries older than this are pruned
+	lastPrune time.Time
 }
 
 type bucket struct {
@@ -27,16 +28,15 @@ type bucket struct {
 }
 
 // NewRateLimiter returns a limiter allowing burst requests immediately, then
-// perSecond sustained. It starts a background pruning goroutine.
+// perSecond sustained. Idle visitors are pruned during normal requests, so a
+// limiter does not need a background goroutine that outlives its handler.
 func NewRateLimiter(perSecond, burst float64) *RateLimiter {
-	rl := &RateLimiter{
+	return &RateLimiter{
 		visitors: make(map[string]*bucket),
 		rate:     perSecond,
 		burst:    burst,
 		ttl:      10 * time.Minute,
 	}
-	go rl.cleanupLoop()
-	return rl
 }
 
 func (rl *RateLimiter) allow(key string) bool {
@@ -44,6 +44,15 @@ func (rl *RateLimiter) allow(key string) bool {
 	defer rl.mu.Unlock()
 
 	now := time.Now()
+	if rl.lastPrune.IsZero() || now.Sub(rl.lastPrune) >= time.Minute {
+		cutoff := now.Add(-rl.ttl)
+		for k, b := range rl.visitors {
+			if b.last.Before(cutoff) {
+				delete(rl.visitors, k)
+			}
+		}
+		rl.lastPrune = now
+	}
 	b, ok := rl.visitors[key]
 	if !ok {
 		rl.visitors[key] = &bucket{tokens: rl.burst - 1, last: now}
@@ -59,21 +68,6 @@ func (rl *RateLimiter) allow(key string) bool {
 	}
 	b.tokens--
 	return true
-}
-
-func (rl *RateLimiter) cleanupLoop() {
-	t := time.NewTicker(rl.ttl)
-	defer t.Stop()
-	for range t.C {
-		rl.mu.Lock()
-		cutoff := time.Now().Add(-rl.ttl)
-		for k, b := range rl.visitors {
-			if b.last.Before(cutoff) {
-				delete(rl.visitors, k)
-			}
-		}
-		rl.mu.Unlock()
-	}
 }
 
 // Limit wraps next, rejecting requests from clients over the rate with 429.

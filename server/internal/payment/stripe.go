@@ -145,6 +145,9 @@ type CheckoutSessionObject struct {
 // and returns the parsed event. It rejects stale timestamps and uses a
 // constant-time comparison.
 func VerifyWebhook(payload []byte, sigHeader, secret string) (*Event, error) {
+	if secret == "" {
+		return nil, ErrInvalidSignature
+	}
 	ts, sigs := parseSignatureHeader(sigHeader)
 	if ts == 0 || len(sigs) == 0 {
 		return nil, ErrInvalidSignature
