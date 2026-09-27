@@ -52,6 +52,14 @@ render(
           </p>
         </div>
 
+        <section class="cause_interests">
+          <h2>Work I care about</h2>
+          <p>
+            I'm especially interested in engineering work for nonprofits, wildlife conservation and environmental efforts,
+            expanding access to science and technology, and human rights causes.
+          </p>
+        </section>
+
         <div class="widest center">
           <image-scroller>
             <img
@@ -431,13 +439,14 @@ render(
       <article slot="content" id="basaltwater" class="systems_feature">
         <div class="systems_feature__intro">
           <p class="systems_feature__eyebrow">Open-source systems engineering</p>
-          <h1>Basaltwater</h1>
+          <h2 class="section_title">Basaltwater</h2>
           <p>
             I designed and maintain Basaltwater, a toolkit for setting up and operating Debian machines,
             Proxmox guests, web services, and development workstations. It turns repeatable operations into
             inspectable commands with diagnostics and recovery paths.
           </p>
           <div class="systems_feature__links">
+            <site-link href={sitePath('basaltwater.html')}>Read the case study</site-link>
             <site-link href="https://github.com/bluehexagons/basaltwater">Explore the source</site-link>
             <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/GETTING_STARTED.md">Getting started</site-link>
           </div>
@@ -445,7 +454,7 @@ render(
 
         <div class="systems_feature__grid">
           <section>
-            <h2>Machine setup</h2>
+            <h3>Machine setup</h3>
             <p>
               Compose server and workstation capabilities, provision Proxmox guests, manage service and network
               configuration, and diagnose hosts after setup.
@@ -453,7 +462,7 @@ render(
             <span>Linux · Python · Proxmox · systemd</span>
           </section>
           <section>
-            <h2>Safe deployments</h2>
+            <h3>Safe deployments</h3>
             <p>
               Stage builds before release, isolate service accounts and writable state, check health at activation,
               and retain a path to roll back. SQLite services can receive consistent backups.
@@ -461,7 +470,7 @@ render(
             <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/DEPLOYMENT_SAFETY.md">Deployment design</site-link>
           </section>
           <section>
-            <h2>Development environments</h2>
+            <h3>Development environments</h3>
             <p>
               Prepare coding VMs with managed Git workspaces, browser testing, credentials, and clear privilege
               boundaries so changes can be developed, reviewed, and checked against running systems.
@@ -483,10 +492,10 @@ render(
       </article>
 
       <article slot="content">
-        <h1>
+        <h2 class="section_title">
           Antistatic
           <span class="time_range">2012 - Present</span>
-        </h1>
+        </h2>
 
         <p class="description">
           A solo-developed uncompromising platform fighting game using a bespoke C/TypeScript engine.
@@ -572,10 +581,10 @@ render(
       </article>
 
       <article slot="content">
-        <h1>
+        <h2 class="section_title">
           Senior UI Engineer @ Zazzle.com
           <span class="time_range">Jun 2019 - Sep 2023</span>
-        </h1>
+        </h2>
 
         <p class="description">I worked on most parts of the Zazzle.com frontend codebase, and built some internal tools.</p>
 
@@ -626,10 +635,10 @@ render(
       </article>
 
       <article slot="content">
-        <h1>
+        <h2 class="section_title">
           Application Developer @ Dexter Solutions
           <span class="time_range">Feb 2014 - Jun 2018</span>
-        </h1>
+        </h2>
 
         <p class="description">
           For most of the time, I was part of a two-person team responsible for any dev or sysadmin work that came up for the company
@@ -657,10 +666,10 @@ render(
       </article>
 
       <article slot="content">
-        <h1>
+        <h2 class="section_title">
           Lead Programmer @ Air Dash Online
           <span class="time_range">May - Oct 2013</span>
-        </h1>
+        </h2>
 
         <p class="description">
           Air Dash Online was an obscenely fast-paced platform fighting game built by a small team of FGC members and artists.
@@ -724,10 +733,10 @@ render(
       </article>
 
       <article slot="content">
-        <h1>
+        <h2 class="section_title">
           Don't Starve Food Guide
           <span class="time_range">Jan 2013 - Present</span>
-        </h1>
+        </h2>
 
         <p class="description">
           The Unofficial Don't Starve Food Guide is a simple static JavaScript-powered app that provides several helpful food-related
@@ -763,10 +772,10 @@ render(
       </article>
 
       <article slot="content">
-        <h1>
+        <h2 class="section_title">
           bluehexagons.com
           <span class="time_range">2015 - Present</span>
-        </h1>
+        </h2>
 
         <p class="description">You Are Here. And I appreciate you.</p>
 

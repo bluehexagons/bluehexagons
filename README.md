@@ -52,6 +52,9 @@ workstations, and Proxmox guests. It combines repeatable, machine-aware
 configuration with diagnostics, security hardening, deployments, coding-agent
 workflows, and browser automation.
 
+[Read the Basaltwater case study](https://bluehexagons.com/basaltwater.html) for
+the engineering decisions and links to implementation details.
+
 ## Projects
 
 I’m actively revisiting older projects such as
@@ -132,7 +135,9 @@ React, Electron, Godot, Vite, Node.js, SQLite, AWS Lambda, and Linux.
 
 I’m open to full-time software engineering roles, freelance projects, and
 contract work. I can help with full-stack web applications, general software
-and game development, infrastructure, and technical consulting. If you’d like
+and game development, infrastructure, and technical consulting. I’m especially
+interested in nonprofits, wildlife conservation and environmental work, expanding
+access to science and technology, and human rights causes. If you’d like
 to work together, email me at
 [loren@bluehexagons.com](mailto:loren@bluehexagons.com) or connect with me on
 [LinkedIn](https://www.linkedin.com/in/loren-crain).
@@ -153,3 +158,11 @@ build and publishes `dist/` to
 [bluehexagons.github.io/bluehexagons](https://bluehexagons.github.io/bluehexagons/).
 The shop and account UI is excluded from the default static build because it
 requires the separate API service.
+
+The homepage includes a short HTML summary that remains readable without
+JavaScript. Keep it aligned with the interactive homepage and the concise
+[`profile.md`](public/profile.md) when career details change. The static
+[`basaltwater.html`](src/basaltwater.html) case study provides a direct URL for
+the project; [`llms.txt`](public/llms.txt) links these public sources for
+automated readers. Canonical URLs and the sitemap point to bluehexagons.com,
+which is the primary copy of the site.

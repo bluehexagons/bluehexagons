@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Basaltwater: infrastructure and deployment engineering — Loren Crain</title>
+    <meta name="description" content="How Loren Crain designs Basaltwater for repeatable Linux setup, safer deployments, and managed coding environments." />
+    <link rel="canonical" href="https://bluehexagons.com/basaltwater.html" />
+    <link rel="icon" type="image/png" href="%BASE_URL%assets/icon.png" />
+    <link rel="stylesheet" href="/case-study.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareSourceCode",
+        "name": "Basaltwater",
+        "description": "A toolkit for repeatable machine setup, deployment, and operations across Debian machines, Proxmox guests, web services, and development workstations.",
+        "codeRepository": "https://github.com/bluehexagons/basaltwater",
+        "programmingLanguage": ["Python", "Bash"],
+        "author": {
+          "@type": "Person",
+          "name": "Loren Crain",
+          "url": "https://bluehexagons.com/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="case-study-shell">
+      <header class="case-study-header">
+        <a class="case-study-home" href="%BASE_URL%">bluehexagons</a>
+        <nav aria-label="Portfolio navigation">
+          <a href="%BASE_URL%">Portfolio</a>
+          <a href="%BASE_URL%antistatic.html">Antistatic</a>
+          <a href="%BASE_URL%profile.md">Concise profile</a>
+        </nav>
+      </header>
+
+      <main>
+        <article class="case-study">
+          <p class="case-study-kicker">Open-source systems engineering</p>
+          <h1>Basaltwater</h1>
+          <p class="case-study-lede">
+            I designed and maintain Basaltwater, a toolkit for setting up and operating Debian machines,
+            Proxmox guests, web services, and development workstations. It packages repeatable infrastructure
+            work into commands that can be inspected, rerun, diagnosed, and recovered.
+          </p>
+
+          <dl class="case-study-facts">
+            <div><dt>My role</dt><dd>Project creator and maintainer</dd></div>
+            <div><dt>Technical areas</dt><dd>Linux, Python, Bash, Proxmox, Git, systemd, web deployment</dd></div>
+            <div><dt>Source</dt><dd><a href="https://github.com/bluehexagons/basaltwater">github.com/bluehexagons/basaltwater</a></dd></div>
+          </dl>
+
+          <section aria-labelledby="case-study-problem">
+            <h2 id="case-study-problem">The engineering problem</h2>
+            <p>
+              A server, coding VM, or workstation needs more than an installation script. It needs reproducible
+              configuration, explicit choices about access and services, a way to diagnose drift, and a recovery
+              path when an update fails. Basaltwater brings those operations together without hiding the underlying
+              Linux systems from the operator.
+            </p>
+          </section>
+
+          <section aria-labelledby="case-study-approach">
+            <h2 id="case-study-approach">What I built</h2>
+            <ul>
+              <li><strong>Machine setup:</strong> compose server and workstation capabilities, configure Debian hosts, and provision Proxmox guests from a control machine.</li>
+              <li><strong>Web deployments:</strong> describe static sites and services in a repository manifest, build in staging, activate with health checks, and preserve service state across releases.</li>
+              <li><strong>Operations:</strong> provide diagnostics, maintenance commands, and documented recovery procedures for managed machines and services.</li>
+              <li><strong>Coding environments:</strong> prepare VMs with Git workspaces, browser testing, credential handling, and privilege boundaries for development work.</li>
+            </ul>
+          </section>
+
+          <section aria-labelledby="case-study-safety">
+            <h2 id="case-study-safety">Design decisions</h2>
+            <p>
+              Deployment components get dedicated runtime users and writable data directories. Builds are staged
+              before activation; declared health checks can reject a release and restore the previous one. SQLite
+              services can request a consistent backup before replacement. The goal is to make ordinary updates
+              repeatable while keeping failure handling visible and testable.
+            </p>
+            <p>
+              For coding environments, I treat the agent as one part of an engineering workflow: isolate Git work,
+              give tools only the access they need, inspect diffs, and verify behavior in a browser or on the target
+              system. I have also used agentic workflows to build features for production websites as a financial
+              technology contractor.
+            </p>
+          </section>
+
+          <section aria-labelledby="case-study-evidence">
+            <h2 id="case-study-evidence">Inspect the work</h2>
+            <ul class="case-study-evidence">
+              <li><a href="https://github.com/bluehexagons/basaltwater">Source repository</a> — implementation, tests, and issue history.</li>
+              <li><a href="https://github.com/bluehexagons/basaltwater/blob/main/docs/GETTING_STARTED.md">Getting started</a> — setup flow and first checks.</li>
+              <li><a href="https://github.com/bluehexagons/basaltwater/blob/main/docs/DEPLOYMENT_SAFETY.md">Deployment safety</a> — staging, health checks, backups, and recovery.</li>
+              <li><a href="https://github.com/bluehexagons/basaltwater/blob/main/docs/AGENTIC_VMS.md">Coding VM guide</a> — development environments and access boundaries.</li>
+            </ul>
+          </section>
+
+          <p class="case-study-conclusion">
+            This project reflects the work I want to bring to teams: designing reliable interfaces, automating
+            operations, making changes reviewable, and documenting how to recover when systems behave unexpectedly.
+          </p>
+        </article>
+      </main>
+
+      <footer class="case-study-footer">
+        <a href="%BASE_URL%">Back to the portfolio</a> ·
+        <a href="mailto:loren@bluehexagons.com">Contact Loren</a>
+      </footer>
+    </div>
+  </body>
+</html>

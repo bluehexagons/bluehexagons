@@ -78,6 +78,15 @@ h2 {
   line-height: 30px;
   text-shadow: var(--shadow) 1px 0 10px;
 }
+
+h2.section_title {
+  margin: 0;
+  padding: 0;
+  line-height: 40px;
+  font-size: 38px;
+  color: var(--highlight);
+  text-shadow: var(--shadow) 1px 0 10px;
+}
 h3 {
   line-height: 20px;
   text-shadow: var(--shadow) 1px 0 10px;
@@ -424,10 +433,11 @@ article {
   background: rgba(5, 18, 23, 0.72);
 }
 
-.systems_feature__grid h2 {
+.systems_feature__grid h3 {
   margin: 0;
   color: #bceaf0;
   font-size: 1.16rem;
+  line-height: 1.3;
 }
 
 .systems_feature__grid p {
@@ -466,4 +476,35 @@ article {
   .systems_feature__grid p {
     margin-bottom: 10px;
   }
+}
+
+.static-summary {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.static-summary section {
+  margin-top: 28px;
+}
+
+.static-summary a {
+  color: var(--highlight);
+}
+
+.cause_interests {
+  margin: 0 20px 28px;
+  padding: 16px 20px;
+  border-left: 3px solid #4c8d91;
+  background: rgba(10, 32, 38, 0.65);
+}
+
+.cause_interests h2 {
+  margin: 0;
+  color: #bceaf0;
+  font-size: 1.1rem;
+}
+
+.cause_interests p {
+  margin: 8px 0 0;
 }

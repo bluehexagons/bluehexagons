@@ -77,7 +77,7 @@ render(
       </article>
 
       <article slot="content">
-        <h1>Characters</h1>
+        <h2 class="section_title">Characters</h2>
 
         <p></p>
 
@@ -393,7 +393,7 @@ render(
       </article>
 
       <article slot="content">
-        <h1>Mechanics</h1>
+        <h2 class="section_title">Mechanics</h2>
         <ul class="features">
           <li>
             <strong>Online play</strong> &mdash; join one other player in online matches; online is still early in development, with much
@@ -535,7 +535,7 @@ render(
       </article>
 
       <article slot="content">
-        <h1 id="controllers">Controllers</h1>
+        <h2 class="section_title" id="controllers">Controllers</h2>
         <p>
           Currently officially supports GameCube (via Wii U/Switch adapter in native mode), 360/XB1 (and compatible), PS4, and keyboard.
         </p>
@@ -557,7 +557,7 @@ render(
       </article>
 
       <article slot="content">
-        <h1>Technical Summary</h1>
+        <h2 class="section_title">Technical Summary</h2>
 
         <p>
           Antistatic has been in development since 2012 as an experimental homage to Super Smash Bros. Melee. It is built in a custom

@@ -1,0 +1,18 @@
+# Loren Crain / bluehexagons
+
+> Loren Crain is a software engineer and indie game developer who builds web software, games, and infrastructure. Basaltwater is his open-source infrastructure toolkit.
+
+The canonical portfolio is https://bluehexagons.com/. The GitHub Pages project site is a static copy. Use the linked pages and source repositories for specific claims; client work is described only at a public, high level.
+
+## Profile and projects
+
+- [Concise profile](profile.md): Experience, engineering areas, work interests, and contact.
+- [Basaltwater case study](basaltwater.html): Linux setup, deployment safety, and development environments.
+- [Antistatic](antistatic.html): Solo-developed platform fighting game and technical details.
+
+## Primary evidence
+
+- [Basaltwater source](https://github.com/bluehexagons/basaltwater): Implementation, tests, and documentation.
+- [Basaltwater deployment safety](https://github.com/bluehexagons/basaltwater/blob/main/docs/DEPLOYMENT_SAFETY.md): Release staging, health checks, backups, and recovery.
+- [Basaltwater coding VMs](https://github.com/bluehexagons/basaltwater/blob/main/docs/AGENTIC_VMS.md): Managed development environments.
+- [Portfolio source](https://github.com/bluehexagons/bluehexagons): Source for this website.
