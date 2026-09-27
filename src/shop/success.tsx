@@ -189,6 +189,9 @@ function deliveryView(): Node {
         <div class="shop__error" role="alert">
           {state.error}
         </div>
+        <div class="shop__empty-actions">
+          <button class="shop__button" onClick={() => void loadDelivery(true)}>Retry loading order</button>
+        </div>
       </div>
     );
   }
@@ -198,13 +201,19 @@ function deliveryView(): Node {
       <div class="shop__delivery">
         {orderSummary(state.delivery)}
         <div class="shop__empty">
-          Stripe returned you to the shop, but this order is still <strong>{statusLabel(state.delivery.status)}</strong>. Downloads, keys, and
-          instructions unlock after the payment webhook arrives.
-          <div class="shop__empty-actions">
-            <button class="shop__button" onClick={() => void loadDelivery(true)}>
-              Refresh order status
-            </button>
-          </div>
+          {state.delivery.status === 'cancelled' ? (
+            <p>This checkout did not complete. Return to the shop to try again.</p>
+          ) : (
+            <>
+              Stripe returned you to the shop, but this order is still <strong>{statusLabel(state.delivery.status)}</strong>. Downloads,
+              keys, and instructions unlock after the payment webhook arrives.
+              <div class="shop__empty-actions">
+                <button class="shop__button" onClick={() => void loadDelivery(true)}>
+                  Refresh order status
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     );

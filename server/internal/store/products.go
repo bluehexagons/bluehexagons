@@ -50,7 +50,7 @@ func (h *Handler) listProducts(w http.ResponseWriter, r *http.Request) error {
 		`SELECT `+productColumns+`
 		 FROM products p
 		 LEFT JOIN product_details d ON d.product_id = p.id
-		 WHERE p.active = 1
+		 WHERE p.active = 1 AND COALESCE(d.kind, 'digital') = 'digital'
 		 ORDER BY p.id`)
 	if err != nil {
 		return err
@@ -85,7 +85,7 @@ func (h *Handler) getProduct(w http.ResponseWriter, r *http.Request) error {
 		`SELECT `+productColumns+`
 		 FROM products p
 		 LEFT JOIN product_details d ON d.product_id = p.id
-		 WHERE p.id = ? AND p.active = 1`, id)
+		 WHERE p.id = ? AND p.active = 1 AND COALESCE(d.kind, 'digital') = 'digital'`, id)
 	p, err := scanProduct(row)
 	if errors.Is(err, sql.ErrNoRows) {
 		return httpx.Errorf(http.StatusNotFound, "product not found")

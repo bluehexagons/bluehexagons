@@ -2,6 +2,7 @@ import '../bootstrap';
 import './shop.css';
 import { render } from '../render';
 import { api, apiURL, ApiError, apiErrorMessage, type Product, type User } from './api';
+import { formatMoney } from './money';
 
 // A small, dependency-free shop UI: it loads the catalog and current user,
 // keeps a client-side cart, and hands off to Stripe's hosted Checkout. There is
@@ -11,6 +12,7 @@ const app = document.getElementById('app');
 if (!app) throw new Error('Missing #app container');
 
 const MAX_CART_QUANTITY = 100;
+const MAX_CART_ITEMS = 50;
 const CART_STORAGE_KEY = 'bluehexagons.shop.cart.v1';
 const STRIPE_CHECKOUT_HOST = 'checkout.stripe.com';
 
@@ -18,6 +20,7 @@ interface State {
   loading: boolean;
   user: User | null;
   products: Product[];
+  catalogError: string;
   cart: Map<number, number>; // productId -> quantity
   authError: string;
   cartError: string;
@@ -29,6 +32,7 @@ const state: State = {
   loading: true,
   user: null,
   products: [],
+  catalogError: '',
   cart: new Map(),
   authError: '',
   cartError: '',
@@ -39,19 +43,11 @@ const state: State = {
 let authEmail = '';
 let authPassword = '';
 
-const money = (cents: number, currency: string) => {
-  try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: currency.toUpperCase() }).format(cents / 100);
-  } catch {
-    return `${(cents / 100).toFixed(2)} ${currency.toUpperCase()}`;
-  }
-};
-
 const errMessage = (err: unknown): string => apiErrorMessage(err);
 const cartItemCount = (): number => [...state.cart.values()].reduce((sum, quantity) => sum + quantity, 0);
 
 function readStoredCart(products: Product[]): Map<number, number> {
-  const available = new Set(products.map((product) => product.id));
+  const available = new Set(products.filter((product) => product.kind === 'digital').map((product) => product.id));
   const cart = new Map<number, number>();
   try {
     const raw = window.localStorage.getItem(CART_STORAGE_KEY);
@@ -63,7 +59,9 @@ function readStoredCart(products: Product[]): Map<number, number> {
       const [rawID, rawQuantity] = entry;
       const id = Number(rawID);
       const quantity = Math.min(MAX_CART_QUANTITY, Math.trunc(Number(rawQuantity)));
-      if (Number.isInteger(id) && id > 0 && quantity > 0 && available.has(id)) cart.set(id, quantity);
+      if (Number.isInteger(id) && id > 0 && quantity > 0 && available.has(id) && (cart.has(id) || cart.size < MAX_CART_ITEMS)) {
+        cart.set(id, quantity);
+      }
     }
   } catch {
     return new Map();
@@ -93,16 +91,21 @@ async function init(): Promise<void> {
   try {
     state.user = await api.me();
   } catch (err) {
-    if (!(err instanceof ApiError && err.status === 401)) state.cartError = errMessage(err);
+    if (!(err instanceof ApiError && err.status === 401)) state.authError = errMessage(err);
   }
+  await loadCatalog();
+}
+
+async function loadCatalog(): Promise<void> {
+  setState({ loading: true, catalogError: '' });
   try {
     state.products = await api.products();
     state.cart = readStoredCart(state.products);
     writeStoredCart(state.cart);
+    setState({ loading: false, catalogError: '' });
   } catch (err) {
-    state.cartError = errMessage(err);
+    setState({ loading: false, catalogError: errMessage(err) });
   }
-  setState({ loading: false });
 }
 
 async function submitAuth(kind: 'login' | 'register'): Promise<void> {
@@ -131,19 +134,24 @@ async function submitAuth(kind: 'login' | 'register'): Promise<void> {
 
 async function logout(): Promise<void> {
   if (state.authBusy) return;
-  setState({ authBusy: true });
+  setState({ authBusy: true, authError: '' });
   try {
     await api.logout();
-  } catch {
-    /* ignore: clearing local state is enough */
+  } catch (err) {
+    setState({ authBusy: false, authError: errMessage(err) });
+    return;
   }
   authPassword = '';
-  setState({ user: null, cart: new Map(), authBusy: false });
+  setState({ user: null, authBusy: false, cartError: '' });
 }
 
 function addToCart(id: number): void {
-  if (!state.products.some((p) => p.id === id)) return;
+  if (!state.products.some((p) => p.id === id && p.kind === 'digital')) return;
   const current = state.cart.get(id) ?? 0;
+  if (current === 0 && state.cart.size >= MAX_CART_ITEMS) {
+    setState({ cartError: `Your cart can contain up to ${MAX_CART_ITEMS} different items.` });
+    return;
+  }
   if (current >= MAX_CART_QUANTITY) {
     setState({ cartError: `You can add up to ${MAX_CART_QUANTITY} of one item.` });
     return;
@@ -196,6 +204,10 @@ async function checkout(): Promise<void> {
     setState({ cartError: 'One cart item is no longer available. Refresh and try again.' });
     return;
   }
+  if (items.some((item) => byId.get(item.product_id)?.kind !== 'digital')) {
+    setState({ cartError: 'Physical items are not available for checkout yet.' });
+    return;
+  }
   const currencies = new Set(items.map((item) => byId.get(item.product_id)?.currency));
   if (currencies.size > 1) {
     setState({ cartError: 'Cart items must use one currency.' });
@@ -226,6 +238,7 @@ function authPanel(): Node {
         <button class="shop__button shop__button--ghost" onClick={() => void logout()} disabled={state.authBusy}>
           {state.authBusy ? 'Signing out...' : 'Log out'}
         </button>
+        {state.authError ? <div class="shop__error" role="alert">{state.authError}</div> : null}
       </div>
     );
   }
@@ -294,8 +307,8 @@ function productCard(p: Product): Node {
   const quantity = state.cart.get(p.id) ?? 0;
   const preview = p.previews.find((asset) => asset.content_type.startsWith('image/'));
   const title = p.title || p.name;
-  const delivery = p.kind === 'physical' ? 'Physical item' : 'Digital delivery';
-  const descriptionFallback = p.kind === 'physical' ? 'Fulfillment details are provided after checkout.' : 'Digital delivery after checkout.';
+  const delivery = p.kind === 'physical' ? 'Physical item · unavailable' : 'Digital delivery';
+  const descriptionFallback = p.kind === 'physical' ? 'Shipping is not available yet.' : 'Digital delivery after checkout.';
   return (
     <article class="shop__product">
       {preview ? <img class="shop__product-preview" src={apiURL(preview.url)} alt={`${title} preview`} loading="lazy" decoding="async" /> : null}
@@ -305,9 +318,9 @@ function productCard(p: Product): Node {
       </div>
       <div class="shop__product-kind">{delivery}</div>
       <div class="shop__muted">{p.description || descriptionFallback}</div>
-      <div class="shop__price">{money(p.price_cents, p.currency)}</div>
-      <button class="shop__button" onClick={() => addToCart(p.id)} disabled={quantity >= MAX_CART_QUANTITY}>
-        {quantity > 0 ? `Add another (${quantity} in cart)` : 'Add to cart'}
+      <div class="shop__price">{formatMoney(p.price_cents, p.currency)}</div>
+      <button class="shop__button" onClick={() => addToCart(p.id)} disabled={p.kind !== 'digital' || quantity >= MAX_CART_QUANTITY}>
+        {p.kind !== 'digital' ? 'Unavailable' : quantity > 0 ? `Add another (${quantity} in cart)` : 'Add to cart'}
       </button>
     </article>
   );
@@ -356,7 +369,7 @@ function cartView(): Node {
               <li class="shop__cart-row">
                 <div class="shop__cart-item">
                   <strong>{title}</strong>
-                  <span class="shop__muted">{money(product.price_cents, product.currency)} each</span>
+                  <span class="shop__muted">{formatMoney(product.price_cents, product.currency)} each</span>
                 </div>
                 <div class="shop__cart-controls" aria-label={`${title} quantity controls`}>
                   <button
@@ -381,7 +394,7 @@ function cartView(): Node {
                     Remove
                   </button>
                 </div>
-                <span class="shop__cart-price">{money(product.price_cents * quantity, product.currency)}</span>
+                <span class="shop__cart-price">{formatMoney(product.price_cents * quantity, product.currency)}</span>
               </li>
             );
           })}
@@ -389,7 +402,7 @@ function cartView(): Node {
       )}
       <div class="shop__total">
         <span>Total</span>
-        <strong>{hasMixedCurrencies ? 'Multiple currencies' : money(total, currency)}</strong>
+        <strong>{hasMixedCurrencies ? 'Multiple currencies' : formatMoney(total, currency)}</strong>
       </div>
       {hasUnavailableItems ? <div class="shop__error">One cart item is no longer available.</div> : null}
       {hasMixedCurrencies ? <div class="shop__error">Cart items must use one currency.</div> : null}
@@ -413,10 +426,15 @@ function buildTree(): Node {
           <div class="shop__hero">
             <div class="shop__eyebrow">Optional shop module</div>
             <h1>Shop</h1>
-            <p class="shop__lede">Pick up bluehexagons digital goods through a small audited cart and Stripe Checkout.</p>
+            <p class="shop__lede">Pick up bluehexagons digital goods through a simple cart and Stripe Checkout.</p>
           </div>
           {state.loading ? (
             <div class="shop__empty">Loading catalog...</div>
+          ) : state.catalogError ? (
+            <div class="shop__empty" role="alert">
+              <p>Could not load the catalog: {state.catalogError}</p>
+              <button class="shop__button" onClick={() => void loadCatalog()}>Retry</button>
+            </div>
           ) : (
             <div class="shop">
               {authPanel()}

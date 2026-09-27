@@ -31,12 +31,17 @@ import (
 
 // fakeGateway records the params it receives and returns a canned session,
 // so checkout can be tested without touching the network.
-type fakeGateway struct{ last payment.CheckoutParams }
+type fakeGateway struct {
+	last  payment.CheckoutParams
+	count int
+}
 
 func (f *fakeGateway) Configured() bool { return true }
 func (f *fakeGateway) CreateCheckoutSession(_ context.Context, p payment.CheckoutParams) (*payment.CheckoutSession, error) {
 	f.last = p
-	return &payment.CheckoutSession{ID: "cs_test_123", URL: "https://stripe.test/c/cs_test_123"}, nil
+	f.count++
+	id := fmt.Sprintf("cs_test_%d", 122+f.count)
+	return &payment.CheckoutSession{ID: id, URL: "https://stripe.test/c/" + id}, nil
 }
 
 func TestShopFlow(t *testing.T) {
@@ -52,6 +57,12 @@ func TestShopFlow(t *testing.T) {
 		`INSERT INTO products (sku, name, price_cents, currency) VALUES ('p1','Key',?, 'usd')`,
 		priceCents); err != nil {
 		t.Fatalf("seed: %v", err)
+	}
+	if _, err := database.Exec(`INSERT INTO products (sku, name, price_cents, currency) VALUES ('physical','Poster',1000,'usd')`); err != nil {
+		t.Fatalf("seed physical product: %v", err)
+	}
+	if _, err := database.Exec(`INSERT INTO product_details (product_id, kind, created_at, updated_at) VALUES (2,'physical',0,0)`); err != nil {
+		t.Fatalf("seed physical details: %v", err)
 	}
 
 	cfg := config.Config{
@@ -76,6 +87,11 @@ func TestShopFlow(t *testing.T) {
 		if method == http.MethodPost {
 			req.Header.Set("Origin", cfg.FrontendOrigin)
 		}
+		if path == "/api/checkout" {
+			// This flow exercises more checkout cases than the production burst
+			// limiter allows from one IP. Keep the limiter active for each visitor.
+			req.Header.Set("X-Forwarded-For", "192.0.2."+strconv.Itoa(10+gw.count))
+		}
 		if body != "" {
 			req.Header.Set("Content-Type", "application/json")
 		}
@@ -95,6 +111,12 @@ func TestShopFlow(t *testing.T) {
 	if resp, _ := do(http.MethodGet, "/api/me", ""); resp.StatusCode != 200 {
 		t.Fatalf("me after register: status %d", resp.StatusCode)
 	}
+	if resp, body := do(http.MethodGet, "/api/products", ""); resp.StatusCode != 200 || bytes.Contains(body, []byte("Poster")) {
+		t.Fatalf("physical product should be absent from catalog: status %d body %s", resp.StatusCode, body)
+	}
+	if resp, _ := do(http.MethodGet, "/api/products/2", ""); resp.StatusCode != 404 {
+		t.Fatalf("physical product detail: want 404, got %d", resp.StatusCode)
+	}
 
 	// --- checkout: unknown product is rejected ---
 	if resp, _ := do(http.MethodPost, "/api/checkout", `{"items":[{"product_id":999,"quantity":1}]}`); resp.StatusCode != 400 {
@@ -102,6 +124,9 @@ func TestShopFlow(t *testing.T) {
 	}
 	if resp, _ := do(http.MethodPost, "/api/checkout", `{"items":[{"product_id":1,"quantity":1},{"product_id":1,"quantity":1}]}`); resp.StatusCode != 400 {
 		t.Fatalf("checkout duplicate product: want 400, got %d", resp.StatusCode)
+	}
+	if resp, _ := do(http.MethodPost, "/api/checkout", `{"items":[{"product_id":2,"quantity":1}]}`); resp.StatusCode != 400 {
+		t.Fatalf("checkout physical product: want 400, got %d", resp.StatusCode)
 	}
 
 	// --- checkout: valid, quantity 2 ---
@@ -179,6 +204,38 @@ func TestShopFlow(t *testing.T) {
 	}
 	if events != 1 {
 		t.Fatalf("processed_events = %d, want 1 (idempotent)", events)
+	}
+
+	// Delayed payment methods complete before the funds arrive; the later
+	// async success event must unlock the order.
+	resp, body = do(http.MethodPost, "/api/checkout", `{"items":[{"product_id":1,"quantity":1}]}`)
+	if resp.StatusCode != 200 || json.Unmarshal(body, &co) != nil {
+		t.Fatalf("second checkout: status %d body %s", resp.StatusCode, body)
+	}
+	asyncSession := fmt.Sprintf("cs_test_%d", 122+gw.count)
+	completedUnpaid := fmt.Sprintf(`{"id":"evt_unpaid","type":"checkout.session.completed","data":{"object":`+
+		`{"id":"%s","client_reference_id":"%d","payment_status":"unpaid","amount_total":1999,"currency":"usd"}}}`, asyncSession, co.OrderID)
+	if code := postWebhook(completedUnpaid); code != 200 || orderStatus(t, database, co.OrderID) != "pending" {
+		t.Fatalf("unpaid completion: status %d order %s", code, orderStatus(t, database, co.OrderID))
+	}
+	asyncPaid := fmt.Sprintf(`{"id":"evt_async_paid","type":"checkout.session.async_payment_succeeded","data":{"object":`+
+		`{"id":"%s","client_reference_id":"%d","payment_status":"paid","amount_total":1999,"currency":"usd"}}}`, asyncSession, co.OrderID)
+	if code := postWebhook(asyncPaid); code != 200 || orderStatus(t, database, co.OrderID) != "paid" {
+		t.Fatalf("async success: status %d order %s", code, orderStatus(t, database, co.OrderID))
+	}
+
+	resp, body = do(http.MethodPost, "/api/checkout", `{"items":[{"product_id":1,"quantity":1}]}`)
+	if resp.StatusCode != 200 || json.Unmarshal(body, &co) != nil {
+		t.Fatalf("third checkout: status %d body %s", resp.StatusCode, body)
+	}
+	expiredSession := fmt.Sprintf("cs_test_%d", 122+gw.count)
+	expired := fmt.Sprintf(`{"id":"evt_expired","type":"checkout.session.expired","data":{"object":`+
+		`{"id":"%s","client_reference_id":"%d"}}}`, expiredSession, co.OrderID)
+	if code := postWebhook(expired); code != 200 || orderStatus(t, database, co.OrderID) != "cancelled" {
+		t.Fatalf("expired checkout: status %d order %s", code, orderStatus(t, database, co.OrderID))
+	}
+	if code := postWebhook(expired); code != 200 {
+		t.Fatalf("expired event redelivery: status %d", code)
 	}
 
 	// --- logout ends the session ---
@@ -348,6 +405,16 @@ func TestAdminDigitalDeliveryFlow(t *testing.T) {
 	if err := json.Unmarshal(body, &co); err != nil {
 		t.Fatalf("decode checkout: %v", err)
 	}
+	if resp, body := jsonDo(buyerClient, http.MethodPost, "/api/checkout", fmt.Sprintf(`{"items":[{"product_id":%d,"quantity":2}]}`, product.ID)); resp.StatusCode != http.StatusConflict {
+		t.Fatalf("oversold keys: want 409, got %d body %s", resp.StatusCode, body)
+	}
+	secondKeyID := product.Keys[1].ID
+	if resp, body := do(adminClient, http.MethodDelete, fmt.Sprintf("/api/admin/keys/%d", secondKeyID), "", nil); resp.StatusCode != http.StatusOK {
+		t.Fatalf("delete spare key: status %d body %s", resp.StatusCode, body)
+	}
+	if resp, body := do(adminClient, http.MethodDelete, fmt.Sprintf("/api/admin/keys/%d", product.Keys[0].ID), "", nil); resp.StatusCode != http.StatusConflict {
+		t.Fatalf("delete reserved key: want 409, got %d body %s", resp.StatusCode, body)
+	}
 
 	event := fmt.Sprintf(`{"id":"evt_delivery","type":"checkout.session.completed","data":{"object":`+
 		`{"id":"cs_test_123","client_reference_id":"%d","payment_status":"paid","amount_total":1999,"currency":"usd"}}}`,
@@ -388,7 +455,7 @@ func TestAdminDigitalDeliveryFlow(t *testing.T) {
 	if delivery.Status != "paid" || len(delivery.Items) != 1 || delivery.Items[0].PostPurchaseText == "" {
 		t.Fatalf("bad deliverables: %s", body)
 	}
-	if len(delivery.Items[0].Downloads) != 1 || delivery.Items[0].Keys.Total != 2 || delivery.Items[0].Keys.Claimable != 1 {
+	if len(delivery.Items[0].Downloads) != 1 || delivery.Items[0].Keys.Total != 1 || delivery.Items[0].Keys.Claimable != 1 {
 		t.Fatalf("bad delivery assets/keys: %s", body)
 	}
 
@@ -421,10 +488,10 @@ func TestAdminDigitalDeliveryFlow(t *testing.T) {
 	if err := json.Unmarshal(body, &product); err != nil {
 		t.Fatalf("decode product after claim: %v", err)
 	}
-	if product.KeyStats.Claimed != 1 || product.KeyStats.Remaining != 1 {
+	if product.KeyStats.Claimed != 1 || product.KeyStats.Remaining != 0 {
 		t.Fatalf("key stats after claim = %+v", product.KeyStats)
 	}
-	if product.Keys[1].ClaimedOrderItemID == nil || product.Keys[1].ClaimedUserEmail != "buyer@example.com" {
+	if product.Keys[0].ClaimedOrderItemID == nil || product.Keys[0].ClaimedUserEmail != "buyer@example.com" {
 		t.Fatalf("admin key redemption missing: %+v", product.Keys)
 	}
 }

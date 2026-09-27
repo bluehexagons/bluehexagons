@@ -289,23 +289,38 @@ func (h *Handler) adminDeleteKey(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	res, err := h.db.ExecContext(r.Context(), `DELETE FROM product_keys WHERE id = ? AND claimed_at IS NULL`, id)
+	tx, err := h.db.BeginTx(r.Context(), nil)
 	if err != nil {
 		return err
 	}
-	if n, _ := res.RowsAffected(); n == 1 {
-		httpx.WriteJSON(w, http.StatusOK, map[string]string{"status": "ok"})
-		return nil
-	}
+	defer tx.Rollback()
+	var productID int64
 	var claimed sql.NullInt64
-	err = h.db.QueryRowContext(r.Context(), `SELECT claimed_at FROM product_keys WHERE id = ?`, id).Scan(&claimed)
+	err = tx.QueryRowContext(r.Context(), `SELECT product_id, claimed_at FROM product_keys WHERE id = ?`, id).Scan(&productID, &claimed)
 	if errors.Is(err, sql.ErrNoRows) {
 		return httpx.Errorf(http.StatusNotFound, "key not found")
 	}
 	if err != nil {
 		return err
 	}
-	return httpx.Errorf(http.StatusConflict, "claimed keys cannot be deleted")
+	if claimed.Valid {
+		return httpx.Errorf(http.StatusConflict, "claimed keys cannot be deleted")
+	}
+	_, available, err := keyAvailability(r.Context(), tx, productID)
+	if err != nil {
+		return err
+	}
+	if available <= 0 {
+		return httpx.Errorf(http.StatusConflict, "key is needed for an existing order")
+	}
+	if _, err := tx.ExecContext(r.Context(), `DELETE FROM product_keys WHERE id = ?`, id); err != nil {
+		return err
+	}
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+	httpx.WriteJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+	return nil
 }
 
 func (h *Handler) loadAdminProduct(ctx context.Context, id int64, includeKeys bool) (AdminProduct, error) {
@@ -446,6 +461,9 @@ func validateAdminProductInput(in adminProductInput, create bool) (adminProductI
 	}
 	if in.Kind != "digital" && in.Kind != "physical" {
 		return in, httpx.Errorf(http.StatusBadRequest, "kind must be digital or physical")
+	}
+	if in.Kind == "physical" && *in.Active {
+		return in, httpx.Errorf(http.StatusBadRequest, "physical listings must remain inactive until shipping is supported")
 	}
 	return in, nil
 }

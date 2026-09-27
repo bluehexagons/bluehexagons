@@ -82,6 +82,9 @@ func (h *Handler) checkout(w http.ResponseWriter, r *http.Request) error {
 	})
 	if err != nil {
 		h.log.Error("stripe checkout", "order", orderID, "err", err)
+		if _, cancelErr := h.db.ExecContext(r.Context(), `UPDATE orders SET status = 'cancelled' WHERE id = ? AND status = 'pending'`, orderID); cancelErr != nil {
+			h.log.Error("cancel failed checkout", "order", orderID, "err", cancelErr)
+		}
 		return httpx.Errorf(http.StatusBadGateway, "could not start checkout")
 	}
 
@@ -123,16 +126,28 @@ func (h *Handler) createOrder(ctx context.Context, userID int64, items []cartIte
 	rows := make([]lineRow, 0, len(items))
 
 	for _, it := range items {
-		var name, cur string
+		var name, cur, kind string
 		var price int64
 		err := tx.QueryRowContext(ctx,
-			`SELECT name, price_cents, currency FROM products WHERE id = ? AND active = 1`,
-			it.ProductID).Scan(&name, &price, &cur)
+			`SELECT p.name, p.price_cents, p.currency, COALESCE(d.kind, 'digital')
+			 FROM products p LEFT JOIN product_details d ON d.product_id = p.id
+			 WHERE p.id = ? AND p.active = 1`,
+			it.ProductID).Scan(&name, &price, &cur, &kind)
 		if errors.Is(err, sql.ErrNoRows) {
 			return 0, nil, httpx.Errorf(http.StatusBadRequest, "product %d is unavailable", it.ProductID)
 		}
 		if err != nil {
 			return 0, nil, err
+		}
+		if kind != "digital" {
+			return 0, nil, httpx.Errorf(http.StatusBadRequest, "physical products are not available for checkout")
+		}
+		keyTotal, keyAvailable, err := keyAvailability(ctx, tx, it.ProductID)
+		if err != nil {
+			return 0, nil, err
+		}
+		if keyTotal > 0 && keyAvailable < it.Quantity {
+			return 0, nil, httpx.Errorf(http.StatusConflict, "not enough digital keys are available for %s", name)
 		}
 		if currency == "" {
 			currency = cur
@@ -240,5 +255,39 @@ func (h *Handler) fulfill(ctx context.Context, eventID string, obj payment.Check
 	// Extension point: grant entitlements / allocate digital keys / queue a
 	// confirmation email here, inside this transaction, before commit.
 
+	return tx.Commit()
+}
+
+// cancelPendingOrder closes an unpaid Checkout Session without changing an
+// order that has already been marked paid. Stripe may send events out of order.
+func (h *Handler) cancelPendingOrder(ctx context.Context, eventID string, obj payment.CheckoutSessionObject) error {
+	orderID, err := strconv.ParseInt(obj.ClientReferenceID, 10, 64)
+	if err != nil || orderID <= 0 {
+		return fmt.Errorf("bad client_reference_id %q", obj.ClientReferenceID)
+	}
+	tx, err := h.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	if _, err := tx.ExecContext(ctx,
+		`INSERT INTO processed_events (event_id, processed_at) VALUES (?, ?)`, eventID, time.Now().Unix()); err != nil {
+		if db.IsUniqueViolation(err) {
+			return errAlreadyProcessed
+		}
+		return err
+	}
+	var stripeSessionID string
+	if err := tx.QueryRowContext(ctx,
+		`SELECT COALESCE(stripe_session_id, '') FROM orders WHERE id = ?`, orderID).Scan(&stripeSessionID); err != nil {
+		return err
+	}
+	if stripeSessionID == "" || obj.ID != stripeSessionID {
+		return fmt.Errorf("stripe session mismatch for order %d", orderID)
+	}
+	if _, err := tx.ExecContext(ctx,
+		`UPDATE orders SET status = 'cancelled' WHERE id = ? AND status = 'pending'`, orderID); err != nil {
+		return err
+	}
 	return tx.Commit()
 }

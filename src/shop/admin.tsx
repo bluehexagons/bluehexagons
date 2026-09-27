@@ -11,6 +11,7 @@ import {
   type ProductAsset,
   type User,
 } from './api';
+import { formatMoney } from './money';
 
 const app = document.getElementById('app');
 if (!app) throw new Error('Missing #app container');
@@ -67,14 +68,6 @@ const errMessage = (err: unknown): string => {
   return apiErrorMessage(err);
 };
 
-const money = (cents: number, currency: string) => {
-  try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: currency.toUpperCase() }).format(cents / 100);
-  } catch {
-    return `${(cents / 100).toFixed(2)} ${currency.toUpperCase()}`;
-  }
-};
-
 function fileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -124,10 +117,11 @@ function validateProductForm(): string {
   if (!title) return 'Title is required.';
   if (title.length > MAX_TITLE_LENGTH) return `Title must be ${MAX_TITLE_LENGTH} characters or fewer.`;
   if (!Number.isFinite(form.price_cents) || !Number.isInteger(form.price_cents) || form.price_cents < 0) {
-    return 'Price must be a whole number of cents.';
+    return 'Price must be a whole number of minor units.';
   }
   if (!/^[a-z]{3}$/.test(currency)) return 'Currency must be a three-letter code like usd.';
   if (form.kind !== 'digital' && form.kind !== 'physical') return 'Kind must be digital or physical.';
+  if (form.kind === 'physical' && form.active) return 'Physical listings must remain hidden until shipping is supported.';
   if (description.length > MAX_DESCRIPTION_LENGTH) return `Description must be ${MAX_DESCRIPTION_LENGTH} characters or fewer.`;
   if (postPurchaseText.length > MAX_POST_PURCHASE_LENGTH) {
     return `Post-purchase text must be ${MAX_POST_PURCHASE_LENGTH} characters or fewer.`;
@@ -222,11 +216,12 @@ async function submitAuth(kind: 'login' | 'register'): Promise<void> {
 
 async function logout(): Promise<void> {
   if (state.authBusy) return;
-  setState({ authBusy: true });
+  setState({ authBusy: true, error: '' });
   try {
     await api.logout();
-  } catch {
-    /* local state reset is enough */
+  } catch (err) {
+    setState({ authBusy: false, error: errMessage(err) });
+    return;
   }
   authPassword = '';
   authAdminToken = '';
@@ -468,7 +463,7 @@ function productList(): Node {
               <strong>{product.title || product.name}</strong>
               <small>{product.sku}</small>
             </span>
-            <span>{money(product.price_cents, product.currency)}</span>
+            <span>{formatMoney(product.price_cents, product.currency)}</span>
             <span class="shop__muted">
               {product.active ? 'Active' : 'Inactive'} · {product.key_stats.remaining}/{product.key_stats.total} keys
             </span>
@@ -523,7 +518,7 @@ function productForm(): Node {
         <small class="shop__field-help">Shown to customers in the catalog and checkout.</small>
       </label>
       <label>
-        <span>Price (cents)</span>
+        <span>Price (minor units)</span>
         <input
           type="number"
           min="0"
@@ -536,7 +531,7 @@ function productForm(): Node {
             markFormDirty();
           }}
         />
-        <small class="shop__field-help">Use cents, for example 1999 for $19.99.</small>
+        <small class="shop__field-help">Use the currency's smallest charge unit: 1999 for $19.99 USD, or 500 for ¥500 JPY.</small>
       </label>
       <label>
         <span>Currency</span>
@@ -561,9 +556,9 @@ function productForm(): Node {
           }}
         >
           <option value="digital">Digital</option>
-          <option value="physical">Physical placeholder</option>
+          <option value="physical">Physical draft (not for sale)</option>
         </select>
-        <small class="shop__field-help">Digital listings can unlock downloads, keys, or post-purchase text.</small>
+        <small class="shop__field-help">Physical drafts must remain hidden until shipping is supported.</small>
       </label>
       <label class="shop__checkline">
         <input
@@ -621,9 +616,9 @@ function listingReadiness(): Node {
   const hasDelivery = selected.downloads.length > 0 || selected.key_stats.total > 0 || selected.post_purchase_text.trim() !== '';
   const checks = [
     {
-      ok: selected.active,
+      ok: selected.active && selected.kind === 'digital',
       label: 'Shop visibility',
-      detail: selected.active ? 'Visible to customers.' : 'Hidden from the public catalog.',
+      detail: selected.kind === 'physical' ? 'Physical drafts cannot be sold until shipping is supported.' : selected.active ? 'Visible to customers.' : 'Hidden from the public catalog.',
     },
     {
       ok: selected.previews.length > 0,
@@ -915,7 +910,7 @@ function buildTree(): Node {
             <h1>Shop Admin</h1>
             <p class="shop__lede">
               Manage downloadable games, soundtracks, art packs, preview media, and deferred key claims. Physical merchandise is
-              represented as a listing kind now; shipping workflows can be layered in later.
+              represented as drafts but cannot be sold until shipping is supported.
             </p>
           </div>
           {state.loading ? <div class="shop__empty">Loading admin portal...</div> : portal()}

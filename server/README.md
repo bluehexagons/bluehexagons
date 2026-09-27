@@ -40,14 +40,14 @@ deploy/                 build script, systemd unit, Caddyfile, .env.example
 | POST   | `/api/login`            | none (limited)  | Start session                        |
 | POST   | `/api/logout`           | session         | End session                          |
 | GET    | `/api/me`               | session         | Current user                         |
-| GET    | `/api/products`         | none            | List active products                 |
+| GET    | `/api/products`         | none            | List active digital products         |
 | GET    | `/api/products/{id}`    | none            | One product                          |
 | GET    | `/api/assets/{id}/preview` | none         | Public listing preview asset         |
 | GET    | `/api/assets/{id}/download` | session + purchase | Download unlocked asset       |
 | GET    | `/api/orders/{id}/deliverables` | session + owner | Post-purchase text/files/keys |
 | POST   | `/api/order-items/{id}/claim-key` | session + owner | Claim one deferred key        |
 | POST   | `/api/checkout`         | session         | Create order + Stripe Checkout URL   |
-| POST   | `/api/webhooks/stripe`  | Stripe signature| Fulfill paid orders (idempotent)     |
+| POST   | `/api/webhooks/stripe`  | Stripe signature| Fulfill or cancel orders (idempotent)|
 | `*`    | `/api/admin/*`          | admin session   | Manage listings, uploads, and keys   |
 
 Admin sessions use the normal account cookie. `SHOP_PRIMARY_ADMIN_EMAIL`
@@ -63,6 +63,15 @@ asset links. In production these links must be HTTPS and resolve to public IPs;
 Linked download assets redirect to the third-party URL after purchase
 authorization; linked preview images are fetched once and converted into local
 JPEG thumbnails.
+
+Physical products can be saved as inactive drafts, but cannot be published or
+checked out until shipping is supported. Prices use Stripe's currency minor
+units despite the historical `price_cents` API and database field name. A
+key-backed product reserves available key stock for pending and paid orders;
+Stripe expiration or failure releases a pending order's stock. Configure the
+webhook endpoint for `checkout.session.completed`,
+`checkout.session.async_payment_succeeded`,
+`checkout.session.async_payment_failed`, and `checkout.session.expired`.
 
 ## Run locally
 
