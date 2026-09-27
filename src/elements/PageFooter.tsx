@@ -1,5 +1,6 @@
 import { BaseElement } from './BaseElement';
 import pageFooterStyles from './PageFooter.css?inline';
+import { sitePath } from '../site-path';
 
 export class PageFooter extends BaseElement {
   constructor() {
@@ -19,7 +20,7 @@ export class PageFooter extends BaseElement {
 
         <ul class="links-container">
           <li>
-            <site-link href="privacy">Privacy</site-link>
+            <site-link href={sitePath('privacy.html')}>Privacy</site-link>
           </li>
         </ul>
       </footer>

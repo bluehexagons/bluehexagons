@@ -1,5 +1,6 @@
 import '../bootstrap';
 import { render } from '../render';
+import { sitePath } from '../site-path';
 
 const app = document.getElementById('app');
 if (!app) throw new Error('Missing #app container');
@@ -43,11 +44,11 @@ render(
         </div>
 
         <div class="description">
-          <p>I'm a generalist software engineer and indie game developer. Founder of bluehexagons, solo developer of Antistatic.</p>
+          <p>I'm a software engineer and indie game developer. I build games, web software, and the infrastructure behind them, including <site-link href={sitePath('#basaltwater')}>Basaltwater</site-link>.</p>
 
           <p>
-            Open for work, freelance, and contract opportunities using a variety of technologies. Proficient in web and software
-            development. Professional experience in financial tech, e-commerce, and games.
+            Open to engineering roles, freelance work, and contracts. My professional experience spans financial technology,
+            e-commerce, and games; my independent work covers product engineering through deployment and operations.
           </p>
         </div>
 
@@ -56,37 +57,37 @@ render(
             <img
               data-link-override="https://youtu.be/GtGyPGYhTdE?si=AbhJgwcNC9TpAteq"
               title="Antistatic is made from scratch in a bespoke 3D engine, built solo using C and TypeScript using very few third-party dependencies. I created all sound effects, music, 3D models, color algorithms, etc. Follow this link for the Antistatic 0.7 combo video trailer on YouTube."
-              src="/assets/thumbs/antistatic/eztrailer_4-00.00.01.149.png"
+              src={sitePath('/assets/thumbs/antistatic/eztrailer_4-00.00.01.149.png')}
             />
             <img
               title="Air Dash Online was a short-lived project to create a fast platform fighting game for PC, which I was the programmer for."
-              src="/assets/thumbs/ado/1157428_391081464351375_1074064025_n.png"
+              src={sitePath('/assets/thumbs/ado/1157428_391081464351375_1074064025_n.png')}
             />
-            <img title="End of Blackjack, a PC game made in Godot, coming soon." src="/assets/thumbs/bluehexagons/end_of_blackjack.jpg" />
-            <img title="A prototype version of End of Blackjack." src="/assets/thumbs/bluehexagons/early_prototype_card_game.png" />
-            <img title="Minimal Clicker was a short project to learn about Ruby on Rails, with a login system and a button that's fun to press." src="/assets/thumbs/bluehexagons/minimal_clicker.png" />
+            <img title="End of Blackjack, a PC game made in Godot, coming soon." src={sitePath('/assets/thumbs/bluehexagons/end_of_blackjack.jpg')} />
+            <img title="A prototype version of End of Blackjack." src={sitePath('/assets/thumbs/bluehexagons/early_prototype_card_game.png')} />
+            <img title="Minimal Clicker was a short project to learn about Ruby on Rails, with a login system and a button that's fun to press." src={sitePath('/assets/thumbs/bluehexagons/minimal_clicker.png')} />
             <img
               title="A Simple Snake Game is self descriptive, made in Godot and open-source."
-              src="/assets/thumbs/bluehexagons/a_simple_snake_game.png"
+              src={sitePath('/assets/thumbs/bluehexagons/a_simple_snake_game.png')}
             />
           </image-scroller>
           <image-scroller>
             <img
               title="A table rendered in React that was created using the internal table editing tool I authored at Zazzle."
-              src="/assets/thumbs/zazzle/Screenshot 2023-11-13 121545.png"
+              src={sitePath('/assets/thumbs/zazzle/Screenshot 2023-11-13 121545.png')}
             />
             <img
               title="The unofficial Don't Starve Food Guide started as a crockpot simulator early in alpha, and has grown since."
-              src="/assets/thumbs/foodguide/Screenshot 2023-11-16 141703.png"
+              src={sitePath('/assets/thumbs/foodguide/Screenshot 2023-11-16 141703.png')}
             />
-            <img title="Part of the admin UI for backend systems built for a client." src="/assets/thumbs/bluehexagons/redacted_admin_ui.png" />
+            <img title="Part of the admin UI for backend systems built for a client." src={sitePath('/assets/thumbs/bluehexagons/redacted_admin_ui.png')} />
             <img
               title="vector-pose is an open-source vector-based character posing tool I built for an in-development project."
-              src="/assets/thumbs/bluehexagons/vector_pose_alpha.png"
+              src={sitePath('/assets/thumbs/bluehexagons/vector_pose_alpha.png')}
             />
             <img
               title="A macro photograph I took of a butterfly. I post more photos to Bluesky, and offer higher-quality downloads."
-              src="/assets/thumbs/bluehexagons/set_2_5_butterfly.jpg"
+              src={sitePath('/assets/thumbs/bluehexagons/set_2_5_butterfly.jpg')}
             />
           </image-scroller>
         </div>
@@ -427,6 +428,60 @@ render(
         </expandable-section>
       </article>
 
+      <article slot="content" id="basaltwater" class="systems_feature">
+        <div class="systems_feature__intro">
+          <p class="systems_feature__eyebrow">Open-source systems engineering</p>
+          <h1>Basaltwater</h1>
+          <p>
+            I designed and maintain Basaltwater, a toolkit for setting up and operating Debian machines,
+            Proxmox guests, web services, and development workstations. It turns repeatable operations into
+            inspectable commands with diagnostics and recovery paths.
+          </p>
+          <div class="systems_feature__links">
+            <site-link href="https://github.com/bluehexagons/basaltwater">Explore the source</site-link>
+            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/GETTING_STARTED.md">Getting started</site-link>
+          </div>
+        </div>
+
+        <div class="systems_feature__grid">
+          <section>
+            <h2>Machine setup</h2>
+            <p>
+              Compose server and workstation capabilities, provision Proxmox guests, manage service and network
+              configuration, and diagnose hosts after setup.
+            </p>
+            <span>Linux · Python · Proxmox · systemd</span>
+          </section>
+          <section>
+            <h2>Safe deployments</h2>
+            <p>
+              Stage builds before release, isolate service accounts and writable state, check health at activation,
+              and retain a path to roll back. SQLite services can receive consistent backups.
+            </p>
+            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/DEPLOYMENT_SAFETY.md">Deployment design</site-link>
+          </section>
+          <section>
+            <h2>Development environments</h2>
+            <p>
+              Prepare coding VMs with managed Git workspaces, browser testing, credentials, and clear privilege
+              boundaries so changes can be developed, reviewed, and checked against running systems.
+            </p>
+            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/AGENTIC_VMS.md">Coding VM guide</site-link>
+          </section>
+        </div>
+
+        <p class="systems_feature__experience">
+          <strong>Applied experience:</strong> I have used agentic workflows to build features for production websites
+          while contracting for a financial technology company. Across contract and independent work, I have used
+          Codex, Claude Code, GitHub Copilot, Cursor, OpenCode, and T3 Code to develop complex systems.
+        </p>
+
+        <p class="systems_feature__closing">
+          This work draws on the same skills I bring to a team: designing reliable interfaces, automating operations,
+          testing failure paths, and keeping systems understandable for the next person who has to run them.
+        </p>
+      </article>
+
       <article slot="content">
         <h1>
           Antistatic
@@ -436,23 +491,23 @@ render(
         <p class="description">
           A solo-developed uncompromising platform fighting game using a bespoke C/TypeScript engine.
 
-          {' '}Read more at <site-link href="/antistatic">the main Antistatic page.</site-link>
+          {' '}Read more at <site-link href={sitePath('antistatic.html')}>the main Antistatic page.</site-link>
         </p>
 
         <div class="widest center">
           <image-scroller>
-            <img src="/assets/thumbs/antistatic/boxart.png" title="Antistatic's Steam box art" />
+            <img src={sitePath('/assets/thumbs/antistatic/boxart.png')} title="Antistatic's Steam box art" />
             <img
               data-link-override="https://youtu.be/GtGyPGYhTdE?si=AbhJgwcNC9TpAteq"
               title="A thumbnail for the Antistatic 0.7 combo video trailer. Follow the link to check it out."
-              src="/assets/thumbs/antistatic/eztrailer_4-00.00.01.149.png"
+              src={sitePath('/assets/thumbs/antistatic/eztrailer_4-00.00.01.149.png')}
             />
             <img
-              src="/assets/thumbs/antistatic/Screenshot 2023-11-16 135339.png"
+              src={sitePath('/assets/thumbs/antistatic/Screenshot 2023-11-16 135339.png')}
               title="A screenshot of the current state of the 0.8 open alpha test."
             />
             <img
-              src="/assets/thumbs/antistatic/wheeeemodels.png"
+              src={sitePath('/assets/thumbs/antistatic/wheeeemodels.png')}
               title="A screenshot showing a graphics engine test. It uses public domain high-detail models of a DSLR or mirrorless camera, and a rolling coffee cart."
             />
           </image-scroller>
@@ -528,20 +583,20 @@ render(
           <image-scroller>
             <img
               title="A screenshot showing a few technologies I built and worked on being used on the website. I worked extensively on displaying images, interactive hotspots, and the content management system."
-              src="/assets/thumbs/zazzle/Screenshot 2023-11-13 121328.png"
+              src={sitePath('/assets/thumbs/zazzle/Screenshot 2023-11-13 121328.png')}
             />
-            <img title="A screenshot of other examples of rich content and image use I worked on." src="/assets/thumbs/zazzle/Screenshot 2023-11-13 121946.png" />
+            <img title="A screenshot of other examples of rich content and image use I worked on." src={sitePath('/assets/thumbs/zazzle/Screenshot 2023-11-13 121946.png')} />
             <img
               title="A screenshot of a featured creators spotlight, using a highly-configurable profile photo embedding feature I originally authored."
-              src="/assets/thumbs/zazzle/Screenshot 2023-11-13 121406.png"
+              src={sitePath('/assets/thumbs/zazzle/Screenshot 2023-11-13 121406.png')}
             />
             <img
               title="A screenshot of an internal table editing tool built for React that I fully designed and implemented."
-              src="/assets/thumbs/zazzle/Screenshot 2023-05-16 at 20.26.22.png"
+              src={sitePath('/assets/thumbs/zazzle/Screenshot 2023-05-16 at 20.26.22.png')}
             />
             <img
               title="A screenshot of a table rendered in React that was created using the internal table editing tool I authored."
-              src="/assets/thumbs/zazzle/Screenshot 2023-11-13 121545.png"
+              src={sitePath('/assets/thumbs/zazzle/Screenshot 2023-11-13 121545.png')}
             />
           </image-scroller>
         </div>
@@ -616,16 +671,16 @@ render(
           <image-scroller>
             <img
               title="A promotional screenshot showing Tesla using side-special against a stationary Chai."
-              src="/assets/thumbs/ado/1157428_391081464351375_1074064025_n.png"
+              src={sitePath('/assets/thumbs/ado/1157428_391081464351375_1074064025_n.png')}
             />
             <img
               loading="lazy"
               title="A short animation showing Tesla comboing Chai. It ends in an air dash knee used to punish a stun cancel air dash for the KO."
-              src="/assets/ado/dd0e10cb88d38afeaf6303d24b11521f_large.gif"
+              src={sitePath('/assets/ado/dd0e10cb88d38afeaf6303d24b11521f_large.gif')}
             />
             <img
               title="A screenshot of progress made after the Evo demo, leading up to the Kickstarter launch."
-              src="/assets/thumbs/ado/1093871_374154056044116_1718466907_o.png"
+              src={sitePath('/assets/thumbs/ado/1093871_374154056044116_1718466907_o.png')}
             />
           </image-scroller>
         </div>
@@ -681,9 +736,9 @@ render(
 
         <div class="widest center">
           <image-scroller>
-            <img title="A screenshot of the Don't Starve Food Guide's Discovery tab." src="/assets/thumbs/foodguide/Screenshot 2023-11-16 141445.png" />
-            <img title="Woah! That's a lot of food!" src="/assets/thumbs/foodguide/Screenshot 2023-11-16 141703.png" />
-            <img title="A screenshot of the statistics analyzer in the Discovery tab." src="/assets/thumbs/foodguide/Screenshot 2023-11-16 141519.png" />
+            <img title="A screenshot of the Don't Starve Food Guide's Discovery tab." src={sitePath('/assets/thumbs/foodguide/Screenshot 2023-11-16 141445.png')} />
+            <img title="Woah! That's a lot of food!" src={sitePath('/assets/thumbs/foodguide/Screenshot 2023-11-16 141703.png')} />
+            <img title="A screenshot of the statistics analyzer in the Discovery tab." src={sitePath('/assets/thumbs/foodguide/Screenshot 2023-11-16 141519.png')} />
           </image-scroller>
         </div>
 
@@ -731,8 +786,8 @@ render(
 
         <expandable-section aria-label="Show more">
           <p>
-            This website is hosted on a headless Linux server running nginx, written using modern HTML, CSS, and TypeScript. It's
-            still under construction.
+            The main site runs on a Linux server behind nginx. This TypeScript and web components frontend also builds as a static
+            site for GitHub Pages, with the optional shop kept separate from that build.
           </p>
         </expandable-section>
       </article>

@@ -53,6 +53,7 @@ const jsxInjectPlugin: Plugin = {
 export default defineConfig({
   // Base directory for resolving imports
   root: 'src',
+  base: process.env.VITE_BASE_PATH || '/',
 
   plugins: [jsxInjectPlugin],
 

@@ -1,5 +1,6 @@
 import { BaseElement } from './BaseElement';
 import videoReelStyles from './VideoReel.css?inline';
+import { sitePath } from '../site-path';
 
 const defaultVideos = ['carbon1.mp4', 'xenon1.mp4', 'silicon1.mp4', 'helium1.mp4', 'xenon2.mp4'];
 
@@ -16,7 +17,7 @@ export class VideoReelElement extends BaseElement {
   private videos: string[] = [];
   private videoIndex = 0;
   private swapping = false;
-  private videoDir = '/etc/antistatic/clips/';
+  private videoDir = sitePath('etc/antistatic/clips/');
   private preloadLink: HTMLLinkElement | null = null;
   
   constructor() {

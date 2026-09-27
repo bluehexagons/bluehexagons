@@ -1,5 +1,6 @@
 import '../bootstrap';
 import { render } from '../render';
+import { sitePath } from '../site-path';
 
 const app = document.getElementById('app');
 if (!app) throw new Error('Missing #app container');
@@ -57,18 +58,18 @@ render(
 
         <div class="widest center">
           <image-scroller>
-            <img src="/assets/thumbs/antistatic/boxart.png" title="Antistatic's Steam box art" />
+            <img src={sitePath('/assets/thumbs/antistatic/boxart.png')} title="Antistatic's Steam box art" />
             <img
               data-link-override="https://youtu.be/GtGyPGYhTdE?si=AbhJgwcNC9TpAteq"
               title="A thumbnail for the Antistatic 0.7 combo video trailer. Follow the link to check it out."
-              src="/assets/thumbs/antistatic/eztrailer_4-00.00.01.149.png"
+              src={sitePath('/assets/thumbs/antistatic/eztrailer_4-00.00.01.149.png')}
             />
             <img
-              src="/assets/thumbs/antistatic/Screenshot 2023-11-16 135339.png"
+              src={sitePath('/assets/thumbs/antistatic/Screenshot 2023-11-16 135339.png')}
               title="A screenshot of the current state of the 0.8 open alpha test."
             />
             <img
-              src="/assets/thumbs/antistatic/wheeeemodels.png"
+              src={sitePath('/assets/thumbs/antistatic/wheeeemodels.png')}
               title="A screenshot showing a graphics engine test. It uses public domain high-detail models of a DSLR or mirrorless camera, and a rolling coffee cart."
             />
           </image-scroller>
@@ -82,12 +83,12 @@ render(
 
         <div class="widest center">
           <image-scroller>
-            <img src="/assets/antistatic/characters/silicon.png" title="Silicon" alt="Silicon character artwork" />
-            <img src="/assets/antistatic/characters/carbon.png" title="Carbon" alt="Carbon character artwork" />
-            <img src="/assets/antistatic/characters/iron.png" title="Iron" alt="Iron character artwork" />
-            <img src="/assets/antistatic/characters/xenon.png" title="Xenon" alt="Xenon character artwork" />
-            <img src="/assets/antistatic/characters/helium.png" title="Helium" alt="Helium character artwork" />
-            <img src="/assets/antistatic/characters/rhodium.png" title="Rhodium" alt="Rhodium character artwork" />
+            <img src={sitePath('/assets/antistatic/characters/silicon.png')} title="Silicon" alt="Silicon character artwork" />
+            <img src={sitePath('/assets/antistatic/characters/carbon.png')} title="Carbon" alt="Carbon character artwork" />
+            <img src={sitePath('/assets/antistatic/characters/iron.png')} title="Iron" alt="Iron character artwork" />
+            <img src={sitePath('/assets/antistatic/characters/xenon.png')} title="Xenon" alt="Xenon character artwork" />
+            <img src={sitePath('/assets/antistatic/characters/helium.png')} title="Helium" alt="Helium character artwork" />
+            <img src={sitePath('/assets/antistatic/characters/rhodium.png')} title="Rhodium" alt="Rhodium character artwork" />
           </image-scroller>
         </div>
 

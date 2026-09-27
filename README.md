@@ -143,3 +143,13 @@ to work together, email me at
 [Bluesky](https://bsky.app/profile/bluehexagons.com) ·
 [itch.io](https://bluehexagons.itch.io/) ·
 [YouTube](https://www.youtube.com/@bluehexagons)
+
+## Building this site
+
+`npm ci && npm run build` creates the static site in `dist/` for hosting at `/`.
+For the GitHub Pages project URL, build with
+`VITE_BASE_PATH=/bluehexagons/ npm run build`. The Pages workflow runs that
+build and publishes `dist/` to
+[bluehexagons.github.io/bluehexagons](https://bluehexagons.github.io/bluehexagons/).
+The shop and account UI is excluded from the default static build because it
+requires the separate API service.

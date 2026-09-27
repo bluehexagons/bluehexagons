@@ -1,5 +1,6 @@
 import { BaseElement } from './BaseElement';
 import iconStyles from './Icon.css?inline';
+import { sitePath } from '../site-path';
 
 export class IconElement extends BaseElement {
   static observedAttributes = ['name'];
@@ -20,7 +21,7 @@ export class IconElement extends BaseElement {
     }
 
     this.image.style.display = '';
-    this.image.src = `/assets/icons/${iconName}${iconName.endsWith('.png') ? '' : '.svg'}`;
+    this.image.src = sitePath(`assets/icons/${iconName}${iconName.endsWith('.png') ? '' : '.svg'}`);
   }
 
   connectedCallback() {

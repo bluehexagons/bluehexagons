@@ -41,7 +41,7 @@
   box-shadow: 0 100px 150px rgba(8, 9, 10, 0.9);
 
   background: #0b161d top repeat;
-  background-image: url('/assets/b6bg_b.png');
+  background-image: var(--content-background);
 }
 
 @media (max-width: 1500px) {
