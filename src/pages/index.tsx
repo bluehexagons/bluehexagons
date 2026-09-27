@@ -443,7 +443,8 @@ render(
           <p>
             I designed and maintain Basaltwater, a toolkit for setting up and operating Debian machines,
             Proxmox guests, web services, and development workstations. It turns repeatable operations into
-            inspectable commands with diagnostics and recovery paths.
+            inspectable commands with diagnostics and recovery paths. I use it to manage this website and my
+            internal tools, services, and workstations.
           </p>
           <div class="systems_feature__links">
             <site-link href={sitePath('basaltwater.html')}>Read the case study</site-link>
@@ -480,9 +481,10 @@ render(
         </div>
 
         <p class="systems_feature__experience">
-          <strong>Applied experience:</strong> I have used agentic workflows to build features for production websites
-          while contracting for a financial technology company. Across contract and independent work, I have used
-          Codex, Claude Code, GitHub Copilot, Cursor, OpenCode, and T3 Code to develop complex systems.
+          <strong>Applied experience:</strong> As a financial technology contractor, I built features for production
+          websites using an AWS stack that included Lambda, Cognito, DynamoDB, Amplify, CloudWatch, Route 53, IAM,
+          and Secrets Manager. Across contract and independent work, I have used Codex, Claude Code, GitHub Copilot,
+          Cursor, OpenCode, and T3 Code in agentic development workflows.
         </p>
 
         <p class="systems_feature__closing">

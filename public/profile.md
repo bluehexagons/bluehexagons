@@ -5,9 +5,9 @@ Software engineer and indie game developer in southwest Missouri. I build web so
 ## Experience
 
 - Professional work spans financial technology, e-commerce, and games.
-- As a contractor for a financial technology company, I have used agentic workflows to build features for production websites.
+- As a financial technology contractor, I built features for production websites using an AWS stack that included Lambda, Cognito, DynamoDB, Amplify, CloudWatch, Route 53, IAM, and Secrets Manager. The client and product are unnamed here.
 - I have used Codex, Claude Code, GitHub Copilot, Cursor, OpenCode, and T3 Code across contract and independent work developing complex systems.
-- I designed and maintain [Basaltwater](basaltwater.html), an open-source toolkit for repeatable Linux setup, web deployments, operations, and coding environments. [Source repository](https://github.com/bluehexagons/basaltwater).
+- I designed and maintain [Basaltwater](basaltwater.html), an open-source toolkit for repeatable Linux setup, web deployments, operations, and coding environments. I use it to manage this website and my internal tools, services, and workstations. [Source repository](https://github.com/bluehexagons/basaltwater).
 - I am the solo developer of [Antistatic](antistatic.html), a platform fighter built with a bespoke C and TypeScript engine.
 
 ## Engineering areas

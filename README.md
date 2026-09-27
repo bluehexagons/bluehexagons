@@ -51,6 +51,7 @@ automating setup and operations across Debian control planes, servers,
 workstations, and Proxmox guests. It combines repeatable, machine-aware
 configuration with diagnostics, security hardening, deployments, coding-agent
 workflows, and browser automation.
+I use it to manage this website and my internal tools, services, and workstations.
 
 [Read the Basaltwater case study](https://bluehexagons.com/basaltwater.html) for
 the engineering decisions and links to implementation details.

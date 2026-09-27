@@ -7,7 +7,7 @@ The canonical portfolio is https://bluehexagons.com/. The GitHub Pages project s
 ## Profile and projects
 
 - [Concise profile](profile.md): Experience, engineering areas, work interests, and contact.
-- [Basaltwater case study](basaltwater.html): Linux setup, deployment safety, and development environments.
+- [Basaltwater case study](basaltwater.html): Linux setup, deployment safety, development environments, and use in operating this website and internal systems.
 - [Antistatic](antistatic.html): Solo-developed platform fighting game and technical details.
 
 ## Primary evidence
@@ -16,4 +16,5 @@ The canonical portfolio is https://bluehexagons.com/. The GitHub Pages project s
 - [Manifest parser](https://github.com/bluehexagons/basaltwater/blob/main/lib/project_manifest.py) and [deployment orchestrator](https://github.com/bluehexagons/basaltwater/blob/main/lib/deployment.py): Representative implementation files.
 - [Basaltwater deployment safety](https://github.com/bluehexagons/basaltwater/blob/main/docs/DEPLOYMENT_SAFETY.md): Release staging, health checks, backups, and recovery.
 - [Basaltwater coding VMs](https://github.com/bluehexagons/basaltwater/blob/main/docs/AGENTIC_VMS.md): Managed development environments.
+- [This site's deployment manifest](https://github.com/bluehexagons/bluehexagons/blob/main/basaltwater.json): Public example of a site managed with Basaltwater.
 - [Portfolio source](https://github.com/bluehexagons/bluehexagons): Source for this website.
