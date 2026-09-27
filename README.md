@@ -44,9 +44,9 @@ Antistatic predates Air Dash Online. Its team hired me as lead programmer after
 seeing an early demo of the project—then called Blastzone—and knowing me through
 the local competitive Super Smash Bros. scene.
 
-## infra-tools
+## Basaltwater
 
-[infra-tools](https://github.com/bluehexagons/infra_tools) is my toolkit for
+[Basaltwater](https://github.com/bluehexagons/basaltwater) is my toolkit for
 automating setup and operations across Debian control planes, servers,
 workstations, and Proxmox guests. It combines repeatable, machine-aware
 configuration with diagnostics, security hardening, deployments, coding-agent

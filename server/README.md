@@ -88,31 +88,55 @@ stripe listen --forward-to localhost:8080/api/webhooks/stripe
 3. Install `deploy/bx-server.service`, `systemctl enable --now bx-server`.
 4. Put Caddy in front with `deploy/Caddyfile` for automatic HTTPS.
 
-### Automated deploy (infra_tools)
+### Automated deploy (Basaltwater)
 
-The repo-root `infra.json` deploys only the static site by default; it does not
-build or install this optional backend. For an explicit backend deployment, use
-a service manifest component with `path: "/api"`. In that path infra_tools
-installs `deploy/bx-server.service.tmpl` as the systemd unit, substituting
-`{{...}}` placeholders at deploy time, and reverse-proxies same-origin `/api` →
-`127.0.0.1:8080` via nginx. Specifically it:
+The repo-root `basaltwater.json` deploys only the static site by default; it does
+not build or install this optional backend. To deploy the API, add this service
+component to its `components` array:
 
-- runs the service as a **dedicated, isolated** `--system` user (`app-<app>-shop-api`),
-  not a shared deploy user;
-- creates and owns a **managed data dir** at
-  `/var/www/.infra_tools_shared/<app>/shop-api/data` (the `{{data_dir}}`), which
-  persists across deploys; the unit injects `DB_PATH` there and restricts writes
-  to it (`ReadWritePaths`);
-- reads the operator env file from the managed shared dir
-  (`.../shop-api/.env`, the `{{env_file}}`) — secrets live there, never in the repo.
+```json
+{
+  "name": "shop-api",
+  "type": "service",
+  "domain": "{{domain}}",
+  "path": "/api",
+  "build": "server/deploy/build.sh",
+  "binary": "server/bx-server",
+  "port": "auto",
+  "env_file": "{{shared_dir}}/.env",
+  "runtime_env": {
+    "LISTEN_ADDR": "127.0.0.1:{{port}}",
+    "DB_PATH": "{{data_dir}}/bluehexagons.db",
+    "SHOP_UPLOAD_DIR": "{{data_dir}}/shop_uploads"
+  },
+  "health": "/api/health",
+  "sqlite_backup": "{{data_dir}}/bluehexagons.db",
+  "backup_retention": 14
+}
+```
 
-The non-templated `deploy/bx-server.service` and `deploy/Caddyfile` are the
-**manual**-path reference (they target `/opt/bx-server`), not used by infra_tools.
-Either way, `LISTEN_ADDR` in the env file must match the manifest's `port` (`8080`).
+Basaltwater generates the hardened systemd unit for the dedicated
+`app-<app>-shop-api` user and proxies same-origin `/api` to its assigned
+loopback port. It keeps the database and uploaded assets in
+`/var/www/.basaltwater_shared/<app>/shop-api/data` across releases, and backs up
+the SQLite database before replacement. See [Basaltwater's deployment guide](https://github.com/bluehexagons/basaltwater/blob/main/docs/DEPLOYMENTS.md)
+for the manifest and backup behavior.
+
+Before deploying, put the operator env file at
+`/var/www/.basaltwater_shared/<app>/shop-api/.env`, using
+`deploy/.env.example` as a starting point. Omit `LISTEN_ADDR`, `DB_PATH`, and
+`SHOP_UPLOAD_DIR` because the manifest sets them. The file must be readable but
+not writable by the generated service user, and its parent directory must not
+be writable by that user. Keep secrets out of the repository.
+
+The non-templated `deploy/bx-server.service` and `deploy/Caddyfile` are for the
+manual `/opt/bx-server` deployment only.
 
 ### Backups
 
-SQLite runs in WAL mode. Back up consistently without stopping the service:
+SQLite runs in WAL mode. The Basaltwater service component above creates a
+consistent backup before release replacement. For a manual deployment, back up
+the database without stopping the service:
 
 ```bash
 sqlite3 /opt/bx-server/data/bluehexagons.db ".backup '/backup/bx-$(date +%F).db'"
