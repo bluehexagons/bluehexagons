@@ -8,13 +8,16 @@ export class ExpandableSection extends BaseElement {
   private contentContainer: HTMLDivElement | null = null;
   private contentInner: HTMLDivElement | null = null;
   private resizeObserver: ResizeObserver | null = null;
+  private collapsedLabel = 'Show more';
+  private expandedLabel = 'Show less';
 
   constructor() {
     super(styles);
   }
 
   connectedCallback() {
-    const ariaLabel = this.getAttribute('aria-label') || 'Show more';
+    this.collapsedLabel = this.getAttribute('aria-label') || 'Show more';
+    this.expandedLabel = this.collapsedLabel.replace(/^Show more/, 'Show less');
     const contentId = `expandable-${++expandableSectionId}`;
 
     let toggleButton: HTMLButtonElement | null = null;
@@ -58,7 +61,7 @@ export class ExpandableSection extends BaseElement {
           class="expand_toggle"
           type="button"
           aria-expanded="false"
-          aria-label={ariaLabel}
+          aria-label={this.collapsedLabel}
           aria-controls={contentId}
           ref={(el: Element) => {
             toggleButton = el as HTMLButtonElement;
@@ -94,6 +97,7 @@ export class ExpandableSection extends BaseElement {
     const isExpanded = expanded !== undefined ? expanded : this.toggleButton.getAttribute('aria-expanded') !== 'true';
 
     this.toggleButton.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+    this.toggleButton.setAttribute('aria-label', isExpanded ? this.expandedLabel : this.collapsedLabel);
     this.contentContainer.classList.toggle('expanded', isExpanded);
 
     if (isExpanded) {

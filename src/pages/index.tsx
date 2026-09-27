@@ -10,10 +10,17 @@ render(
     <content-area>
       <page-header slot="content"></page-header>
 
-      <article slot="content">
+      <article slot="content" class="profile_intro">
         <h1>Loren Crain</h1>
 
-        <br />
+        <div class="description">
+          <p>I'm a software engineer and indie game developer. I build games, web software, and the infrastructure behind them, including <site-link href={sitePath('#basaltwater')}>Basaltwater</site-link>.</p>
+
+          <p>
+            Open to engineering roles, freelance work, and contracts. My professional experience spans financial technology,
+            e-commerce, and games; my independent work covers product engineering through deployment and operations.
+          </p>
+        </div>
 
         <div class="labeled_list profile_links contact_links">
           <div>Contact</div>
@@ -43,15 +50,6 @@ render(
           <icon-img name="MissouriFlag.png"></icon-img> SW MO, USA (central time)
         </div>
 
-        <div class="description">
-          <p>I'm a software engineer and indie game developer. I build games, web software, and the infrastructure behind them, including <site-link href={sitePath('#basaltwater')}>Basaltwater</site-link>.</p>
-
-          <p>
-            Open to engineering roles, freelance work, and contracts. My professional experience spans financial technology,
-            e-commerce, and games; my independent work covers product engineering through deployment and operations.
-          </p>
-        </div>
-
         <section class="cause_interests">
           <h2>Work I care about</h2>
           <p>
@@ -59,29 +57,91 @@ render(
             expanding access to science and technology, and human rights causes.
           </p>
         </section>
+      </article>
+
+      <article slot="content" id="basaltwater" class="systems_feature">
+        <div class="systems_feature__intro">
+          <p class="systems_feature__eyebrow">Open-source systems engineering</p>
+          <h2 class="section_title">Basaltwater</h2>
+          <p>
+            I designed and maintain Basaltwater, a toolkit for setting up and operating Debian machines,
+            Proxmox guests, web services, and development workstations. It turns repeatable operations into
+            inspectable commands with diagnostics and recovery paths. I use it to manage this website and my
+            internal tools, services, and workstations.
+          </p>
+          <div class="systems_feature__links">
+            <site-link href={sitePath('basaltwater.html')}>Read the case study</site-link>
+            <site-link href="https://github.com/bluehexagons/basaltwater">Explore the source</site-link>
+            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/GETTING_STARTED.md">Getting started</site-link>
+          </div>
+        </div>
+
+        <div class="systems_feature__grid">
+          <section>
+            <h3>Machine setup</h3>
+            <p>
+              Compose server and workstation capabilities, provision Proxmox guests, manage service and network
+              configuration, and diagnose hosts after setup.
+            </p>
+            <span>Linux · Python · Proxmox · systemd</span>
+          </section>
+          <section>
+            <h3>Safe deployments</h3>
+            <p>
+              Stage builds before release, isolate service accounts and writable state, check health at activation,
+              and retain a path to roll back. SQLite services can receive consistent backups.
+            </p>
+            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/DEPLOYMENT_SAFETY.md">Deployment design</site-link>
+          </section>
+          <section>
+            <h3>Development environments</h3>
+            <p>
+              Prepare coding VMs with managed Git workspaces, browser testing, credentials, and clear privilege
+              boundaries so changes can be developed, reviewed, and checked against running systems.
+            </p>
+            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/AGENTIC_VMS.md">Coding VM guide</site-link>
+          </section>
+        </div>
+
+        <p class="systems_feature__experience">
+          <strong>Applied experience:</strong> As a financial technology contractor, I built features for production
+          websites using an AWS stack that included Lambda, Cognito, DynamoDB, Amplify, CloudWatch, Route 53, IAM,
+          and Secrets Manager. Across contract and independent work, I have used Codex, Claude Code, GitHub Copilot,
+          Cursor, OpenCode, and T3 Code in agentic development workflows.
+        </p>
+
+        <p class="systems_feature__closing">
+          This work draws on the same skills I bring to a team: designing reliable interfaces, automating operations,
+          testing failure paths, and keeping systems understandable for the next person who has to run them.
+        </p>
+      </article>
+
+      <article slot="content" class="work_overview">
+        <h2 class="section_title">Work samples and skills</h2>
+        <p class="work_overview__lede">A selection of games, web tools, and visual work. Scroll through the images and select one for a larger view or related video.</p>
 
         <div class="widest center">
           <image-scroller>
             <img
               data-link-override="https://youtu.be/GtGyPGYhTdE?si=AbhJgwcNC9TpAteq"
-              title="Antistatic is made from scratch in a bespoke 3D engine, built solo using C and TypeScript using very few third-party dependencies. I created all sound effects, music, 3D models, color algorithms, etc. Follow this link for the Antistatic 0.7 combo video trailer on YouTube."
+              title="Antistatic's 0.7 combo trailer. I built its engine, models, animation, sound effects, and music."
               src={sitePath('/assets/thumbs/antistatic/eztrailer_4-00.00.01.149.png')}
             />
             <img
               title="Air Dash Online was a short-lived project to create a fast platform fighting game for PC, which I was the programmer for."
               src={sitePath('/assets/thumbs/ado/1157428_391081464351375_1074064025_n.png')}
             />
-            <img title="End of Blackjack, a PC game made in Godot, coming soon." src={sitePath('/assets/thumbs/bluehexagons/end_of_blackjack.jpg')} />
+            <img title="End of Blackjack, a PC game I built in Godot." src={sitePath('/assets/thumbs/bluehexagons/end_of_blackjack.jpg')} />
             <img title="A prototype version of End of Blackjack." src={sitePath('/assets/thumbs/bluehexagons/early_prototype_card_game.png')} />
             <img title="Minimal Clicker was a short project to learn about Ruby on Rails, with a login system and a button that's fun to press." src={sitePath('/assets/thumbs/bluehexagons/minimal_clicker.png')} />
             <img
-              title="A Simple Snake Game is self descriptive, made in Godot and open-source."
+              title="A Simple Snake Game, an open-source Godot project."
               src={sitePath('/assets/thumbs/bluehexagons/a_simple_snake_game.png')}
             />
           </image-scroller>
           <image-scroller>
             <img
-              title="A table rendered in React that was created using the internal table editing tool I authored at Zazzle."
+              title="A React table created with an internal editing tool I built at Zazzle."
               src={sitePath('/assets/thumbs/zazzle/Screenshot 2023-11-13 121545.png')}
             />
             <img
@@ -104,10 +164,10 @@ render(
           <div>Roles</div>
           <ul class="flex_list flex_list__background">
             <li>Software Engineer</li>
-            <li>True Full-Stack</li>
-            <li>Web Dev</li>
-            <li>Game Dev</li>
-            <li>SysAdmin</li>
+            <li>Full-stack engineer</li>
+            <li>Web developer</li>
+            <li>Game developer</li>
+            <li>Systems administrator</li>
           </ul>
         </div>
 
@@ -382,7 +442,7 @@ render(
               <li>DynamoDB</li>
               <li>AWS Amplify</li>
               <li>CloudWatch</li>
-              <li>Route 51</li>
+              <li>Route 53</li>
               <li>IAM</li>
               <li>Secrets Manager</li>
             </ul>
@@ -434,63 +494,6 @@ render(
             </ul>
           </div>
         </expandable-section>
-      </article>
-
-      <article slot="content" id="basaltwater" class="systems_feature">
-        <div class="systems_feature__intro">
-          <p class="systems_feature__eyebrow">Open-source systems engineering</p>
-          <h2 class="section_title">Basaltwater</h2>
-          <p>
-            I designed and maintain Basaltwater, a toolkit for setting up and operating Debian machines,
-            Proxmox guests, web services, and development workstations. It turns repeatable operations into
-            inspectable commands with diagnostics and recovery paths. I use it to manage this website and my
-            internal tools, services, and workstations.
-          </p>
-          <div class="systems_feature__links">
-            <site-link href={sitePath('basaltwater.html')}>Read the case study</site-link>
-            <site-link href="https://github.com/bluehexagons/basaltwater">Explore the source</site-link>
-            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/GETTING_STARTED.md">Getting started</site-link>
-          </div>
-        </div>
-
-        <div class="systems_feature__grid">
-          <section>
-            <h3>Machine setup</h3>
-            <p>
-              Compose server and workstation capabilities, provision Proxmox guests, manage service and network
-              configuration, and diagnose hosts after setup.
-            </p>
-            <span>Linux · Python · Proxmox · systemd</span>
-          </section>
-          <section>
-            <h3>Safe deployments</h3>
-            <p>
-              Stage builds before release, isolate service accounts and writable state, check health at activation,
-              and retain a path to roll back. SQLite services can receive consistent backups.
-            </p>
-            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/DEPLOYMENT_SAFETY.md">Deployment design</site-link>
-          </section>
-          <section>
-            <h3>Development environments</h3>
-            <p>
-              Prepare coding VMs with managed Git workspaces, browser testing, credentials, and clear privilege
-              boundaries so changes can be developed, reviewed, and checked against running systems.
-            </p>
-            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/AGENTIC_VMS.md">Coding VM guide</site-link>
-          </section>
-        </div>
-
-        <p class="systems_feature__experience">
-          <strong>Applied experience:</strong> As a financial technology contractor, I built features for production
-          websites using an AWS stack that included Lambda, Cognito, DynamoDB, Amplify, CloudWatch, Route 53, IAM,
-          and Secrets Manager. Across contract and independent work, I have used Codex, Claude Code, GitHub Copilot,
-          Cursor, OpenCode, and T3 Code in agentic development workflows.
-        </p>
-
-        <p class="systems_feature__closing">
-          This work draws on the same skills I bring to a team: designing reliable interfaces, automating operations,
-          testing failure paths, and keeping systems understandable for the next person who has to run them.
-        </p>
       </article>
 
       <article slot="content">

@@ -38,6 +38,11 @@
   color: #fff;
 }
 
+.expand_toggle:focus-visible {
+  outline: 2px solid var(--highlight, #00dffc);
+  outline-offset: 2px;
+}
+
 .expand_toggle::before {
   content: 'Show more';
   font-size: 14px;
@@ -90,5 +95,13 @@
 @media (max-width: 700px) {
   .expand_toggle {
     padding: 9px 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .expand_toggle,
+  .expandable-content,
+  .expandable-content::after {
+    transition: none;
   }
 }
