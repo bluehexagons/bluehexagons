@@ -5,6 +5,8 @@ the bluehexagons site. It compiles to a single static binary with **zero
 runtime dependencies** and is meant to be audited independently of the static
 frontend.
 
+Requires Go 1.27.3 or newer. Go has no LTS line; development targets the latest stable release.
+
 ## Design
 
 - **Standard library first.** HTTP server + routing (`net/http`, Go 1.22+
