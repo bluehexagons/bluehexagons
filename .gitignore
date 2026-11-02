@@ -2,8 +2,14 @@
 /dist
 /public/assets/thumbs
 
+# Local configuration (keep sanitized examples tracked)
+.env
+.env.*
+!.env.example
+
 # Go backend (server/)
 /server/bx-server
 /server/*.db
 /server/*.db-shm
 /server/*.db-wal
+/server/shop_uploads/

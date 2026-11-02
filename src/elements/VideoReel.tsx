@@ -17,7 +17,7 @@ export class VideoReelElement extends BaseElement {
   private videos: string[] = [];
   private videoIndex = 0;
   private swapping = false;
-  private videoDir = sitePath('etc/antistatic/clips/');
+  private videoDir = sitePath('etc/antistatic/assets/clips/');
   private preloadLink: HTMLLinkElement | null = null;
   
   constructor() {

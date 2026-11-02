@@ -635,7 +635,7 @@ render(
               Font rendering: <site-link href="https://github.com/freetype">Freetype</site-link>
             </li>
             <li>
-              Fonts: <site-link href="https://github.com/googlefonts/noto-fonts">Noto</site-link>,{' '}
+              Fonts: <site-link href="https://github.com/notofonts/noto-fonts">Noto</site-link>,{' '}
               <site-link href="https://github.com/IBM/plex">IBM Plex</site-link>
             </li>
             <li>

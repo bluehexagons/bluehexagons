@@ -72,7 +72,7 @@ render(
           <div class="systems_feature__links">
             <site-link href={sitePath('basaltwater.html')}>Read the case study</site-link>
             <site-link href="https://github.com/bluehexagons/basaltwater">Explore the source</site-link>
-            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/GETTING_STARTED.md">Getting started</site-link>
+            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/getting-started/getting-started.md">Getting started</site-link>
           </div>
         </div>
 
@@ -91,7 +91,7 @@ render(
               Stage builds before release, isolate service accounts and writable state, check health at activation,
               and retain a path to roll back. SQLite services can receive consistent backups.
             </p>
-            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/DEPLOYMENT_SAFETY.md">Deployment design</site-link>
+            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/services/deployment-safety.md">Deployment design</site-link>
           </section>
           <section>
             <h3>Development environments</h3>
@@ -99,7 +99,7 @@ render(
               Prepare coding VMs with managed Git workspaces, browser testing, credentials, and clear privilege
               boundaries so changes can be developed, reviewed, and checked against running systems.
             </p>
-            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/AGENTIC_VMS.md">Coding VM guide</site-link>
+            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/agents/agentic-vms.md">Coding VM guide</site-link>
           </section>
         </div>
 
@@ -184,7 +184,7 @@ render(
               <site-link href="https://nodejs.org/en">Node.js</site-link>
             </li>
             <li>
-              <site-link href="https://electronjs.org/">Electron</site-link>
+              <site-link href="https://www.electronjs.org/">Electron</site-link>
             </li>
             <li>
               <site-link href="https://react.dev/">React</site-link>
@@ -297,7 +297,7 @@ render(
                 <icon-img name="JS"></icon-img> JavaScript
               </li>
               <li>
-                <site-link href="https://electronjs.org/">Electron</site-link>
+                <site-link href="https://www.electronjs.org/">Electron</site-link>
               </li>
               <li>
                 <site-link href="https://react.dev/">React</site-link>

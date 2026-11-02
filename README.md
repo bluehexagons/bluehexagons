@@ -11,7 +11,7 @@ e-commerce, and games.
 
 ## Released games
 
-### [Antistatic](https://bluehexagons.com/antistatic)
+### [Antistatic](https://bluehexagons.com/antistatic.html)
 
 [Antistatic on Steam](https://store.steampowered.com/app/944500/Antistatic) ·
 [itch.io](https://bluehexagons.itch.io/antistatic) ·
@@ -21,7 +21,8 @@ Antistatic is a crisp, uncompromising platform fighter focused on exploring
 competitive mechanics. I built the game and its custom C and TypeScript engine
 as a solo project, including its animation, 3D art, music, and sound.
 
-Antistatic’s related repositories include the [lobby server](https://github.com/bluehexagons/antistatic-server),
+The game's source is private. Public supporting repositories include the
+[lobby server](https://github.com/bluehexagons/antistatic-server),
 [animation tool](https://github.com/bluehexagons/antistatic-animator), and
 [translation files](https://github.com/bluehexagons/antistatic-translations). The
 [Trace language](https://github.com/bluehexagons/trace),
@@ -152,13 +153,40 @@ to work together, email me at
 
 ## Building this site
 
-`npm ci && npm run build` creates the static site in `dist/` for hosting at `/`.
+Use Node.js 24.22.2 or newer in the 24.x line, or 26.13.0 or newer in the
+26.x line. [Node.js downloads](https://nodejs.org/en/download/) provides both
+supported LTS lines; `.nvmrc` pins the 24.x release used by CI.
+
+```bash
+nvm install && nvm use      # if you use nvm
+npm ci
+npm run dev                 # development server at http://localhost:3000
+npm run build               # production output in dist/
+npm run preview             # inspect the production build locally
+```
+
+`npm run build` creates the static site in `dist/` for hosting at `/`.
+The build type-checks the frontend and generates thumbnails from `public/assets/`.
+Thumbnails, `node_modules/`, and `dist/` are generated and are not committed.
 For the GitHub Pages project URL, build with
 `VITE_BASE_PATH=/bluehexagons/ npm run build`. The Pages workflow runs that
 build and publishes `dist/` to
 [bluehexagons.github.io/bluehexagons](https://bluehexagons.github.io/bluehexagons/).
 The shop and account UI is excluded from the default static build because it
 requires the separate API service.
+
+Use `npm run dev:shop` for local shop development or `npm run build:shop` to
+include it in a production build. See the [API setup guide](server/README.md)
+for the Go service, local cookies, payments, and deployment. `VITE_API_BASE`
+can override the API origin; it defaults to `http://localhost:8080` on local
+hosts and the site's own origin in production. Values beginning with `VITE_`
+are public build settings; keep secrets in the API's environment.
+
+Before pushing, run `npm run build`, `npm run build:shop`, and, from `server/`,
+`go mod verify`, `go vet ./...`, and `go test -race ./...`. The repository
+checks workflow runs these checks and builds the static Go binary on pushes
+to `main` and pull requests. The separate Pages workflow builds the static
+portfolio for the project URL on pushes to `main`.
 
 The homepage includes a short HTML summary that remains readable without
 JavaScript. Keep it aligned with the interactive homepage and the concise
@@ -167,3 +195,7 @@ JavaScript. Keep it aligned with the interactive homepage and the concise
 the project; [`llms.txt`](public/llms.txt) links these public sources for
 automated readers. Canonical URLs and the sitemap point to bluehexagons.com,
 which is the primary copy of the site.
+
+Check repository links while signed out of GitHub before adding them to public
+pages or documentation. Link to a public project page or storefront when the
+source repository is private.

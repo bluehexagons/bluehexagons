@@ -77,11 +77,33 @@ webhook endpoint for `checkout.session.completed`,
 
 ## Run locally
 
+Run these commands from `server/`. Configuration comes from the process
+environment; the Go service does not load `.env` files automatically.
+
 ```bash
 go run .                                   # serves on 127.0.0.1:8080
-SEED_DEMO=1 COOKIE_SECURE=false go run .    # with example products, http cookies
-SHOP_PRIMARY_ADMIN_EMAIL=you@example.com SHOP_ADMIN_SIGNUP_TOKEN=dev-token COOKIE_SECURE=false go run . # enables /shop/admin.html locally
-go test ./...                               # unit/handler tests
+# Example products and cookies for local HTTP.
+SEED_DEMO=1 COOKIE_SECURE=false go run .
+```
+
+In another terminal, run `npm ci && npm run dev:shop` from the repository root,
+then open `http://localhost:3000/shop/`. The API permits that frontend origin
+by default. Stripe return URLs also use `FRONTEND_ORIGIN`; update it if you
+change the frontend's host or port.
+
+To bootstrap a local administrator, add
+`SHOP_PRIMARY_ADMIN_EMAIL=you@example.com SHOP_ADMIN_SIGNUP_TOKEN=dev-token`
+to the API command, then register through `/shop/admin.html` using that email
+and token. Local data is saved to `server/bluehexagons.db` and uploads to
+`server/shop_uploads/`; both are ignored by Git.
+
+Run the backend checks from `server/`:
+
+```bash
+go mod verify
+go vet ./...
+go test -race ./...                         # unit/handler tests + race detector
+./deploy/build.sh                          # static Linux binary (CGO disabled)
 ```
 
 Test Stripe webhooks locally with the Stripe CLI (a dev tool, not a dependency):
@@ -93,11 +115,31 @@ stripe listen --forward-to localhost:8080/api/webhooks/stripe
 
 ## Deploy (self-hosted VPS)
 
-1. `./deploy/build.sh` → static `bx-server` (verify with `file bx-server`).
-2. Copy the binary, `deploy/.env.example` (→ `.env`), and create
-   `/opt/bx-server/data`.
-3. Install `deploy/bx-server.service`, `systemctl enable --now bx-server`.
-4. Put Caddy in front with `deploy/Caddyfile` for automatic HTTPS.
+1. Run `./deploy/build.sh` from `server/` to build a static `bx-server`
+   (verify with `file bx-server`). It targets Linux/amd64 by default; set
+   `GOARCH=arm64` when the server uses ARM64.
+2. On the target host, create the system service user and data directory:
+
+   ```bash
+   sudo useradd --system --user-group --home-dir /opt/bx-server --shell /usr/sbin/nologin bxserver
+   sudo install -d -o root -g root -m 755 /opt/bx-server
+   sudo install -d -o bxserver -g bxserver -m 700 /opt/bx-server/data
+   ```
+
+3. Install the binary at `/opt/bx-server/bx-server` as root with mode `755`.
+   Copy `deploy/.env.example` to `/opt/bx-server/.env`, replace the example
+   secrets, and set the public frontend origin/URL. Keep it owned by
+   `root:bxserver` with mode `640`. Store both the database and uploaded assets
+   under `/opt/bx-server/data`, the unit's writable directory.
+4. Install `deploy/bx-server.service` in `/etc/systemd/system/`, run
+   `sudo systemctl daemon-reload`, then `sudo systemctl enable --now bx-server`.
+5. Put Caddy in front using the API handler in `deploy/Caddyfile` for automatic
+   HTTPS. That example only proxies `/api/*`; combine it with your static-site
+   hosting configuration. Build the frontend with `npm run build:shop` from
+   the repository root and serve its `dist/` on the same public origin.
+
+Confirm `/api/health` responds before enabling checkout. Keep `.env`, database
+backups, and uploaded assets outside the public static-site directory.
 
 ### Automated deploy (Basaltwater)
 
@@ -130,7 +172,7 @@ Basaltwater generates the hardened systemd unit for the dedicated
 `app-<app>-shop-api` user and proxies same-origin `/api` to its assigned
 loopback port. It keeps the database and uploaded assets in
 `/var/www/.basaltwater_shared/<app>/shop-api/data` across releases, and backs up
-the SQLite database before replacement. See [Basaltwater's deployment guide](https://github.com/bluehexagons/basaltwater/blob/main/docs/DEPLOYMENTS.md)
+the SQLite database before replacement. See [Basaltwater's deployment guide](https://github.com/bluehexagons/basaltwater/blob/main/docs/services/deployments.md)
 for the manifest and backup behavior.
 
 Before deploying, put the operator env file at
