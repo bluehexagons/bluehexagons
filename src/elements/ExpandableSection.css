@@ -1,5 +1,12 @@
 :host {
   display: block;
+  min-width: 0;
+}
+
+[data-root='content'] {
+  display: block !important;
+  width: 100%;
+  min-width: 0;
 }
 
 .expandable-container {

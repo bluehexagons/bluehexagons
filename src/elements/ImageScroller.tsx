@@ -72,19 +72,16 @@ export class ImageScrollerElement extends BaseElement {
     }
 
     const selectAndReveal = () => {
-      if (this.currentImage === imgElement) {
-        return;
-      }
-
       this.selectImage(imgElement);
       this.currentImage?.scrollIntoView({
-        behavior: 'smooth',
         block: 'nearest',
         inline: 'nearest',
       });
     };
 
-    imgElement.addEventListener('mouseenter', selectAndReveal);
+    imgElement.addEventListener('mouseenter', () => {
+      if (this.currentImage !== imgElement) this.selectImage(imgElement);
+    });
 
     imgElement.addEventListener('touchstart', () => {
       this.selectImage(imgElement);

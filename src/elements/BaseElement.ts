@@ -10,7 +10,7 @@ export abstract class BaseElement extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' });
 
     this.stylesRoot = document.createElement('div');
-    this.stylesRoot.style.display = 'inline-block';
+    this.stylesRoot.hidden = true;
     this.stylesRoot.setAttribute('data-root', 'styles');
     this.shadow.appendChild(this.stylesRoot);
 

@@ -21,7 +21,7 @@ Antistatic is a crisp, uncompromising platform fighter focused on exploring
 competitive mechanics. I built the game and its custom C and TypeScript engine
 as a solo project, including its animation, 3D art, music, and sound.
 
-The game's source is private. Public supporting repositories include the
+Antistatic's supporting repositories include the
 [lobby server](https://github.com/bluehexagons/antistatic-server),
 [animation tool](https://github.com/bluehexagons/antistatic-animator), and
 [translation files](https://github.com/bluehexagons/antistatic-translations). The
@@ -172,6 +172,8 @@ For the GitHub Pages project URL, build with
 `VITE_BASE_PATH=/bluehexagons/ npm run build`. The Pages workflow runs that
 build and publishes `dist/` to
 [bluehexagons.github.io/bluehexagons](https://bluehexagons.github.io/bluehexagons/).
+To preview that build locally, use
+`VITE_BASE_PATH=/bluehexagons/ npm run preview` so the preview uses the same path.
 The shop and account UI is excluded from the default static build because it
 requires the separate API service.
 

@@ -234,7 +234,7 @@ function buildTree(): Node {
   return (
     <>
       <content-area>
-        <page-header slot="content"></page-header>
+        <page-header slot="header"></page-header>
         <article slot="content" class="shop__page">
           <div class="shop__hero">
             <div class="shop__eyebrow">Stripe checkout return</div>

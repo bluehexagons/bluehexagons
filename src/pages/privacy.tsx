@@ -7,7 +7,7 @@ if (!app) throw new Error('Missing #app container');
 render(
   <>
     <content-area>
-      <page-header slot="content"></page-header>
+      <page-header slot="header"></page-header>
 
       <article slot="content">
         <h1>Privacy Policy</h1>

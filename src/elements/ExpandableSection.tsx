@@ -30,13 +30,14 @@ export class ExpandableSection extends BaseElement {
           class="expandable-content"
           onFocusin={(event: FocusEvent) => {
             if (!contentContainer || contentContainer.classList.contains('expanded')) return;
-            const target = event.target;
+            const target = event.composedPath().find(node => node instanceof Element);
             if (!(target instanceof Element)) return;
 
             const contentBounds = contentContainer.getBoundingClientRect();
             const targetBounds = target.getBoundingClientRect();
-            if (targetBounds.top < contentBounds.top || targetBounds.bottom > contentBounds.bottom) {
-              this.toggle(true);
+            if (contentContainer.scrollTop > 0 || targetBounds.top < contentBounds.top || targetBounds.bottom > contentBounds.bottom) {
+              this.reveal();
+              target.scrollIntoView({ block: 'nearest' });
             }
           }}
           ref={(el: Element) => {
@@ -103,8 +104,20 @@ export class ExpandableSection extends BaseElement {
     if (isExpanded) {
       this.setExpandedHeight();
     } else {
+      this.contentContainer.scrollTop = 0;
       this.contentContainer.style.maxHeight = '';
     }
+  }
+
+  // Fragment navigation and keyboard focus must reveal their destination
+  // immediately so the browser scrolls the page instead of the clipped preview.
+  reveal() {
+    if (!this.contentContainer) return;
+    const container = this.contentContainer;
+    container.style.transition = 'none';
+    this.toggle(true);
+    container.scrollTop = 0;
+    requestAnimationFrame(() => { container.style.transition = ''; });
   }
 
   disconnectedCallback() {

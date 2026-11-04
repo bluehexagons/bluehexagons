@@ -903,7 +903,7 @@ function buildTree(): Node {
   return (
     <>
       <content-area>
-        <page-header slot="content"></page-header>
+        <page-header slot="header"></page-header>
         <article slot="content" class="shop__page">
           <div class="shop__hero shop__hero--admin">
             <div class="shop__eyebrow">Digital distribution control room</div>
