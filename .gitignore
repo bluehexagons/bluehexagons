@@ -13,3 +13,6 @@
 /server/*.db-shm
 /server/*.db-wal
 /server/shop_uploads/
+
+# Private, uncurated review captures and logs
+/artifacts/review/

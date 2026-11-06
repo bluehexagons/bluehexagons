@@ -30,7 +30,7 @@ internal/
   auth/                 argon2id, sessions, register/login/logout/me, RequireUser
   payment/              Stripe Checkout + webhook verification (REST, no SDK)
   store/                products, checkout, orders, fulfillment
-deploy/                 build script, systemd unit, Caddyfile, .env.example
+deploy/                 static build script and managed-service .env.example
 ```
 
 ## API
@@ -113,84 +113,14 @@ stripe listen --forward-to localhost:8080/api/webhooks/stripe
 # use the printed whsec_... as STRIPE_WEBHOOK_SECRET
 ```
 
-## Deploy (self-hosted VPS)
+## Deployment and recovery
 
-1. Run `./deploy/build.sh` from `server/` to build a static `bx-server`
-   (verify with `file bx-server`). It targets Linux/amd64 by default; set
-   `GOARCH=arm64` when the server uses ARM64.
-2. On the target host, create the system service user and data directory:
+The shop is unfinished and excluded from the default deployment. When development
+resumes, use the complete opt-in manifest and private configuration procedure in
+[Basaltwater integration](../docs/basaltwater.md#optional-shop-deployment).
+Basaltwater owns service users, systemd units, loopback ports, persistent state,
+and reverse proxy routing. The API's `/api/health` checks the database connection.
 
-   ```bash
-   sudo useradd --system --user-group --home-dir /opt/bx-server --shell /usr/sbin/nologin bxserver
-   sudo install -d -o root -g root -m 755 /opt/bx-server
-   sudo install -d -o bxserver -g bxserver -m 700 /opt/bx-server/data
-   ```
-
-3. Install the binary at `/opt/bx-server/bx-server` as root with mode `755`.
-   Copy `deploy/.env.example` to `/opt/bx-server/.env`, replace the example
-   secrets, and set the public frontend origin/URL. Keep it owned by
-   `root:bxserver` with mode `640`. Store both the database and uploaded assets
-   under `/opt/bx-server/data`, the unit's writable directory.
-4. Install `deploy/bx-server.service` in `/etc/systemd/system/`, run
-   `sudo systemctl daemon-reload`, then `sudo systemctl enable --now bx-server`.
-5. Put Caddy in front using the API handler in `deploy/Caddyfile` for automatic
-   HTTPS. That example only proxies `/api/*`; combine it with your static-site
-   hosting configuration. Build the frontend with `npm run build:shop` from
-   the repository root and serve its `dist/` on the same public origin.
-
-Confirm `/api/health` responds before enabling checkout. Keep `.env`, database
-backups, and uploaded assets outside the public static-site directory.
-
-### Automated deploy (Basaltwater)
-
-The repo-root `basaltwater.json` deploys only the static site by default; it does
-not build or install this optional backend. To deploy the API, add this service
-component to its `components` array:
-
-```json
-{
-  "name": "shop-api",
-  "type": "service",
-  "domain": "{{domain}}",
-  "path": "/api",
-  "build": "server/deploy/build.sh",
-  "binary": "server/bx-server",
-  "port": "auto",
-  "env_file": "{{shared_dir}}/.env",
-  "runtime_env": {
-    "LISTEN_ADDR": "127.0.0.1:{{port}}",
-    "DB_PATH": "{{data_dir}}/bluehexagons.db",
-    "SHOP_UPLOAD_DIR": "{{data_dir}}/shop_uploads"
-  },
-  "health": "/api/health",
-  "sqlite_backup": "{{data_dir}}/bluehexagons.db",
-  "backup_retention": 14
-}
-```
-
-Basaltwater generates the hardened systemd unit for the dedicated
-`app-<app>-shop-api` user and proxies same-origin `/api` to its assigned
-loopback port. It keeps the database and uploaded assets in
-`/var/www/.basaltwater_shared/<app>/shop-api/data` across releases, and backs up
-the SQLite database before replacement. See [Basaltwater's deployment guide](https://github.com/bluehexagons/basaltwater/blob/main/docs/services/deployments.md)
-for the manifest and backup behavior.
-
-Before deploying, put the operator env file at
-`/var/www/.basaltwater_shared/<app>/shop-api/.env`, using
-`deploy/.env.example` as a starting point. Omit `LISTEN_ADDR`, `DB_PATH`, and
-`SHOP_UPLOAD_DIR` because the manifest sets them. The file must be readable but
-not writable by the generated service user, and its parent directory must not
-be writable by that user. Keep secrets out of the repository.
-
-The non-templated `deploy/bx-server.service` and `deploy/Caddyfile` are for the
-manual `/opt/bx-server` deployment only.
-
-### Backups
-
-SQLite runs in WAL mode. The Basaltwater service component above creates a
-consistent backup before release replacement. For a manual deployment, back up
-the database without stopping the service:
-
-```bash
-sqlite3 /opt/bx-server/data/bluehexagons.db ".backup '/backup/bx-$(date +%F).db'"
-```
+The [backup and restore procedure](../docs/basaltwater.md#shop-backup-and-restore)
+covers both SQLite and uploaded assets. Deployment-time database backups alone
+are insufficient to recover the shop.

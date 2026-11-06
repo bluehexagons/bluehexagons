@@ -8,5 +8,38 @@
       "build": "npm ci && npm run build",
       "output": "dist"
     }
-  ]
+  ],
+  "ci": {
+    "install": [
+      {
+        "argv": ["npm", "ci"]
+      }
+    ],
+    "build": [
+      {
+        "argv": ["npm", "run", "build"]
+      },
+      {
+        "argv": ["npm", "run", "build:shop"]
+      },
+      {
+        "argv": ["./deploy/build.sh"],
+        "directory": "server"
+      }
+    ],
+    "test": [
+      {
+        "argv": ["go", "mod", "verify"],
+        "directory": "server"
+      },
+      {
+        "argv": ["go", "vet", "./..."],
+        "directory": "server"
+      },
+      {
+        "argv": ["go", "test", "-race", "./..."],
+        "directory": "server"
+      }
+    ]
+  }
 }

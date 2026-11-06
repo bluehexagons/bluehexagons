@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "instructions": "Keep the existing output layout. Stop project builds and preview servers before cleanup; this policy does not authorize removal. Preserve source media, databases, uploads, private configuration, and curated evidence.",
+  "preserve": [
+    "src",
+    "server",
+    "artifacts/archive"
+  ],
+  "rules": [
+    {
+      "name": "site-output",
+      "paths": [
+        "dist",
+        "public/assets/thumbs"
+      ],
+      "strategy": "generated",
+      "instructions": "Reproduce dist and thumbnails with npm ci && npm run build (or build:shop when intentionally enabled). Only these directories contain generated site output; public/assets outside thumbs is source media."
+    },
+    {
+      "name": "review-evidence",
+      "paths": [
+        "artifacts/review"
+      ],
+      "strategy": "agent",
+      "archive": "artifacts/archive",
+      "instructions": "Review captures and logs individually; keep raw evidence private. Archive only selected evidence sanitized for secrets, personal infrastructure, and user data, with a dated index and provenance. Preserve curated archives."
+    }
+  ]
+}

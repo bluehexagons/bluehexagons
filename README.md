@@ -202,6 +202,14 @@ Check repository links while signed out of GitHub before adding them to public
 pages or documentation. Link to a public project page or storefront when the
 source repository is private.
 
+### Basaltwater integration
+
+See [the integration guide](docs/basaltwater.md) for manifest CI commands,
+portfolio deployment, the opt-in unfinished shop, and cleanup/backup procedures.
+Native development uses the commands above; Basaltwater is optional for local
+builds and tests. Linux deployment uses Bash and the Go build script; native
+Windows runtime testing has not been established.
+
 ### Image galleries
 
 Use `<image-scroller aria-label="Project screenshots">` with image children.
