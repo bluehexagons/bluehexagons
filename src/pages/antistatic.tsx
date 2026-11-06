@@ -57,11 +57,11 @@ render(
         </div>
 
         <div class="widest center">
-          <image-scroller>
+          <image-scroller aria-label="Antistatic">
             <img src={sitePath('/assets/thumbs/antistatic/boxart.png')} title="Antistatic's Steam box art" />
             <img
               data-link-override="https://youtu.be/GtGyPGYhTdE?si=AbhJgwcNC9TpAteq"
-              title="A thumbnail for the Antistatic 0.7 combo video trailer. Follow the link to check it out."
+              title="Antistatic 0.7 combo video trailer."
               src={sitePath('/assets/thumbs/antistatic/eztrailer_4-00.00.01.149.png')}
             />
             <img
@@ -82,13 +82,13 @@ render(
         <p></p>
 
         <div class="widest center">
-          <image-scroller>
-            <img src={sitePath('/assets/antistatic/characters/silicon.png')} title="Silicon" alt="Silicon character artwork" />
-            <img src={sitePath('/assets/antistatic/characters/carbon.png')} title="Carbon" alt="Carbon character artwork" />
-            <img src={sitePath('/assets/antistatic/characters/iron.png')} title="Iron" alt="Iron character artwork" />
-            <img src={sitePath('/assets/antistatic/characters/xenon.png')} title="Xenon" alt="Xenon character artwork" />
-            <img src={sitePath('/assets/antistatic/characters/helium.png')} title="Helium" alt="Helium character artwork" />
-            <img src={sitePath('/assets/antistatic/characters/rhodium.png')} title="Rhodium" alt="Rhodium character artwork" />
+          <image-scroller aria-label="Character artwork">
+            <img src={sitePath('/assets/thumbs/antistatic/characters/silicon.png')} title="Silicon" alt="Silicon character artwork" />
+            <img src={sitePath('/assets/thumbs/antistatic/characters/carbon.png')} title="Carbon" alt="Carbon character artwork" />
+            <img src={sitePath('/assets/thumbs/antistatic/characters/iron.png')} title="Iron" alt="Iron character artwork" />
+            <img src={sitePath('/assets/thumbs/antistatic/characters/xenon.png')} title="Xenon" alt="Xenon character artwork" />
+            <img src={sitePath('/assets/thumbs/antistatic/characters/helium.png')} title="Helium" alt="Helium character artwork" />
+            <img src={sitePath('/assets/thumbs/antistatic/characters/rhodium.png')} title="Rhodium" alt="Rhodium character artwork" />
           </image-scroller>
         </div>
 

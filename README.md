@@ -201,3 +201,17 @@ which is the primary copy of the site.
 Check repository links while signed out of GitHub before adding them to public
 pages or documentation. Link to a public project page or storefront when the
 source repository is private.
+
+### Image galleries
+
+Use `<image-scroller aria-label="Project screenshots">` with image children.
+Each image's `title` supplies its caption; use `alt` for a distinct visual
+description when useful. Generated `/assets/thumbs/` images appear in the preview
+strip, while the selected image and enlarged viewer use the original asset.
+`data-link-override` preserves video destinations and displays a Watch video link.
+
+Browse with the arrows, thumbnails, or horizontal swipes on the selected image.
+Left/Right and Home/End work while a gallery has keyboard focus. The enlarged
+viewer keeps focus inside it; Escape, Close, or a backdrop click dismisses it and
+returns focus to the gallery without losing the page position. There is no
+automatic advance, and thumbnail scrolling respects reduced-motion preferences.

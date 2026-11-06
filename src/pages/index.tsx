@@ -118,10 +118,10 @@ render(
 
       <article slot="content" class="work_overview">
         <h2 class="section_title">Work samples and skills</h2>
-        <p class="work_overview__lede">A selection of games, web tools, and visual work. Scroll through the images and select one for a larger view or related video.</p>
+        <p class="work_overview__lede">A selection of games, web tools, and visual work. Choose a preview to browse, then enlarge an image or watch a related video.</p>
 
         <div class="widest center">
-          <image-scroller>
+          <image-scroller aria-label="Work samples">
             <img
               data-link-override="https://youtu.be/GtGyPGYhTdE?si=AbhJgwcNC9TpAteq"
               title="Antistatic's 0.7 combo trailer. I built its engine, models, animation, sound effects, and music."
@@ -138,8 +138,6 @@ render(
               title="A Simple Snake Game, an open-source Godot project."
               src={sitePath('/assets/thumbs/bluehexagons/a_simple_snake_game.png')}
             />
-          </image-scroller>
-          <image-scroller>
             <img
               title="A React table created with an internal editing tool I built at Zazzle."
               src={sitePath('/assets/thumbs/zazzle/Screenshot 2023-11-13 121545.png')}
@@ -509,11 +507,11 @@ render(
         </p>
 
         <div class="widest center">
-          <image-scroller>
+          <image-scroller aria-label="Antistatic">
             <img src={sitePath('/assets/thumbs/antistatic/boxart.png')} title="Antistatic's Steam box art" />
             <img
               data-link-override="https://youtu.be/GtGyPGYhTdE?si=AbhJgwcNC9TpAteq"
-              title="A thumbnail for the Antistatic 0.7 combo video trailer. Follow the link to check it out."
+              title="Antistatic 0.7 combo video trailer."
               src={sitePath('/assets/thumbs/antistatic/eztrailer_4-00.00.01.149.png')}
             />
             <img
@@ -594,7 +592,7 @@ render(
         <p class="description">I worked on most parts of the Zazzle.com frontend codebase, and built some internal tools.</p>
 
         <div class="widest center">
-          <image-scroller>
+          <image-scroller aria-label="Zazzle web and editing tools">
             <img
               title="A screenshot showing a few technologies I built and worked on being used on the website. I worked extensively on displaying images, interactive hotspots, and the content management system."
               src={sitePath('/assets/thumbs/zazzle/Screenshot 2023-11-13 121328.png')}
@@ -682,7 +680,7 @@ render(
         </p>
 
         <div class="widest center">
-          <image-scroller>
+          <image-scroller aria-label="Air Dash Online">
             <img
               title="A promotional screenshot showing Tesla using side-special against a stationary Chai."
               src={sitePath('/assets/thumbs/ado/1157428_391081464351375_1074064025_n.png')}
@@ -749,7 +747,7 @@ render(
         </p>
 
         <div class="widest center">
-          <image-scroller>
+          <image-scroller aria-label="Don't Starve Food Guide">
             <img title="A screenshot of the Don't Starve Food Guide's Discovery tab." src={sitePath('/assets/thumbs/foodguide/Screenshot 2023-11-16 141445.png')} />
             <img title="Woah! That's a lot of food!" src={sitePath('/assets/thumbs/foodguide/Screenshot 2023-11-16 141703.png')} />
             <img title="A screenshot of the statistics analyzer in the Discovery tab." src={sitePath('/assets/thumbs/foodguide/Screenshot 2023-11-16 141519.png')} />
