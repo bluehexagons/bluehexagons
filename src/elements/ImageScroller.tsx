@@ -93,9 +93,12 @@ export class ImageScrollerElement extends BaseElement {
         </div>
         <div class="gallery__media">
           <a class="gallery__stage" aria-haspopup="dialog" onClick={(event: MouseEvent) => {
-            if (this.swiped) {
+            // Keyboard and assistive activation must work even if a swipe did
+            // not produce a click to consume its suppression flag.
+            const dragged = this.swiped && event.detail !== 0;
+            this.swiped = false;
+            if (dragged) {
               event.preventDefault();
-              this.swiped = false;
             } else if (this.items[this.selected]?.video && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey && event.button === 0) {
               event.preventDefault();
               this.togglePlayer();
@@ -185,18 +188,13 @@ export class ImageScrollerElement extends BaseElement {
         this.finishLoading(image);
         image.hidden = true;
         (image.nextElementSibling as HTMLElement).hidden = false;
-        if (image === this.image && !this.items[this.selected]?.video) {
-          this.stage.removeAttribute('aria-haspopup');
-          this.stage.setAttribute('aria-label', 'Open original image (opens in a new tab)');
-          this.stage.target = '_blank';
-          this.stage.rel = 'noopener noreferrer';
-          this.shadow.querySelector('.gallery__open')!.textContent = 'Open original ↗';
-        }
+        if (image === this.image) this.updateStageAction();
       });
       image.addEventListener('load', () => {
         this.finishLoading(image);
         image.hidden = false;
         (image.nextElementSibling as HTMLElement).hidden = true;
+        if (image === this.image) this.updateStageAction();
       });
     }
   }
@@ -248,19 +246,7 @@ export class ImageScrollerElement extends BaseElement {
     const item = this.items[this.selected];
     const count = `${String(this.selected + 1).padStart(2, '0')} / ${String(this.items.length).padStart(2, '0')}`;
     this.setImage(this.image, item);
-    this.stage.href = item.link || item.source;
-    this.stage.setAttribute('aria-label', item.video ? `Play video: ${item.caption}` : item.link ? `Watch video: ${item.caption} (opens in a new tab)` : `Enlarge image ${this.selected + 1}: ${item.caption}`);
-    if (item.link && !item.video) {
-      this.stage.target = '_blank';
-      this.stage.rel = 'noopener noreferrer';
-      this.stage.removeAttribute('aria-haspopup');
-    } else {
-      this.stage.removeAttribute('target');
-      this.stage.removeAttribute('rel');
-      if (item.video) this.stage.removeAttribute('aria-haspopup');
-      else this.stage.setAttribute('aria-haspopup', 'dialog');
-    }
-    this.shadow.querySelector('.gallery__open')!.textContent = item.video ? '▶ Play video' : item.link ? '▶ Watch video ↗' : '⤢ Enlarge image';
+    this.updateStageAction();
     this.shadow.querySelector<HTMLElement>('.gallery__actions')!.hidden = !item.video;
     const external = this.shadow.querySelector<HTMLAnchorElement>('.gallery__external')!;
     external.href = item.link || item.source;
@@ -276,6 +262,24 @@ export class ImageScrollerElement extends BaseElement {
     this.thumbnails.hidden = this.items.length < 2;
     if (this.dialog.open) this.updateViewer();
     if (reveal && !this.dialog.open) this.revealThumbnail();
+  }
+
+  private updateStageAction() {
+    const item = this.items[this.selected];
+    if (!item) return;
+    this.stage.href = item.link || item.source;
+    this.stage.setAttribute('aria-label', item.video ? `Play video: ${item.caption}` : item.link ? `Watch video: ${item.caption} (opens in a new tab)` : this.image.hidden ? `Open original image: ${item.caption} (opens in a new tab)` : `Enlarge image ${this.selected + 1}: ${item.caption}`);
+    if (!item.video && (item.link || this.image.hidden)) {
+      this.stage.target = '_blank';
+      this.stage.rel = 'noopener noreferrer';
+      this.stage.removeAttribute('aria-haspopup');
+    } else {
+      this.stage.removeAttribute('target');
+      this.stage.removeAttribute('rel');
+      if (item.video) this.stage.removeAttribute('aria-haspopup');
+      else this.stage.setAttribute('aria-haspopup', 'dialog');
+    }
+    this.shadow.querySelector('.gallery__open')!.textContent = item.video ? '▶ Play video' : item.link ? '▶ Watch video ↗' : this.image.hidden ? 'Open original ↗' : '⤢ Enlarge image';
   }
 
   private setImage(image: HTMLImageElement, item: GalleryItem) {
