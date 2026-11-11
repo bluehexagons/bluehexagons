@@ -574,3 +574,70 @@ image-scroller {
 .cause_interests p {
   margin: 8px 0 0;
 }
+
+.open_projects__intro {
+  max-width: 780px;
+  margin: 18px 0 28px;
+  color: #c9d5d8;
+  line-height: 1.6;
+}
+
+.open_projects__groups {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.open_projects__groups section {
+  min-width: 0;
+}
+
+.open_projects__groups h3 {
+  margin: 0 0 12px;
+  color: #a8d5dc;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.open_projects__groups ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.open_projects__groups li {
+  padding: 18px 0;
+  border-top: 1px solid #2a4650;
+}
+
+.open_projects__groups h4 {
+  margin: 0;
+  font-size: 1.12rem;
+  line-height: 1.4;
+}
+
+.open_projects__groups p {
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+.open_projects__demo {
+  display: inline-block;
+  padding-block: 10px;
+  font-size: 0.9rem;
+}
+
+.open_projects__more {
+  margin: 8px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid #2a4650;
+}
+
+@media (max-width: 900px) {
+  .open_projects__groups {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}

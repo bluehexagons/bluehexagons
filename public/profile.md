@@ -7,8 +7,18 @@ Software engineer and indie game developer in southwest Missouri. I build web so
 - Professional work spans financial technology, e-commerce, and games.
 - As a financial technology contractor, I built features for production websites using an AWS stack that included Lambda, Cognito, DynamoDB, Amplify, CloudWatch, Route 53, IAM, and Secrets Manager. The client and product are unnamed here.
 - I have used Codex, Claude Code, GitHub Copilot, Cursor, OpenCode, and T3 Code across contract and independent work developing complex systems.
-- I designed and maintain [Basaltwater](basaltwater.html), an open-source toolkit for repeatable Linux setup, web deployments, operations, and coding environments. I use it to manage this website and my internal tools, services, and workstations. [Source repository](https://github.com/bluehexagons/basaltwater).
 - I am the solo developer of [Antistatic](antistatic.html), a platform fighter built with a bespoke C and TypeScript engine.
+- I designed and maintain [Basaltwater](basaltwater.html), an open-source toolkit for repeatable Linux setup, web deployments, operations, and coding environments. I use it to manage this website and my internal tools, services, and workstations. [Source repository](https://github.com/bluehexagons/basaltwater).
+
+## Other open-source projects
+
+Alongside Basaltwater and the Food Guide, I build creative tools, games, and small utilities.
+
+- Tools and sandboxes: [vector-pose](https://github.com/bluehexagons/vector-pose), [Easing Lab](https://github.com/bluehexagons/easing-sandbox), and [Generator](https://github.com/bluehexagons/generator).
+- Games and experiments: [Hex Strategy](https://github.com/bluehexagons/hexstrategy), [Corvus](https://github.com/bluehexagons/jsshooter), and [A Simple Snake Game](https://github.com/bluehexagons/snake2d).
+- Languages and utilities: [Trace](https://github.com/bluehexagons/trace), [Waveplayer](https://github.com/bluehexagons/waveplayer), and [Gomoose](https://github.com/bluehexagons/gomoose).
+
+[Explore these projects and their browser demos](index.html#open-source) or [browse all repositories](https://github.com/bluehexagons?tab=repositories).
 
 ## Engineering areas
 

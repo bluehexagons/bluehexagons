@@ -2,6 +2,75 @@ import '../bootstrap';
 import { render } from '../render';
 import { sitePath } from '../site-path';
 
+type OpenSourceProject = {
+  name: string;
+  repository: string;
+  description: string;
+  demo?: string;
+  demoLabel?: string;
+};
+
+const openSourceGroups: { title: string; projects: OpenSourceProject[] }[] = [
+  {
+    title: 'Tools and sandboxes',
+    projects: [
+      {
+        name: 'vector-pose', repository: 'vector-pose',
+        description: 'Vector-based skeletal posing tools, with Electron and browser editions.',
+        demo: 'https://bluehexagons.github.io/vector-pose/', demoLabel: 'Try in browser',
+      },
+      {
+        name: 'Easing Lab', repository: 'easing-sandbox',
+        description: 'Plot, compose, and experiment with easing curves in an interactive browser workbench.',
+        demo: 'https://bluehexagons.github.io/easing-sandbox/', demoLabel: 'Open the lab',
+      },
+      {
+        name: 'Generator', repository: 'generator',
+        description: 'A deterministic plasma image generator, revisiting one of my earliest JavaScript projects.',
+        demo: 'https://bluehexagons.github.io/generator/', demoLabel: 'Make an image',
+      },
+    ],
+  },
+  {
+    title: 'Games and experiments',
+    projects: [
+      {
+        name: 'Hex Strategy', repository: 'hexstrategy',
+        description: 'A procedural systems toy on a canvas lattice, with evolving forms and autonomous motes.',
+        demo: 'https://bluehexagons.github.io/hexstrategy/', demoLabel: 'Explore the demo',
+      },
+      {
+        name: 'Corvus', repository: 'jsshooter',
+        description: 'A wireframe, side-scrolling shooter rebuilt from a 2010 browser experiment.',
+        demo: 'https://bluehexagons.github.io/jsshooter/', demoLabel: 'Play in browser',
+      },
+      {
+        name: 'A Simple Snake Game', repository: 'snake2d',
+        description: 'A Godot game with classic, pitfall, and obstacle modes, plus keyboard, controller, mouse, and touch input.',
+      },
+    ],
+  },
+  {
+    title: 'Languages and utilities',
+    projects: [
+      {
+        name: 'Trace', repository: 'trace',
+        description: 'A specialized functional language originally developed for Antistatic, with an interactive sandbox.',
+        demo: 'https://bluehexagons.github.io/trace-sandbox/', demoLabel: 'Try the language',
+      },
+      {
+        name: 'Waveplayer', repository: 'waveplayer',
+        description: 'A browser-native waveform audio player written in TypeScript.',
+        demo: 'https://bluehexagons.github.io/waveplayer/', demoLabel: 'Try the player',
+      },
+      {
+        name: 'Gomoose', repository: 'gomoose',
+        description: 'Go Minimal Web Server: a small, self-contained web server.',
+      },
+    ],
+  },
+];
+
 const app = document.getElementById('app');
 if (!app) throw new Error('Missing #app container');
 
@@ -57,63 +126,6 @@ render(
             expanding access to science and technology, and human rights causes.
           </p>
         </section>
-      </article>
-
-      <article slot="content" id="basaltwater" class="systems_feature">
-        <div class="systems_feature__intro">
-          <p class="systems_feature__eyebrow">Open-source systems engineering</p>
-          <h2 class="section_title">Basaltwater</h2>
-          <p>
-            I designed and maintain Basaltwater, a toolkit for setting up and operating Debian machines,
-            Proxmox guests, web services, and development workstations. It turns repeatable operations into
-            inspectable commands with diagnostics and recovery paths. I use it to manage this website and my
-            internal tools, services, and workstations.
-          </p>
-          <div class="systems_feature__links">
-            <site-link href={sitePath('basaltwater.html')}>Read the case study</site-link>
-            <site-link href="https://github.com/bluehexagons/basaltwater">Explore the source</site-link>
-            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/getting-started/getting-started.md">Getting started</site-link>
-          </div>
-        </div>
-
-        <div class="systems_feature__grid">
-          <section>
-            <h3>Machine setup</h3>
-            <p>
-              Compose server and workstation capabilities, provision Proxmox guests, manage service and network
-              configuration, and diagnose hosts after setup.
-            </p>
-            <span>Linux · Python · Proxmox · systemd</span>
-          </section>
-          <section>
-            <h3>Safe deployments</h3>
-            <p>
-              Stage builds before release, isolate service accounts and writable state, check health at activation,
-              and retain a path to roll back. SQLite services can receive consistent backups.
-            </p>
-            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/services/deployment-safety.md">Deployment design</site-link>
-          </section>
-          <section>
-            <h3>Development environments</h3>
-            <p>
-              Prepare coding VMs with managed Git workspaces, browser testing, credentials, and clear privilege
-              boundaries so changes can be developed, reviewed, and checked against running systems.
-            </p>
-            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/agents/agentic-vms.md">Coding VM guide</site-link>
-          </section>
-        </div>
-
-        <p class="systems_feature__experience">
-          <strong>Applied experience:</strong> As a financial technology contractor, I built features for production
-          websites using an AWS stack that included Lambda, Cognito, DynamoDB, Amplify, CloudWatch, Route 53, IAM,
-          and Secrets Manager. Across contract and independent work, I have used Codex, Claude Code, GitHub Copilot,
-          Cursor, OpenCode, and T3 Code in agentic development workflows.
-        </p>
-
-        <p class="systems_feature__closing">
-          This work draws on the same skills I bring to a team: designing reliable interfaces, automating operations,
-          testing failure paths, and keeping systems understandable for the next person who has to run them.
-        </p>
       </article>
 
       <article slot="content" class="work_overview">
@@ -581,6 +593,99 @@ render(
             </ul>
           </div>
         </expandable-section>
+      </article>
+
+      <article slot="content" id="basaltwater" class="systems_feature">
+        <div class="systems_feature__intro">
+          <p class="systems_feature__eyebrow">Open-source systems engineering</p>
+          <h2 class="section_title">Basaltwater</h2>
+          <p>
+            I designed and maintain Basaltwater, a toolkit for setting up and operating Debian machines,
+            Proxmox guests, web services, and development workstations. It turns repeatable operations into
+            inspectable commands with diagnostics and recovery paths. I use it to manage this website and my
+            internal tools, services, and workstations.
+          </p>
+          <div class="systems_feature__links">
+            <site-link href={sitePath('basaltwater.html')}>Read the case study</site-link>
+            <site-link href="https://github.com/bluehexagons/basaltwater">Explore the source</site-link>
+            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/getting-started/getting-started.md">Getting started</site-link>
+          </div>
+        </div>
+
+        <div class="systems_feature__grid">
+          <section>
+            <h3>Machine setup</h3>
+            <p>
+              Compose server and workstation capabilities, provision Proxmox guests, manage service and network
+              configuration, and diagnose hosts after setup.
+            </p>
+            <span>Linux · Python · Proxmox · systemd</span>
+          </section>
+          <section>
+            <h3>Safe deployments</h3>
+            <p>
+              Stage builds before release, isolate service accounts and writable state, check health at activation,
+              and retain a path to roll back. SQLite services can receive consistent backups.
+            </p>
+            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/services/deployment-safety.md">Deployment design</site-link>
+          </section>
+          <section>
+            <h3>Development environments</h3>
+            <p>
+              Prepare coding VMs with managed Git workspaces, browser testing, credentials, and clear privilege
+              boundaries so changes can be developed, reviewed, and checked against running systems.
+            </p>
+            <site-link href="https://github.com/bluehexagons/basaltwater/blob/main/docs/agents/agentic-vms.md">Coding VM guide</site-link>
+          </section>
+        </div>
+
+        <p class="systems_feature__experience">
+          <strong>Applied experience:</strong> As a financial technology contractor, I built features for production
+          websites using an AWS stack that included Lambda, Cognito, DynamoDB, Amplify, CloudWatch, Route 53, IAM,
+          and Secrets Manager. Across contract and independent work, I have used Codex, Claude Code, GitHub Copilot,
+          Cursor, OpenCode, and T3 Code in agentic development workflows.
+        </p>
+
+        <p class="systems_feature__closing">
+          This work draws on the same skills I bring to a team: designing reliable interfaces, automating operations,
+          testing failure paths, and keeping systems understandable for the next person who has to run them.
+        </p>
+      </article>
+
+      <article slot="content" id="open-source" class="open_projects">
+        <h2 class="section_title">Other open-source projects</h2>
+        <p class="open_projects__intro">
+          Alongside Basaltwater and the Food Guide, I build creative tools, games, and small utilities.
+          Some began as tools for my games; others revisit my earliest web experiments.
+          Each project below links to its source, with browser demos where available.
+        </p>
+        <div class="open_projects__groups">
+          {openSourceGroups.map(group => (
+            <section>
+              <h3>{group.title}</h3>
+              <ul>
+                {group.projects.map(project => (
+                  <li>
+                    <h4>
+                      <site-link href={`https://github.com/bluehexagons/${project.repository}`} aria-label={`${project.name} source on GitHub`}>
+                        {project.name}
+                      </site-link>
+                    </h4>
+                    <p>{project.description}</p>
+                    {project.demo ? (
+                      <site-link class="open_projects__demo" href={project.demo} aria-label={`${project.demoLabel}: ${project.name}`}>
+                        {project.demoLabel}
+                      </site-link>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+        <p class="open_projects__more">
+          <site-link href="https://github.com/bluehexagons?tab=repositories">Browse all my repositories on GitHub</site-link>
+        </p>
       </article>
 
       <article slot="content">

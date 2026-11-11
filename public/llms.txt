@@ -9,6 +9,7 @@ The canonical portfolio is https://bluehexagons.com/. The GitHub Pages project s
 - [Concise profile](profile.md): Experience, engineering areas, work interests, and contact.
 - [Basaltwater case study](basaltwater.html): Linux setup, deployment safety, development environments, and use in operating this website and internal systems.
 - [Antistatic](antistatic.html): Solo-developed platform fighting game and technical details.
+- [Other open-source projects](index.html#open-source): Creative tools, games, languages, and utilities, with source code and browser demos.
 
 ## Primary evidence
 
