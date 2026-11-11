@@ -216,9 +216,19 @@ Use `<image-scroller aria-label="Project screenshots">` with image children.
 Each image's `title` supplies its caption; use `alt` for a distinct visual
 description when useful. Generated `/assets/thumbs/` images appear in the preview
 strip, while the selected image and enlarged viewer use the original asset.
-`data-link-override` preserves video destinations and displays a Watch video link.
+`data-link-override` preserves video destinations. YouTube watch, short, embed,
+and `youtu.be` links offer an embedded player when selected; choose Play video
+(or click the preview) to load it, and Back to preview to return to the image.
+The enlarged viewer also offers playback for YouTube items. Players use YouTube's
+privacy-enhanced embed host and load only after activation. Switching items,
+returning to the preview, closing the viewer, or removing the gallery stops playback.
+An external watch link remains available, including for other video hosts.
 
-Browse with the arrows, thumbnails, or horizontal swipes on the selected image.
+Browse with the arrows, thumbnails, or horizontal drags and swipes on the selected
+image. Horizontal gestures follow the pointer before switching; vertical touch
+scrolling and pinch zoom remain native. Hovering adds a subtle cursor-centered
+zoom, and images fade in when loaded. Reduced-motion preferences disable these
+animations.
 Left/Right and Home/End work while a gallery has keyboard focus. The enlarged
 viewer keeps focus inside it; Escape, Close, or a backdrop click dismisses it and
 returns focus to the gallery without losing the page position. There is no

@@ -7,7 +7,26 @@ type GalleryItem = {
   alt: string;
   link: string | null;
   button: HTMLButtonElement;
+  video: string | null;
 };
+
+// Accept only known YouTube hosts and video IDs; never embed an arbitrary link.
+function youtubeVideo(link: string | null): string | null {
+  if (!link) return null;
+  try {
+    const url = new URL(link);
+    if (url.protocol !== 'https:' && url.protocol !== 'http:') return null;
+    const host = url.hostname.replace(/^www\./, '');
+    const path = url.pathname.split('/').filter(Boolean);
+    const id = host === 'youtu.be' ? path[0]
+      : ['youtube.com', 'm.youtube.com', 'youtube-nocookie.com'].includes(host)
+        ? (path[0] === 'watch' ? url.searchParams.get('v') : ['embed', 'shorts', 'live'].includes(path[0]) ? path[1] : null)
+        : null;
+    return id && /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : null;
+  } catch {
+    return null;
+  }
+}
 
 export class ImageScrollerElement extends BaseElement {
   private items: GalleryItem[] = [];
@@ -28,6 +47,12 @@ export class ImageScrollerElement extends BaseElement {
   private previousOverflow: string | null = null;
   private pointerStart: { x: number; y: number; id: number } | null = null;
   private swiped = false;
+  private player: HTMLIFrameElement | null = null;
+  private gestureTarget: HTMLElement | null = null;
+
+  private get reducedMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
 
   constructor() {
     super(imageScrollerStyles);
@@ -54,6 +79,8 @@ export class ImageScrollerElement extends BaseElement {
     this.resizeObserver = null;
     if (this.initialized && this.dialog.open) this.dialog.close();
     this.restorePageScroll();
+    this.stopPlayer();
+    this.cancelSwipe();
   }
 
   private renderGallery() {
@@ -62,22 +89,31 @@ export class ImageScrollerElement extends BaseElement {
       <section class="gallery" aria-label={label} aria-roledescription="carousel" onKeydown={(event: KeyboardEvent) => this.onKeydown(event)}>
         <div class="gallery__heading">
           <span class="gallery__label">{label}</span>
-          <span class="gallery__hint">Select a preview to explore</span>
+          <span class="gallery__hint">Drag or swipe to explore</span>
         </div>
-        <a class="gallery__stage" aria-haspopup="dialog" onClick={(event: MouseEvent) => {
-          if (this.swiped) {
-            event.preventDefault();
-            this.swiped = false;
-          } else if (!event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey && event.button === 0 && !this.items[this.selected].link && !this.image.hidden) {
-            event.preventDefault();
-            this.openViewer();
-          }
-        }} onPointerdown={(event: PointerEvent) => this.startSwipe(event)} onPointerup={(event: PointerEvent) => this.endSwipe(event)} onPointercancel={() => { this.pointerStart = null; }}>
-          <img class="gallery__image" loading="lazy" decoding="async" />
-          <span class="gallery__image_error" hidden>Preview unavailable. Use the original image link.</span>
-          <span class="gallery__loading" role="status" hidden>Loading image…</span>
-          <span class="gallery__open" aria-hidden="true"></span>
-        </a>
+        <div class="gallery__media">
+          <a class="gallery__stage" aria-haspopup="dialog" onClick={(event: MouseEvent) => {
+            if (this.swiped) {
+              event.preventDefault();
+              this.swiped = false;
+            } else if (this.items[this.selected]?.video && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey && event.button === 0) {
+              event.preventDefault();
+              this.togglePlayer();
+            } else if (!event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey && event.button === 0 && !this.items[this.selected].link && !this.image.hidden) {
+              event.preventDefault();
+              this.openViewer();
+            }
+          }}>
+            <img class="gallery__image" loading="lazy" decoding="async" />
+            <span class="gallery__image_error" hidden>Preview unavailable. Use the original image link.</span>
+            <span class="gallery__loading" role="status" hidden>Loading image…</span>
+            <span class="gallery__open" aria-hidden="true"></span>
+          </a>
+        </div>
+        <div class="gallery__actions" hidden>
+          <button type="button" class="gallery__mode" onClick={() => this.togglePlayer()}>Play video</button>
+          <a class="gallery__external" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+        </div>
         <div class="gallery__details">
           <p class="gallery__caption" aria-live="polite" aria-atomic="true"></p>
           <div class="gallery__navigation" role="group" aria-label="Browse images">
@@ -105,7 +141,7 @@ export class ImageScrollerElement extends BaseElement {
           <span class="gallery__label">{label}</span>
           <button type="button" class="viewer__close" autofocus aria-label="Close enlarged view" onClick={() => this.dialog.close()}>Close <span aria-hidden="true">×</span></button>
         </div>
-        <div class="viewer__image_wrap" onPointerdown={(event: PointerEvent) => this.startSwipe(event)} onPointerup={(event: PointerEvent) => this.endSwipe(event)} onPointercancel={() => { this.pointerStart = null; }}>
+        <div class="viewer__image_wrap">
           <img class="viewer__image" decoding="async" />
           <p class="gallery__image_error" hidden>Preview unavailable. Open the original image below.</p>
           <span class="gallery__loading" role="status" hidden>Loading image…</span>
@@ -119,6 +155,7 @@ export class ImageScrollerElement extends BaseElement {
           </div>
         </div>
         <div class="viewer__footer">
+          <button type="button" class="gallery__mode" hidden onClick={() => this.togglePlayer()}>Play video</button>
           <span>← → Browse <span aria-hidden="true">·</span> Esc Close</span>
           <a class="viewer__original" target="_blank" rel="noopener noreferrer"></a>
         </div>
@@ -129,10 +166,14 @@ export class ImageScrollerElement extends BaseElement {
     this.viewerCaption = this.dialog.querySelector('.viewer__caption')!;
     this.viewerCounter = this.dialog.querySelector('.viewer__counter')!;
     this.originalLink = this.dialog.querySelector('.viewer__original')!;
+    this.bindPointerEvents(this.stage);
+    this.bindPointerEvents(this.viewerImage.parentElement!);
     this.dialog.addEventListener('click', event => {
       if (event.target === this.dialog) this.dialog.close();
     });
     this.dialog.addEventListener('close', () => {
+      this.stopPlayer();
+      this.cancelSwipe();
       this.restorePageScroll();
       this.swiped = false;
       // Keep the newly selected thumbnail visible without moving the page.
@@ -144,7 +185,7 @@ export class ImageScrollerElement extends BaseElement {
         this.finishLoading(image);
         image.hidden = true;
         (image.nextElementSibling as HTMLElement).hidden = false;
-        if (image === this.image) {
+        if (image === this.image && !this.items[this.selected]?.video) {
           this.stage.removeAttribute('aria-haspopup');
           this.stage.setAttribute('aria-label', 'Open original image (opens in a new tab)');
           this.stage.target = '_blank';
@@ -191,29 +232,41 @@ export class ImageScrollerElement extends BaseElement {
     button.append(image, number);
     button.addEventListener('click', () => this.select(index));
     this.thumbnails.appendChild(button);
-    this.items.push({ source, caption, alt, link: image.dataset.linkOverride || (link !== source ? link : null), button });
+    const destination = image.dataset.linkOverride || (link !== source ? link : null);
+    const video = youtubeVideo(destination);
+    if (video) {
+      number.textContent = `▶ ${number.textContent}`;
+      button.setAttribute('aria-label', `Show video ${index + 1}: ${caption}`);
+    }
+    this.items.push({ source, caption, alt, link: destination, video, button });
   }
 
   private select(index: number, reveal = true) {
+    this.stopPlayer();
+    this.cancelSwipe();
     this.selected = (index + this.items.length) % this.items.length;
     const item = this.items[this.selected];
     const count = `${String(this.selected + 1).padStart(2, '0')} / ${String(this.items.length).padStart(2, '0')}`;
     this.setImage(this.image, item);
     this.stage.href = item.link || item.source;
-    this.stage.setAttribute('aria-label', item.link ? `Watch video: ${item.caption} (opens in a new tab)` : `Enlarge image ${this.selected + 1}: ${item.caption}`);
-    if (item.link) {
+    this.stage.setAttribute('aria-label', item.video ? `Play video: ${item.caption}` : item.link ? `Watch video: ${item.caption} (opens in a new tab)` : `Enlarge image ${this.selected + 1}: ${item.caption}`);
+    if (item.link && !item.video) {
       this.stage.target = '_blank';
       this.stage.rel = 'noopener noreferrer';
       this.stage.removeAttribute('aria-haspopup');
     } else {
       this.stage.removeAttribute('target');
       this.stage.removeAttribute('rel');
-      this.stage.setAttribute('aria-haspopup', 'dialog');
+      if (item.video) this.stage.removeAttribute('aria-haspopup');
+      else this.stage.setAttribute('aria-haspopup', 'dialog');
     }
-    this.shadow.querySelector('.gallery__open')!.textContent = item.link ? '▶ Watch video ↗' : '⤢ Enlarge image';
+    this.shadow.querySelector('.gallery__open')!.textContent = item.video ? '▶ Play video' : item.link ? '▶ Watch video ↗' : '⤢ Enlarge image';
+    this.shadow.querySelector<HTMLElement>('.gallery__actions')!.hidden = !item.video;
+    const external = this.shadow.querySelector<HTMLAnchorElement>('.gallery__external')!;
+    external.href = item.link || item.source;
     // Only the active view announces changes to avoid duplicate live messages.
     this.caption.setAttribute('aria-live', this.dialog.open ? 'off' : 'polite');
-    this.caption.textContent = `Image ${this.selected + 1} of ${this.items.length}. ${item.caption}`;
+    this.caption.textContent = `${item.video ? 'Video' : 'Image'} ${this.selected + 1} of ${this.items.length}. ${item.caption}`;
     this.counter.textContent = count;
     this.items.forEach((entry, i) => {
       entry.button.setAttribute('aria-pressed', String(i === this.selected));
@@ -237,14 +290,20 @@ export class ImageScrollerElement extends BaseElement {
 
   private finishLoading(image: HTMLImageElement) {
     image.parentElement!.dataset.loading = 'false';
+    if (!this.reducedMotion) {
+      image.getAnimations().forEach(animation => animation.cancel());
+      image.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' });
+    }
     image.parentElement!.querySelector<HTMLElement>('.gallery__loading')!.hidden = true;
   }
 
   private updateViewer() {
     const item = this.items[this.selected];
     this.setImage(this.viewerImage, item);
+    this.viewerImage.parentElement!.dataset.video = String(!!item.video);
     this.viewerCaption.textContent = this.caption.textContent;
     this.viewerCounter.textContent = this.counter.textContent;
+    this.dialog.querySelector<HTMLButtonElement>('.gallery__mode')!.hidden = !item.video;
     this.originalLink.href = item.link || item.source;
     this.originalLink.textContent = item.link ? 'Watch video ↗' : 'Open original ↗';
     this.originalLink.setAttribute('aria-label', `${item.link ? 'Watch video' : 'Open original image'} (opens in a new tab)`);
@@ -305,20 +364,112 @@ export class ImageScrollerElement extends BaseElement {
     this.caption.setAttribute('aria-live', 'polite');
   }
 
+  private togglePlayer() {
+    if (this.player) {
+      this.stopPlayer();
+      return;
+    }
+    const item = this.items[this.selected];
+    if (!item?.video) return;
+    this.cancelSwipe();
+    const player = document.createElement('iframe');
+    player.className = 'gallery__player';
+    player.title = `YouTube player: ${item.caption}`;
+    player.src = `https://www.youtube-nocookie.com/embed/${item.video}?playsinline=1&autoplay=1`;
+    player.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    player.allowFullscreen = true;
+    player.referrerPolicy = 'strict-origin-when-cross-origin';
+    const container = this.dialog.open ? this.viewerImage.parentElement! : this.stage.parentElement!;
+    container.appendChild(player);
+    this.player = player;
+    // Keep the covered preview out of keyboard navigation.
+    if (!this.dialog.open) this.stage.hidden = true;
+    this.shadow.querySelectorAll('.gallery__mode').forEach(button => { button.textContent = 'Back to preview'; });
+    player.focus({ preventScroll: true });
+  }
+
+  private stopPlayer() {
+    if (!this.player) return;
+    this.player.remove(); // Removing the frame also stops audio and playback.
+    this.player = null;
+    this.stage.hidden = false;
+    this.shadow.querySelectorAll('.gallery__mode').forEach(button => { button.textContent = 'Play video'; });
+  }
+
+  private bindPointerEvents(surface: HTMLElement) {
+    surface.addEventListener('pointerdown', event => this.startSwipe(event));
+    surface.addEventListener('pointermove', event => this.trackPointer(event));
+    surface.addEventListener('pointerup', event => this.endSwipe(event));
+    surface.addEventListener('pointercancel', () => this.cancelSwipe());
+    surface.addEventListener('lostpointercapture', event => {
+      // Touch implicitly captures the image first. Ignore its bubbling capture
+      // loss when a horizontal drag transfers capture to the surface.
+      if (event.target === surface) this.cancelSwipe();
+    });
+    surface.addEventListener('pointerleave', () => {
+      this.resetHover();
+      if (!this.swiped) this.cancelSwipe();
+    });
+    surface.addEventListener('dragstart', event => event.preventDefault());
+  }
+
+  private resetHover() {
+    this.stage.style.removeProperty('--pointer-x');
+    this.stage.style.removeProperty('--pointer-y');
+  }
+
   private startSwipe(event: PointerEvent) {
     this.swiped = false;
-    if (event.pointerType === 'mouse' || !event.isPrimary) return;
+    if (!event.isPrimary || event.button !== 0 || this.items.length < 2) return;
     this.pointerStart = { x: event.clientX, y: event.clientY, id: event.pointerId };
-    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+    this.gestureTarget = event.currentTarget as HTMLElement;
+    // Capture after horizontal intent so a normal tap keeps its native click.
+  }
+
+  private trackPointer(event: PointerEvent) {
+    const target = event.currentTarget as HTMLElement;
+    if (!this.pointerStart) {
+      if (event.pointerType === 'mouse' && target === this.stage && !this.reducedMotion) {
+        const rect = target.getBoundingClientRect();
+        target.style.setProperty('--pointer-x', `${(event.clientX - rect.left) / rect.width * 100}%`);
+        target.style.setProperty('--pointer-y', `${(event.clientY - rect.top) / rect.height * 100}%`);
+      }
+      return;
+    }
+    if (this.pointerStart.id !== event.pointerId) return;
+    const x = event.clientX - this.pointerStart.x;
+    const y = event.clientY - this.pointerStart.y;
+    if (!this.swiped && Math.abs(y) > 10 && Math.abs(y) > Math.abs(x)) {
+      this.cancelSwipe();
+      return;
+    }
+    if (Math.abs(x) > 8 && Math.abs(x) > Math.abs(y) * 1.5) {
+      this.swiped = true;
+      target.setPointerCapture(event.pointerId);
+      target.dataset.dragging = 'true';
+    }
+    if (this.swiped && !this.reducedMotion) target.style.setProperty('--drag-x', `${Math.max(-100, Math.min(100, x * 0.45))}px`);
+  }
+
+  private cancelSwipe() {
+    const id = this.pointerStart?.id;
+    this.pointerStart = null;
+    if (this.gestureTarget) {
+      this.gestureTarget.removeAttribute('data-dragging');
+      this.gestureTarget.style.removeProperty('--drag-x');
+      if (id !== undefined && this.gestureTarget.hasPointerCapture(id)) this.gestureTarget.releasePointerCapture(id);
+    }
+    this.gestureTarget = null;
   }
 
   private endSwipe(event: PointerEvent) {
     const start = this.pointerStart;
-    this.pointerStart = null;
+    this.cancelSwipe();
     if (!start || start.id !== event.pointerId) return;
     const x = event.clientX - start.x;
     const y = event.clientY - start.y;
-    if (Math.abs(x) < 50 || Math.abs(x) < Math.abs(y) * 1.5) return;
+    const threshold = Math.min(70, (event.currentTarget as HTMLElement).clientWidth * 0.15);
+    if (Math.abs(x) < threshold || Math.abs(x) < Math.abs(y) * 1.5) return;
     this.move(x < 0 ? 1 : -1);
     this.swiped = true;
   }
