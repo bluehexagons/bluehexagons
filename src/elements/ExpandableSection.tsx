@@ -62,6 +62,7 @@ export class ExpandableSection extends BaseElement {
         <div
           id={contentId}
           class="expandable-content"
+          tabindex="-1"
           onFocusin={(event: FocusEvent) => {
             if (!contentContainer || contentContainer.classList.contains('expanded')) return;
             const target = event.composedPath().find(node => node instanceof Element);
@@ -166,10 +167,13 @@ export class ExpandableSection extends BaseElement {
     if (!this.isConnected || !this.toggleButton || !this.contentContainer || !this.contentInner) return;
 
     const hasOverflow = this.getContentHeight() > this.getPreviewHeight() + 1;
+    const activeElement = this.shadow.activeElement;
+    const focusedControl = activeElement && (activeElement === this.toggleButton || activeElement === this.collapseButton);
     this.contentContainer.classList.toggle('fits-content', !hasOverflow);
     this.toggleButton.hidden = !hasOverflow;
 
     this.toggle(hasOverflow && this.toggleButton.getAttribute('aria-expanded') === 'true');
+    if (!hasOverflow && focusedControl) this.contentContainer.focus({ preventScroll: true });
   }
 
   private getPreviewHeight() {

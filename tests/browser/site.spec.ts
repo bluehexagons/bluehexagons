@@ -124,6 +124,30 @@ test('expandable controls reset their labels when content fits, then overflows a
   await expect(toggle).toHaveAccessibleName('Show more test content');
 });
 
+for (const control of ['.expand_toggle', '.expand_collapse']) {
+  test(`resizing preserves keyboard position when ${control} disappears`, async ({ page }) => {
+    const { section, toggle, content } = await expandableFixture(page);
+    await content.evaluate(element => {
+      const link = document.createElement('a');
+      link.href = '#main-content';
+      link.textContent = 'Continue reading';
+      element.append(link);
+    });
+    await toggle.click();
+    await section.locator(control).focus();
+    await expect(section.locator(control)).toBeFocused();
+    await content.evaluate(element => { element.style.height = '20px'; });
+    await expect(toggle).toBeHidden();
+    await expect(section.locator('.expandable-content')).toBeFocused();
+    await page.keyboard.press('Tab');
+    const link = content.getByRole('link', { name: 'Continue reading' });
+    await expect(link).toBeFocused();
+    // Further content updates must leave an existing reader's focus alone.
+    await content.evaluate(element => { element.style.height = '30px'; });
+    await expect(link).toBeFocused();
+  });
+}
+
 test('expandable sections preserve controls and keep resizing after reattachment', async ({ page }) => {
   const { section, toggle, content } = await expandableFixture(page);
   await toggle.click();
@@ -208,4 +232,41 @@ test('keyboard focus reveals clipped content without moving focus to the control
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
   await expect(link).toBeFocused();
   await expect(link).toBeInViewport();
+});
+
+test('printing reveals all expandable content and preserves screen state', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('antistatic.html');
+  await page.getByRole('button', { name: 'Show more character details', exact: true }).click();
+  await page.getByRole('button', { name: 'Show more Carbon moves', exact: true }).click();
+  const sections = page.locator('expandable-section');
+  const screenState = await sections.evaluateAll(elements => elements.map(element =>
+    element.shadowRoot!.querySelector('.expand_toggle')!.getAttribute('aria-expanded')));
+  expect(screenState).toContain('true');
+  expect(screenState).toContain('false');
+
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.locator('.expand_toggle:visible, .expand_collapse:visible')).toHaveCount(0);
+  for (const section of await sections.all()) {
+    await expect.poll(() => section.evaluate(element => {
+      const content = element.shadowRoot!.querySelector<HTMLElement>('.expandable-content')!;
+      const style = getComputedStyle(content);
+      return {
+        maxHeight: style.maxHeight,
+        overflow: style.overflow,
+        clipped: content.clientHeight < content.scrollHeight - 1,
+        fade: getComputedStyle(content, '::after').display,
+      };
+    })).toEqual({ maxHeight: 'none', overflow: 'visible', clipped: false, fade: 'none' });
+  }
+
+  await page.emulateMedia({ media: 'screen' });
+  await expect.poll(() => sections.evaluateAll(elements => elements.map(element =>
+    element.shadowRoot!.querySelector('.expand_toggle')!.getAttribute('aria-expanded')))).toEqual(screenState);
+  await expect(page.getByRole('button', { name: 'Show less Carbon moves', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Show more game guide', exact: true })).toBeVisible();
+  await expect.poll(() => page.locator('expandable-section[aria-label="Show more game guide"]').evaluate(element => {
+    const content = element.shadowRoot!.querySelector<HTMLElement>('.expandable-content')!;
+    return content.clientHeight < content.scrollHeight;
+  })).toBe(true);
 });

@@ -76,7 +76,7 @@
   color: #fff;
 }
 
-:where(.expand_toggle, .expand_collapse):focus-visible {
+:where(.expand_toggle, .expand_collapse, .expandable-content):focus-visible {
   outline: 2px solid var(--highlight, #00dffc);
   outline-offset: 3px;
 }
@@ -137,6 +137,22 @@
   .expand_collapse,
   .expandable-content,
   .expandable-content::after {
+    transition: none;
+  }
+}
+
+@media print {
+  .expand_toggle,
+  .expand_collapse,
+  .expandable-content::after {
+    display: none;
+  }
+
+  .expandable-content {
+    /* Expanded sections also set a height inline. */
+    max-height: none !important;
+    overflow: visible;
+    border-color: transparent;
     transition: none;
   }
 }

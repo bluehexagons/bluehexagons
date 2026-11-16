@@ -70,10 +70,10 @@ npm run check:browser
 
 The suite starts and stops preview on `127.0.0.1:4175`. It checks desktop and phone
 layouts, navigation without JavaScript, gallery keyboard controls and modal
-focus, video activation, fragment links, and expandable content after resizing
-or reattachment. Match `VITE_BASE_PATH` to the build for a project URL. Failure traces
-stay in the ignored `test-results/` directory. Browser tests run separately from
-the fast CI checks; see [Playwright’s browser setup](https://playwright.dev/docs/browsers)
+focus, video activation, fragment links, and expandable content when resizing,
+reattaching, or printing. Match `VITE_BASE_PATH` to the build for a project URL.
+Failure traces stay in the ignored `test-results/` directory. Browser tests run
+separately from the fast CI checks; see [Playwright’s browser setup](https://playwright.dev/docs/browsers)
 for platform requirements.
 
 Also check the skip link, profile printing, and touch gestures manually. Bind
@@ -152,7 +152,9 @@ Expandable sections keep their main control above the preview. Expanded content
 has a second collapse action at the end, which returns focus and the viewport
 to the main control. Give each section a descriptive `aria-label` beginning with
 “Show more”; the label is also visible. Sections that fit hide both controls.
+If a focused control disappears after resizing, focus moves to the content.
 Fragment links and keyboard focus reveal clipped content automatically.
+Printing shows all content and hides the controls.
 
 ## Image galleries
 
