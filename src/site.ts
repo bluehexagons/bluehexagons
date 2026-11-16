@@ -1,8 +1,18 @@
 // Shared by the build and browser. Keep this module free of DOM and Vite APIs.
 export const siteOrigin = 'https://bluehexagons.com';
 
+export type Page = {
+  path: string;
+  title: string;
+  description: string;
+  label: string;
+  layout: 'portfolio' | 'article';
+  sitemap: boolean;
+};
+
 export const pages = {
   home: {
+    layout: 'portfolio',
     path: '',
     title: 'bluehexagons - Loren Crain',
     description: 'Loren Crain builds web software, games, and reliable infrastructure, including the open-source Basaltwater toolkit.',
@@ -10,6 +20,7 @@ export const pages = {
     sitemap: true,
   },
   antistatic: {
+    layout: 'portfolio',
     path: 'antistatic.html',
     title: 'Antistatic - bluehexagons',
     description: 'Antistatic is a crisp, uncompromising platform fighter focused on exploring competitive mechanics.',
@@ -17,6 +28,7 @@ export const pages = {
     sitemap: true,
   },
   basaltwater: {
+    layout: 'article',
     path: 'basaltwater.html',
     title: 'Basaltwater: infrastructure and deployment engineering — Loren Crain',
     description: 'How Loren Crain designs Basaltwater for repeatable Linux setup, safer deployments, and managed coding environments.',
@@ -24,15 +36,14 @@ export const pages = {
     sitemap: true,
   },
   privacy: {
+    layout: 'article',
     path: 'privacy.html',
     title: 'Privacy Policy - bluehexagons',
     description: 'Privacy Policy for bluehexagons.com and related services.',
     label: 'Privacy',
     sitemap: false,
   },
-} as const;
-
-export type Page = typeof pages[keyof typeof pages];
+} as const satisfies Record<string, Page>;
 
 type NavigationItem = { label: string } & ({ path: string } | { href: string });
 

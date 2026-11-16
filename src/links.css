@@ -1,0 +1,34 @@
+a {
+  color: #c9baae;
+  text-decoration: underline;
+}
+
+a:visited {
+  color: #c9baae;
+}
+
+a:hover {
+  color: #fff;
+}
+
+a:active {
+  filter: brightness(0.8);
+}
+
+a:focus-visible {
+  outline: 2px solid var(--highlight, rgb(0, 223, 252));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.link__new-tab {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

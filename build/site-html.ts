@@ -2,6 +2,7 @@ import { relative } from 'node:path';
 import type { Plugin } from 'vite';
 import { navigationLinks, pages, resolveSitePath, siteOrigin, type Page } from '../src/site.ts';
 import { openSourceGroups } from '../src/content/open-source.ts';
+import { artworkCredit, copyrightNotice } from '../src/content/footer.ts';
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, character => ({
@@ -25,6 +26,14 @@ function renderLayoutStart(page: Page, base: string): string {
   const links = navigationLinks(base, resolveSitePath(page.path, base))
     .map(link => `<a href="${escapeHtml(link.href)}"${link.current ? ' aria-current="page"' : ''}>${escapeHtml(link.label)}</a>`)
     .join('\n');
+  if (page.layout === 'portfolio') {
+    return `<a class="skip-link" href="#main-content">Skip to main content</a>
+      <div class="content_area">
+        <div class="content_area__background" aria-hidden="true"></div>
+        <div class="content_wrapper">
+          <header class="navbar"><nav class="nav" aria-label="Primary navigation">${links}</nav></header>
+          <main id="main-content" class="content_main" tabindex="-1">`;
+  }
   return `<a class="skip-link" href="#main-content">Skip to main content</a>
     <div class="case-study-shell">
       <header class="case-study-header">
@@ -33,7 +42,20 @@ function renderLayoutStart(page: Page, base: string): string {
       <main id="main-content" tabindex="-1">`;
 }
 
-function renderLayoutEnd(base: string): string {
+function renderLayoutEnd(page: Page, base: string): string {
+  if (page.layout === 'portfolio') {
+    return `</main></div></div>
+      <footer class="site-footer">
+        <div class="copyright">
+          ${escapeHtml(copyrightNotice(new Date().getFullYear()))}
+          <a href="${artworkCredit.href}" target="_blank" rel="noopener noreferrer">${artworkCredit.name}<span class="link__new-tab"> (opens in a new tab)</span></a>.
+        </div>
+        <ul class="links-container">
+          <li><a href="${escapeHtml(resolveSitePath('profile.md', base))}">Concise profile</a></li>
+          <li><a href="${escapeHtml(resolveSitePath(pages.privacy.path, base))}">Privacy</a></li>
+        </ul>
+      </footer>`;
+  }
   return `</main>
       <footer class="case-study-footer">
         <a href="${escapeHtml(resolveSitePath('', base))}">Back to the portfolio</a> ·
@@ -50,10 +72,20 @@ export function renderSitemap(): string {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
 
-function renderOpenSourceSummary(): string {
-  return `<ul>${openSourceGroups.map(group => `<li>${escapeHtml(group.title)}: ${group.projects
-    .map(project => `<a href="https://github.com/bluehexagons/${escapeHtml(project.repository)}">${escapeHtml(project.name)}</a>`)
-    .join(', ')}.</li>`).join('\n')}</ul>`;
+function projectLink(href: string, label: string, ariaLabel: string, className = ''): string {
+  return `<a href="${escapeHtml(href)}"${className ? ` class="${className}"` : ''} target="_blank" rel="noopener noreferrer"
+    aria-label="${escapeHtml(ariaLabel)} (opens in a new tab)">${escapeHtml(label)}</a>`;
+}
+
+function renderOpenSourceProjects(): string {
+  return openSourceGroups.map(group => `<section>
+    <h3>${escapeHtml(group.title)}</h3>
+    <ul>${group.projects.map(project => `<li>
+      <h4>${projectLink(`https://github.com/bluehexagons/${project.repository}`, project.name, `${project.name} source on GitHub`)}</h4>
+      <p>${escapeHtml(project.description)}</p>
+      ${project.demo ? projectLink(project.demo, project.demoLabel || 'Open demo', `${project.demoLabel || 'Open demo'}: ${project.name}`, 'open_projects__demo') : ''}
+    </li>`).join('\n')}</ul>
+  </section>`).join('\n');
 }
 
 export function siteHtmlPlugin(sourceRoot: string): Plugin {
@@ -71,11 +103,17 @@ export function siteHtmlPlugin(sourceRoot: string): Plugin {
           if (html.includes('<!-- site:')) throw new Error(`Missing page metadata: ${path}`);
           return html;
         }
-        if (!html.includes('<!-- site:head -->')) throw new Error(`Missing site:head in ${path || 'index.html'}`);
-        return html.replace('<!-- site:head -->', () => renderHead(page))
-          .replace('<!-- site:open-source-summary -->', renderOpenSourceSummary)
+        for (const marker of ['head', 'layout-start', 'layout-end']) {
+          if (html.split(`<!-- site:${marker} -->`).length !== 2) {
+            throw new Error(`Expected one site:${marker} in ${path || 'index.html'}`);
+          }
+        }
+        const result = html.replace('<!-- site:head -->', () => renderHead(page))
+          .replace('<!-- site:open-source-projects -->', renderOpenSourceProjects)
           .replace('<!-- site:layout-start -->', () => renderLayoutStart(page, base))
-          .replace('<!-- site:layout-end -->', () => renderLayoutEnd(base));
+          .replace('<!-- site:layout-end -->', () => renderLayoutEnd(page, base));
+        if (result.includes('<!-- site:')) throw new Error(`Unknown site marker in ${path || 'index.html'}`);
+        return result;
       },
     },
     generateBundle() {

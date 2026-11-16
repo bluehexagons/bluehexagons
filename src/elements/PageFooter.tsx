@@ -1,6 +1,7 @@
 import { BaseElement } from './BaseElement';
 import pageFooterStyles from './PageFooter.css?inline';
 import { sitePath } from '../site-path';
+import { artworkCredit, copyrightNotice } from '../content/footer';
 
 export class PageFooter extends BaseElement {
   constructor() {
@@ -13,9 +14,8 @@ export class PageFooter extends BaseElement {
     this.render(
       <footer class="site-footer">
         <div class="copyright">
-          Antistatic © 2018-{year} bluehexagons, all rights reserved. Air Dash Online © 2013 JV5 Games. Logos and
-          trademarks attributed to their respective owners. bluehexagons logo, Antistatic logo, background tile
-          produced by <site-link href="https://bsky.app/profile/hobith.bsky.social">hobith</site-link>.
+          {copyrightNotice(year)}{' '}
+          <site-link href={artworkCredit.href}>{artworkCredit.name}</site-link>.
         </div>
 
         <ul class="links-container">

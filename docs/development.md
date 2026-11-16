@@ -55,7 +55,8 @@ Existing `.html` URLs and homepage fragments remain supported. Curated archives
 under `public/etc/` are copied unchanged.
 
 1. Add an HTML entry such as `src/project.html` and register its path, title,
-   description, label, and sitemap eligibility in [`src/site.ts`](../src/site.ts).
+   description, label, layout (`portfolio` or `article`), and sitemap eligibility
+   in [`src/site.ts`](../src/site.ts).
    The homepage's registry path is the empty string; other paths include `.html`.
 2. Put `<!-- site:head -->` after the charset declaration. The build supplies
    the title, description, viewport, canonical URL, and icons. Page-specific
@@ -65,10 +66,15 @@ under `public/etc/` are copied unchanged.
    `site:layout-end` comments around the article and the `/case-study.css` link.
    These markers supply a shared static header, skip link, main landmark, and
    footer in both development and production; no page script is required.
+   For a portfolio page, use `layout: 'portfolio'`, link `/portfolio.css`, and
+   add `/portfolio.ts` only if it has galleries or expandable sections. The
+   portfolio layout preserves the wider page shell and project credits.
 4. Add a primary navigation entry in `src/site.ts` only when useful. Navigation
    is shared by static layouts and the interactive `page-header` component.
    Use `sitePath()` for browser-generated internal links and `%BASE_URL%` for
-   internal links in source HTML. Canonical URLs always use the primary domain.
+   anchor links in source HTML. Use root-relative source URLs for image `src`
+   and head asset `href` attributes; Vite applies the hosting base to them.
+   Canonical URLs always use the primary domain.
 5. Build and run `check:site` at `/` and `/bluehexagons/`. Add behavior checks
    when a new page introduces interactions or another layout.
 
@@ -77,25 +83,39 @@ before Vite processes HTML and emits `sitemap.xml` from the registry. Do not
 maintain another sitemap in `public/`. Shop entries keep their independent
 metadata and are absent from public navigation and the sitemap.
 
-Keep reusable project records in `src/content/`; detailed page narratives can
-stay in their HTML or TSX file. The homepage's `site:open-source-summary` marker
-uses the same curated project records as its interactive listing. Career
-summaries and `public/profile.md` still need editorial alignment.
+Keep reusable project records in `src/content/` and detailed page narratives in
+HTML. The homepage's `site:open-source-projects` marker generates the full
+curated project listing at build time. All public pages ship their complete
+content, navigation, and links in HTML. Keep career details aligned with the
+concise [`profile.md`](../public/profile.md); there is no separate homepage
+fallback summary to maintain.
 
-Interactive pages import `bootstrap.ts` for common styles and layout components,
-then import only the feature components they use. For example, import
-`elements/ImageScroller` for galleries and `fragment-navigation` for links into
-expandable sections (it also registers `ExpandableSection`). The latter is
-unnecessary on static articles or shop pages. `elements/index.ts` remains an
-explicit all-components entry point; common bootstrapping does not import it.
+`portfolio.ts` registers galleries and expandable sections without replacing
+page content. Gallery source images are wrapped in native links with captions,
+so they remain usable without JavaScript; expandable content remains visible
+until its component upgrades. Keep ordinary links and decorative icons native.
+Page-wide layout and content styles live in document CSS. Components receive
+only `component.css` (reset and accessibility primitives) plus their own styles.
+`layout.css`, `footer.css`, and `links.css` are shared between document layouts
+and the legacy Web Components retained for the opt-in shop.
 
-The homepage includes a short HTML summary that remains readable without
-JavaScript. Keep it aligned with the interactive homepage and the concise
-[`profile.md`](../public/profile.md) when career details change. The static
-[`basaltwater.html`](../src/basaltwater.html) case study provides a direct URL for
-the project; [`llms.txt`](../public/llms.txt) links these public sources for
+The shop continues to use `bootstrap.ts` for its client-rendered shell; it does
+not import the portfolio enhancements. `elements/index.ts` is an explicit
+all-components entry point, unused by common bootstrapping.
+
+[`llms.txt`](../public/llms.txt) links public profile and project sources for
 automated readers. Canonical URLs and the sitemap point to bluehexagons.com,
 which is the primary copy of the site.
+
+For browser smoke checks, serve the site on loopback with
+`npm run dev -- --host 127.0.0.1` (or a production build with
+`npm run preview -- --host 127.0.0.1`). Check the homepage and Antistatic at
+desktop and narrow phone widths, with JavaScript enabled and disabled. Verify
+the skip link, gallery arrows and enlarged viewer, Escape/focus return, and
+`antistatic.html#refresh`, which must reveal nested expandable sections. Managed
+Chromium covers this workflow; Firefox coverage has not been established.
+The `check:site` suite runs development HTTP and build-output checks without a
+browser dependency, including gallery fallbacks and retained guide anchors.
 
 Check repository links while signed out of GitHub before adding them to public
 pages or documentation. Link to a public project page or storefront when the

@@ -1,4 +1,4 @@
-import cssStyles from '../css.css?inline';
+import cssStyles from '../component.css?inline';
 
 export abstract class BaseElement extends HTMLElement {
   protected shadow: ShadowRoot;

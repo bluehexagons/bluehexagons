@@ -1,0 +1,3 @@
+/* Shared Shadow DOM primitives; page layouts and content stay in document CSS. */
+@import './reset.css';
+@import './accessibility.css';

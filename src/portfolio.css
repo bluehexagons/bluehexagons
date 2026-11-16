@@ -1,0 +1,58 @@
+@import './css.css';
+@import './layout.css';
+@import './links.css';
+@import './footer.css';
+@import './elements/PageHeader.css';
+
+.content_area__background {
+  background-image: url('/assets/b6bg_b.png');
+}
+
+.inline-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: -3px;
+}
+
+a.profile_links__link,
+a.also_on__link {
+  display: block;
+  padding: 6px 0;
+  min-width: 0;
+  max-width: 100%;
+  text-decoration: none;
+}
+
+a.profile_links__link:hover,
+a.also_on__link:hover {
+  text-decoration: underline;
+}
+
+expandable-section:not(:defined) {
+  display: block;
+}
+
+/* A usable gallery if JavaScript is unavailable or still loading. */
+image-scroller:not(:defined) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 16px;
+  margin-block: 20px;
+}
+
+.gallery-fallback-caption {
+  display: block;
+  padding-block: 8px;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 520px) {
+  a.profile_links__link,
+  a.also_on__link {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: 6px;
+    padding: 4px 0;
+  }
+}

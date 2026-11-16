@@ -32,38 +32,73 @@ test('every public page has complete generated metadata and base-aware assets', 
     assert.ok(html.includes(`rel="canonical" href="${siteOrigin}/${page.path}"`), page.path);
     assert.ok(html.includes(`href="${base}assets/icon.png"`), page.path);
     assert.doesNotMatch(html, /<!-- site:|%BASE_URL%/);
-    // Local script and stylesheet references must resolve to real build artifacts.
+    // Links and assets must resolve to real artifacts, including original media
+    // used by gallery fallbacks and files copied unchanged from public/.
     const urls = [...html.matchAll(/(?:src|href)="([^"#]+)"/g)].map(match => match[1]);
-    for (const url of urls.filter(url => url.startsWith(base) && /\.(?:css|js)$/.test(url))) {
-      assert.ok(existsSync(resolve('dist', url.slice(base.length))), url);
+    for (const url of urls.filter(url => url.startsWith(base) && !url.startsWith('//'))) {
+      const path = decodeURIComponent(url.slice(base.length).split(/[?#]/)[0]) || 'index.html';
+      assert.ok(existsSync(resolve('dist', path)), url);
     }
   }
 });
 
-test('static pages ship content and accessible navigation without JavaScript', () => {
-  for (const path of ['privacy.html', 'basaltwater.html']) {
-    const html = readOutput(path);
-    assert.match(html, /<main id="main-content" tabindex="-1">/);
+test('all public pages ship content and accessible navigation without JavaScript', () => {
+  for (const page of Object.values(pages)) {
+    const html = readOutput(page.path || 'index.html');
+    assert.equal((html.match(/<main\b/g) || []).length, 1);
+    assert.equal((html.match(/<h1\b/g) || []).length, 1);
+    assert.match(html, /<main id="main-content"[^>]*tabindex="-1">/);
     assert.match(html, /href="#main-content">Skip to main content/);
-    assert.match(html, /<nav aria-label="Primary navigation">/);
+    assert.match(html, /<nav\b[^>]*aria-label="Primary navigation">/);
     assert.ok(html.includes(`href="${base}basaltwater.html"`));
     assert.ok(html.includes(`href="${base}#open-source"`));
-    assert.doesNotMatch(html, /<script[^>]+type="module"|<site-link|<content-area/);
+    assert.doesNotMatch(html, /<site-link|<content-area|<page-header|<page-footer|id="app"/);
+    if (page.layout === 'article') assert.doesNotMatch(html, /<script[^>]+type="module"/);
   }
   assert.match(readOutput('privacy.html'), /<h1>Privacy Policy<\/h1>/);
   assert.match(readOutput('privacy.html'), /Effective Date: April 11, 2025/);
   assert.ok(readOutput('basaltwater.html').includes(`href="${base}basaltwater.html" aria-current="page"`));
 });
 
-test('homepage fallback includes every curated open-source project', () => {
+test('homepage includes full project descriptions and optional demos in static HTML', () => {
   const html = readOutput('index.html');
   for (const group of openSourceGroups) {
     for (const project of group.projects) {
       assert.ok(html.includes(`href="https://github.com/bluehexagons/${project.repository}"`), project.name);
+      assert.ok(html.includes(project.description), project.name);
+      if (project.demo) assert.ok(html.includes(`href="${project.demo}"`), project.name);
     }
   }
   assert.match(html, /id="basaltwater"/);
   assert.match(html, /id="open-source"/);
+});
+
+test('portfolio content retains career details, guide anchors, and usable gallery fallbacks', () => {
+  const home = readOutput('index.html');
+  assert.equal((home.match(/<article\b/g) || []).length, 10);
+  assert.match(home, /Senior UI Engineer @ Zazzle.com/);
+  assert.match(home, /Application Developer @ Dexter Solutions/);
+  assert.match(home, /href="mailto:loren@bluehexagons.com"/);
+  const game = readOutput('antistatic.html');
+  for (const id of ['refresh', 'guide', 'energy', 'familiar', 'differences', 'shields-and-energy', 'controllers', 'control-rebinding']) {
+    assert.ok(game.includes(`id="${id}"`), id);
+  }
+  for (const html of [home, game]) {
+    const fallbackImages = [...html.matchAll(/<image-scroller\b[^>]*>([\s\S]*?)<\/image-scroller>/g)];
+    assert.ok(fallbackImages.length > 0);
+    for (const [, gallery] of fallbackImages) {
+      const images = [...gallery.matchAll(/<img\b([^>]+)>/g)];
+      assert.ok(images.length > 0);
+      assert.equal((gallery.match(/<a\b/g) || []).length, images.length);
+      for (const [, attrs] of images) {
+        assert.match(attrs, /alt="[^"]+"/);
+        const source = attrs.match(/src="([^"]+)"/)![1];
+        assert.ok(source.startsWith(base), source);
+        assert.ok(existsSync(resolve('dist', decodeURIComponent(source.slice(base.length)))), source);
+      }
+    }
+    assert.doesNotMatch(html, /\{sitePath|\{' '\}|slot="content"/);
+  }
 });
 
 test('sitemap uses canonical URLs and excludes optional shop routes', () => {
