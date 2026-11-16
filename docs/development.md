@@ -60,13 +60,25 @@ Temporary fixtures test nested pages through development, build, and preview.
 GitHub Actions checks both frontend modes and the API; a separate workflow builds
 and deploys the Pages copy.
 
-For browser smoke checks, bind development or preview to loopback with
-`--host 127.0.0.1`. Check the homepage, portfolio, profile, and Antistatic at desktop
-and phone widths, with and without JavaScript. Verify navigation, the skip link,
-contribution credits, profile printing, gallery controls, Escape/focus return,
-expandable sections after resizing, and `antistatic.html#refresh`. The browser
-workflow uses managed Chromium; Firefox and native Windows coverage have not
-been established.
+For interactive changes, run the optional Chromium suite against a fresh build:
+
+```bash
+npx playwright install chromium  # once, and after Playwright updates
+npm run build
+npm run check:browser
+```
+
+The suite starts and stops preview on `127.0.0.1:4175`. It checks desktop and phone
+layouts, navigation without JavaScript, gallery keyboard controls and modal
+focus, video activation, fragment links, and expandable content after resizing.
+Match `VITE_BASE_PATH` to the build when checking a project URL. Failure traces
+stay in the ignored `test-results/` directory. Browser tests run separately from
+the fast CI checks; see [Playwright’s browser setup](https://playwright.dev/docs/browsers)
+for platform requirements.
+
+Also check the skip link, profile printing, and touch gestures manually. Bind
+manual preview to loopback with `--host 127.0.0.1`. Firefox and native Windows
+coverage have not been established.
 
 ## Content and architecture
 

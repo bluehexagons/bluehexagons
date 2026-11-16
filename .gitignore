@@ -1,6 +1,7 @@
 /node_modules
 /dist
 /public/assets/thumbs
+/test-results/
 
 # Local configuration (keep sanitized examples tracked)
 .env
