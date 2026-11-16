@@ -128,7 +128,10 @@ the skip link, gallery arrows and enlarged viewer, Escape/focus return, and
 Chromium covers this workflow; Firefox coverage has not been established.
 The `check:site` suite runs registry, development HTTP, production preview, and
 build-output checks without a browser dependency. It checks local link targets,
-unique page IDs, fragment destinations, gallery fallbacks, and shop exclusion.
+unique page IDs, fragment destinations, gallery fallbacks, and shop exclusion,
+including encoded development URLs. Temporary nested-page fixtures exercise
+directory URLs, explicit index aliases, metadata, base-aware links, and sitemaps
+through development, production builds, and preview at both hosting bases.
 
 Check repository links while signed out of GitHub before adding them to public
 pages or documentation. Link to a public project page or storefront when the

@@ -1,4 +1,4 @@
-import { relative } from 'node:path';
+import { posix, relative } from 'node:path';
 import type { Plugin } from 'vite';
 import { navigationLinks, pageFile, pages, resolveSitePath, siteOrigin, type Page } from '../src/site.ts';
 import { openSourceGroups } from '../src/content/open-source.ts';
@@ -75,8 +75,8 @@ function renderLayoutEnd(page: Page, base: string): string {
     </div>`;
 }
 
-export function renderSitemap(): string {
-  const urls = Object.values(pages).filter(page => page.sitemap)
+export function renderSitemap(registeredPages: readonly Page[] = Object.values(pages)): string {
+  const urls = registeredPages.filter(page => page.sitemap)
     .map(page => `  <url><loc>${siteOrigin}/${page.path}</loc></url>`).join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
@@ -97,7 +97,7 @@ function renderOpenSourceProjects(): string {
   </section>`).join('\n');
 }
 
-export function siteHtmlPlugin(sourceRoot: string, includeShop = false): Plugin {
+export function siteHtmlPlugin(sourceRoot: string, registeredPages: readonly Page[], includeShop = false): Plugin {
   let base = '/';
   return {
     name: 'site-html',
@@ -106,10 +106,10 @@ export function siteHtmlPlugin(sourceRoot: string, includeShop = false): Plugin 
       order: 'pre',
       handler(html, context) {
         const path = relative(sourceRoot, context.filename).replaceAll('\\', '/');
-        const page = Object.values(pages).find(page => pageFile(page.path) === path);
+        const page = registeredPages.find(page => pageFile(page.path) === path);
         // Shop entries remain independent and opt-in.
         if (!page) {
-          if (path.startsWith('shop/')) return html;
+          if (includeShop && path.startsWith('shop/')) return html;
           throw new Error(`Missing page metadata: ${path}`);
         }
         for (const marker of ['head', 'layout-start', 'layout-end']) {
@@ -126,20 +126,28 @@ export function siteHtmlPlugin(sourceRoot: string, includeShop = false): Plugin 
       },
     },
     generateBundle() {
-      this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: renderSitemap() });
+      this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: renderSitemap(registeredPages) });
     },
     configureServer(server) {
       server.middlewares.use((request, response, next) => {
-        const path = request.url?.split('?')[0];
-        const entry = path?.startsWith(base) ? path.slice(base.length) : path?.replace(/^\//, '');
-        if (!includeShop && (entry === 'shop' || entry?.startsWith('shop/'))) {
+        let path: string;
+        try {
+          // Match Vite's decoded file paths before applying the feature gate.
+          path = posix.normalize(decodeURIComponent(request.url?.split('?')[0] || '').replaceAll('\\', '/'));
+        } catch {
+          response.statusCode = 400;
+          response.end('Malformed URL');
+          return;
+        }
+        const entry = path.startsWith(base) ? path.slice(base.length) : path.replace(/^\//, '');
+        if (!includeShop && (entry === 'shop' || entry.startsWith('shop/'))) {
           response.statusCode = 404;
           response.end('Not found');
           return;
         }
         if (path !== '/sitemap.xml' && path !== resolveSitePath('sitemap.xml', base)) return next();
         response.setHeader('Content-Type', 'application/xml; charset=utf-8');
-        response.end(renderSitemap());
+        response.end(renderSitemap(registeredPages));
       });
     },
   };

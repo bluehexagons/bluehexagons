@@ -34,10 +34,20 @@ for (const base of ['/', '/bluehexagons/']) {
         const response = await fetch(`${origin}${base}${path}`);
         assert.equal(response.status, 404, path);
       }
-      for (const path of ['shop/', 'shop/admin.html', 'shop/success.html']) {
+      for (const path of ['shop/', 'shop/admin.html', 'shop/success.html', '%73hop/', '%73hop/admin.html', 'shop%2fadmin.html']) {
         const response = await fetch(`${origin}${base}${path}`);
         assert.equal(response.status, process.env.VITE_SHOP === '1' ? 200 : 404, path);
       }
+      if (process.env.VITE_SHOP !== '1') {
+        for (const path of ['/shop/admin.html', '%2fshop/admin.html', 'x%2f..%2fshop/admin.html', 'shop%5cadmin.html']) {
+          assert.equal((await fetch(`${origin}${base}${path}`)).status, 404, path);
+        }
+        await assert.rejects(
+          server.transformIndexHtml('/shop/admin.html', '<!doctype html><title>Shop</title>'),
+          /Missing page metadata: shop\/admin.html/,
+        );
+      }
+      assert.equal((await fetch(`${origin}${base}%ZZ.html`)).status, 400, 'malformed URL');
       await assert.rejects(
         server.transformIndexHtml('/unregistered.html', '<!doctype html><title>Unregistered</title>'),
         /Missing page metadata: unregistered.html/,

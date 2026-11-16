@@ -31,7 +31,7 @@ export default defineConfig({
   appType: 'mpa',
   base: normalizeBasePath(process.env.VITE_BASE_PATH || '/'),
 
-  plugins: [siteHtmlPlugin(sourceRoot, includeShop), jsxInjectPlugin],
+  plugins: [siteHtmlPlugin(sourceRoot, Object.values(pages), includeShop), jsxInjectPlugin],
 
   // Where to output the built files
   build: {
