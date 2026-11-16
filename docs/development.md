@@ -148,6 +148,12 @@ stylesheets compose these with layout, link, and footer styles. Components load
 content. The optional shop uses `bootstrap.ts` and the `css.css` compatibility
 entry. `elements/index.ts` is an unused, explicit all-components entry point.
 
+Expandable sections keep their main control above the preview. Expanded content
+has a second collapse action at the end, which returns focus and the viewport
+to the main control. Give each section a descriptive `aria-label` beginning with
+“Show more”; the label is also visible. Sections that fit hide both controls.
+Fragment links and keyboard focus reveal clipped content automatically.
+
 ## Image galleries
 
 Wrap thumbnail images in native links with captions so galleries work without

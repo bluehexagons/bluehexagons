@@ -74,8 +74,7 @@ test('fragment links reveal collapsed destinations, including the current fragme
   await page.goto('antistatic.html#refresh');
   const target = page.locator('#refresh');
   const section = page.locator('expandable-section').filter({ has: target }).last();
-  const controls = await section.getByRole('button', { name: 'Show less character details', exact: true }).getAttribute('aria-controls');
-  const toggle = section.locator(`button[aria-controls="${controls}"]`);
+  const toggle = section.getByRole('button', { name: /^Show (more|less) character details$/, exact: true });
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
   await expect(target).toBeInViewport();
   await toggle.click();
@@ -106,7 +105,7 @@ async function expandableFixture(page: Page) {
     document.body.append(section);
   });
   const section = page.locator('#resize-fixture');
-  const toggle = section.getByRole('button', { includeHidden: true });
+  const toggle = section.getByRole('button', { name: /^Show (more|less)/, includeHidden: true });
   return { section, toggle, content: page.locator('#resize-content') };
 }
 
@@ -148,4 +147,65 @@ test('expandable sections preserve controls and keep resizing after reattachment
   await expect(toggle).toBeVisible();
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   await expect(toggle).toHaveAccessibleName('Show more updated content');
+});
+
+for (const reducedMotion of ['no-preference', 'reduce'] as const) {
+  test(`long sections keep the main control in place and return focus when collapsed (${reducedMotion})`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion });
+    await page.goto('antistatic.html#guide');
+    const section = page.locator('expandable-section').filter({ has: page.locator('#energy') });
+    const toggle = section.getByRole('button', { name: /^Show (more|less) game guide$/, exact: true });
+    const collapse = section.getByRole('button', { name: 'Collapse section and return to start: game guide', exact: true });
+    await toggle.scrollIntoViewIfNeeded();
+    const start = await toggle.evaluate(element => element.getBoundingClientRect().top);
+    expect(await toggle.evaluate(element => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+    await toggle.press('Enter');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect.poll(() => section.evaluate(element => element.shadowRoot!.querySelector('.expandable-content')!.getAnimations().length)).toBe(0);
+    expect(Math.abs(await toggle.evaluate(element => element.getBoundingClientRect().top) - start)).toBeLessThan(2);
+    await expect(toggle).toBeInViewport();
+    await expect(toggle).toBeFocused();
+    await expect(collapse).toHaveAttribute('aria-controls', (await toggle.getAttribute('aria-controls'))!);
+    await expect(collapse).toHaveAttribute('aria-expanded', 'true');
+    expect(await collapse.evaluate(element => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+    if (reducedMotion === 'reduce') {
+      expect(await section.evaluate(element => getComputedStyle(element.shadowRoot!.querySelector('.expandable-content')!).transitionDuration)).toBe('0s');
+    }
+    await collapse.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(toggle).toBeFocused();
+    await expect(toggle).toBeInViewport();
+    await expect(collapse).toBeHidden();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
+
+test('collapsing a nested section leaves its parent open', async ({ page }) => {
+  await page.goto('antistatic.html#refresh');
+  const parent = page.locator('expandable-section').filter({ has: page.locator('#refresh') });
+  const parentToggle = parent.getByRole('button', { name: 'Show less character details', exact: true });
+  const childToggle = parent.getByRole('button', { name: /^Show (more|less) Silicon moves$/, exact: true });
+  await childToggle.click();
+  await expect(childToggle).toHaveAttribute('aria-expanded', 'true');
+  await parent.getByRole('button', { name: 'Collapse section and return to start: Silicon moves', exact: true }).click();
+  await expect(childToggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(childToggle).toBeFocused();
+  await expect(childToggle).toBeInViewport();
+  await expect(parentToggle).toHaveAttribute('aria-expanded', 'true');
+});
+
+test('keyboard focus reveals clipped content without moving focus to the controls', async ({ page }) => {
+  const { toggle, content } = await expandableFixture(page);
+  await content.evaluate(element => {
+    const link = document.createElement('a');
+    link.href = '#main-content';
+    link.textContent = 'Clipped destination';
+    link.style.cssText = 'display: block; margin-top: 250px';
+    element.append(link);
+  });
+  const link = content.getByRole('link', { name: 'Clipped destination' });
+  await link.focus();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(link).toBeFocused();
+  await expect(link).toBeInViewport();
 });

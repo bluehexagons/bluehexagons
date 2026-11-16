@@ -5,6 +5,8 @@ let expandableSectionId = 0;
 
 export class ExpandableSection extends BaseElement {
   private toggleButton: HTMLButtonElement | null = null;
+  private toggleLabel: HTMLSpanElement | null = null;
+  private collapseButton: HTMLButtonElement | null = null;
   private contentContainer: HTMLDivElement | null = null;
   private contentInner: HTMLDivElement | null = null;
   private resizeObserver: ResizeObserver | null = null;
@@ -37,10 +39,26 @@ export class ExpandableSection extends BaseElement {
     const contentId = `expandable-${++expandableSectionId}`;
 
     let toggleButton: HTMLButtonElement | null = null;
+    let collapseButton: HTMLButtonElement | null = null;
     let contentContainer: HTMLDivElement | null = null;
     let contentInner: HTMLDivElement | null = null;
     this.render(
       <div class="expandable-container">
+        <button
+          class="expand_toggle"
+          type="button"
+          aria-expanded="false"
+          aria-label={this.collapsedLabel}
+          aria-controls={contentId}
+          ref={(el: Element) => { toggleButton = el as HTMLButtonElement; }}
+          onClick={() => {
+            if (this.toggleButton?.getAttribute('aria-expanded') === 'true') this.collapse();
+            else this.toggle(true);
+          }}
+        >
+          <span ref={(el: Element) => { this.toggleLabel = el as HTMLSpanElement; }}>{this.collapsedLabel}</span>
+          <span class="expand_toggle__icon" aria-hidden="true">↓</span>
+        </button>
         <div
           id={contentId}
           class="expandable-content"
@@ -75,24 +93,21 @@ export class ExpandableSection extends BaseElement {
         </div>
 
         <button
-          class="expand_toggle"
+          class="expand_collapse"
           type="button"
           aria-expanded="false"
-          aria-label={this.collapsedLabel}
           aria-controls={contentId}
-          ref={(el: Element) => {
-            toggleButton = el as HTMLButtonElement;
-          }}
-          onClick={() => {
-            if (!toggleButton || !contentContainer) return;
-            const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
-            this.toggle(!isExpanded);
-          }}
-        ></button>
+          hidden
+          ref={(el: Element) => { collapseButton = el as HTMLButtonElement; }}
+          onClick={() => this.collapse()}
+        >
+          <span>Collapse section</span><span aria-hidden="true">↑</span>
+        </button>
       </div>
     );
 
     this.toggleButton = toggleButton;
+    this.collapseButton = collapseButton;
     this.contentContainer = contentContainer;
     this.contentInner = contentInner;
   }
@@ -104,6 +119,13 @@ export class ExpandableSection extends BaseElement {
 
     this.toggleButton.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
     this.toggleButton.setAttribute('aria-label', isExpanded ? this.expandedLabel : this.collapsedLabel);
+    if (this.toggleLabel) this.toggleLabel.textContent = isExpanded ? this.expandedLabel : this.collapsedLabel;
+    if (this.collapseButton) {
+      const context = this.collapsedLabel.replace(/^Show more\s*/, '');
+      this.collapseButton.setAttribute('aria-label', `Collapse section and return to start${context ? `: ${context}` : ''}`);
+      this.collapseButton.setAttribute('aria-expanded', String(isExpanded));
+      this.collapseButton.hidden = !isExpanded || this.toggleButton.hidden;
+    }
     this.contentContainer.classList.toggle('expanded', isExpanded);
 
     if (isExpanded) {
@@ -118,10 +140,21 @@ export class ExpandableSection extends BaseElement {
   // immediately so the browser scrolls the page instead of the clipped preview.
   reveal() {
     if (!this.contentContainer) return;
+    this.toggleImmediately(true);
+    this.contentContainer.scrollTop = 0;
+  }
+
+  private collapse() {
+    this.toggleImmediately(false);
+    this.toggleButton?.focus({ preventScroll: true });
+    this.toggleButton?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+  }
+
+  private toggleImmediately(expanded: boolean) {
+    if (!this.contentContainer) return;
     const container = this.contentContainer;
     container.style.transition = 'none';
-    this.toggle(true);
-    container.scrollTop = 0;
+    this.toggle(expanded);
     requestAnimationFrame(() => { container.style.transition = ''; });
   }
 
@@ -136,16 +169,7 @@ export class ExpandableSection extends BaseElement {
     this.contentContainer.classList.toggle('fits-content', !hasOverflow);
     this.toggleButton.hidden = !hasOverflow;
 
-    if (!hasOverflow) {
-      this.toggle(false);
-      return;
-    }
-
-    if (this.toggleButton.getAttribute('aria-expanded') === 'true') {
-      this.setExpandedHeight();
-    } else {
-      this.contentContainer.style.maxHeight = '';
-    }
+    this.toggle(hasOverflow && this.toggleButton.getAttribute('aria-expanded') === 'true');
   }
 
   private getPreviewHeight() {
