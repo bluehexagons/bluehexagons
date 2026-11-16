@@ -1,4 +1,4 @@
-h2.section_title {
+.section_title {
   margin: 0;
   padding: 0;
   line-height: 40px;
@@ -179,7 +179,7 @@ image-scroller {
 
 @media (max-width: 700px) {
 
-  h2.section_title {
+  .section_title {
     font-size: 31px;
     line-height: 1.2;
   }
@@ -275,7 +275,7 @@ image-scroller {
   background: rgba(5, 18, 23, 0.72);
 }
 
-.systems_feature__grid h3 {
+.systems_feature__grid h4 {
   margin: 0;
   color: #bceaf0;
   font-size: 1.16rem;

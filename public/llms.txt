@@ -2,11 +2,14 @@
 
 > Loren Crain is a software engineer and indie game developer who builds web software, games, and infrastructure. Basaltwater is his open-source infrastructure toolkit.
 
-The canonical portfolio is https://bluehexagons.com/. The GitHub Pages project site is a static copy. Use the linked pages and source repositories for specific claims; client work is described only at a public, high level.
+The primary site is https://bluehexagons.com/. Its homepage focuses on games and projects; detailed work samples and career information have their own pages. The GitHub Pages project site is a static copy. Use the linked pages and source repositories for specific claims; client work is described only at a public, high level.
 
 ## Profile and projects
 
 - [Concise profile](profile.md): Experience, engineering areas, work interests, and contact.
+- [Profile and resume](profile.html): Career history, skills, contact information, and a printable resume.
+- [Portfolio](portfolio.html): Detailed work samples, technical narratives, and solo versus collaborative contribution credits.
+- [Games and projects](index.html): Antistatic, End of Blackjack, creative tools, and browser demos. End of Blackjack's music is by kikiala; Loren Crain handled game development.
 - [Basaltwater case study](basaltwater.html): Linux setup, deployment safety, development environments, and use in operating this website and internal systems.
 - [Antistatic](antistatic.html): Solo-developed platform fighting game and technical details.
 - [Other open-source projects](index.html#open-source): Creative tools, games, languages, and utilities, with source code and browser demos.

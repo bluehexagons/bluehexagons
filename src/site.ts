@@ -15,8 +15,24 @@ export const pages = {
     layout: 'portfolio',
     path: '',
     title: 'bluehexagons - Loren Crain',
-    description: 'Loren Crain builds web software, games, and reliable infrastructure, including the open-source Basaltwater toolkit.',
-    label: 'bluehexagons',
+    description: 'Games, creative tools, and open-source projects by Loren Crain, also known as bluehexagons. Explore Antistatic, End of Blackjack, and more.',
+    label: 'Games & projects',
+    sitemap: true,
+  },
+  portfolio: {
+    layout: 'portfolio',
+    path: 'portfolio.html',
+    title: 'Portfolio — Loren Crain / bluehexagons',
+    description: 'Selected game development, web engineering, and infrastructure work by Loren Crain, with work samples and individual contribution credits.',
+    label: 'Portfolio',
+    sitemap: true,
+  },
+  profile: {
+    layout: 'article',
+    path: 'profile.html',
+    title: 'Profile & resume — Loren Crain',
+    description: 'Loren Crain is a software engineer and indie game developer in southwest Missouri. Experience, skills, work interests, and contact information.',
+    label: 'Profile / resume',
     sitemap: true,
   },
   antistatic: {
@@ -49,12 +65,11 @@ type NavigationItem = { label: string } & ({ path: string } | { href: string });
 
 export const primaryNavigation: readonly NavigationItem[] = [
   { path: pages.home.path, label: pages.home.label },
+  { path: pages.portfolio.path, label: pages.portfolio.label },
+  { path: pages.profile.path, label: pages.profile.label },
   { path: pages.antistatic.path, label: pages.antistatic.label },
   { path: pages.basaltwater.path, label: pages.basaltwater.label },
   { path: '#open-source', label: 'Open source' },
-  { href: 'https://store.steampowered.com/app/3884650/End_of_Blackjack', label: 'End of Blackjack' },
-  { href: 'https://clicker.bluehexagons.com', label: 'Clicker' },
-  { href: 'https://foodguide.bluehexagons.com', label: 'DS Food Guide' },
 ];
 
 export function resolveSitePath(path: string, base: string): string {

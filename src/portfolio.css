@@ -4,6 +4,7 @@
 @import './links.css';
 @import './footer.css';
 @import './elements/PageHeader.css';
+@import './page.css';
 
 .content_area__background {
   background-image: url('/assets/b6bg_b.png');

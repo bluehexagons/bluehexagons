@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- site:head -->
+    <link rel="stylesheet" href="/portfolio.css" />
+    <script type="module" src="/portfolio.ts"></script>
+  </head>
+  <body>
+    <!-- site:layout-start -->
+<header class="page-intro">
+  <p class="eyebrow">Loren Crain / Selected work</p>
+  <h1>Portfolio</h1>
+  <p>Games, web applications, and the systems behind them. Here’s a closer look at what I built, how I built it, and where I worked with a team.</p>
+  <div class="page-actions"><a href="%BASE_URL%profile.html">Experience &amp; resume</a><a href="%BASE_URL%#games">Browse my games</a></div>
+</header>
+<nav class="section-nav" aria-label="Portfolio sections"><a href="#independent-work">Independent work</a><a href="#team-work">Team &amp; client work</a><a href="#work-samples">Work samples</a></nav>
+<section id="independent-work" aria-labelledby="independent-heading"><h2 class="collection-heading" id="independent-heading">Independent work</h2>
+<!-- site:project-detail:blackjack -->
+<article id="antistatic">
+        <h3 class="section_title">
+          Antistatic
+          <span class="time_range">2012 - Present</span>
+        </h3>
+<!-- site:credit:antistatic -->
+
+        <p class="description">
+          A solo-developed uncompromising platform fighting game using a bespoke C/TypeScript engine.
+
+           Read more at <a href="%BASE_URL%antistatic.html">the main Antistatic page.</a>
+        </p>
+
+        <div class="widest center">
+          <image-scroller aria-label="Antistatic">
+            <a href="%BASE_URL%assets/antistatic/boxart.png"><img src="/assets/thumbs/antistatic/boxart.png" title="Antistatic's Steam box art"  alt="Antistatic's Steam box art" loading="lazy" decoding="async" /><span class="gallery-fallback-caption">Antistatic's Steam box art</span></a>
+            <a href="https://youtu.be/GtGyPGYhTdE?si=AbhJgwcNC9TpAteq"><img
+              data-link-override="https://youtu.be/GtGyPGYhTdE?si=AbhJgwcNC9TpAteq"
+              title="Antistatic 0.7 combo video trailer."
+              src="/assets/thumbs/antistatic/eztrailer_4-00.00.01.149.png"
+             alt="Antistatic 0.7 combo video trailer." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">Antistatic 0.7 combo video trailer.</span></a>
+            <a href="%BASE_URL%assets/antistatic/Screenshot 2023-11-16 135339.png"><img
+              src="/assets/thumbs/antistatic/Screenshot 2023-11-16 135339.png"
+              title="A screenshot of the current state of the 0.8 open alpha test."
+             alt="A screenshot of the current state of the 0.8 open alpha test." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A screenshot of the current state of the 0.8 open alpha test.</span></a>
+            <a href="%BASE_URL%assets/antistatic/wheeeemodels.png"><img
+              src="/assets/thumbs/antistatic/wheeeemodels.png"
+              title="A screenshot showing a graphics engine test. It uses public domain high-detail models of a DSLR or mirrorless camera, and a rolling coffee cart."
+             alt="A screenshot showing a graphics engine test. It uses public domain high-detail models of a DSLR or mirrorless camera, and a rolling coffee cart." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A screenshot showing a graphics engine test. It uses public domain high-detail models of a DSLR or mirrorless camera, and a rolling coffee cart.</span></a>
+          </image-scroller>
+        </div>
+
+        <ul class="flex_list flex_list__background">
+          <li>Built from Scratch</li>
+          <li>Main language: TypeScript</li>
+          <li>Native code: C</li>
+          <li>Server language: Go</li>
+        </ul>
+
+        <expandable-section aria-label="Show more">
+          <ul class="flex_list flex_list__background">
+            <li>Shaders: GLES</li>
+            <li>Server OS: Ubuntu</li>
+            <li>Graphics: OpenGL</li>
+            <li>Bespoke graphics engine</li>
+            <li>Dynamic sound engine</li>
+            <li>Custom physics engine</li>
+            <li>Uncapped player count</li>
+            <li>Latency-optimized rendering and input processing</li>
+            <li>Font atlassing in C</li>
+            <li>Delay-based P2P UDP netcode</li>
+            <li>Custom build system: Bash, PowerShell</li>
+          </ul>
+
+          <div class="labeled_list">
+            <div>Open-Source Pieces</div>
+            <ul class="flex_list flex_list__background">
+              <li>
+                Lobby server:
+                <a href="https://github.com/bluehexagons/antistatic-server" target="_blank" rel="noopener noreferrer">antistatic-server<span class="link__new-tab"> (opens in a new tab)</span></a>
+              </li>
+              <li>
+                Input state machine:
+                <a href="https://github.com/bluehexagons/capacitor" target="_blank" rel="noopener noreferrer">capacitor<span class="link__new-tab"> (opens in a new tab)</span></a>
+              </li>
+              <li>
+                Color math scripting language:
+                <a href="https://github.com/bluehexagons/trace" target="_blank" rel="noopener noreferrer">trace<span class="link__new-tab"> (opens in a new tab)</span></a>
+              </li>
+              <li>
+                Loader:
+                <a href="https://github.com/bluehexagons/antistatic-loader" target="_blank" rel="noopener noreferrer">antistatic-loader<span class="link__new-tab"> (opens in a new tab)</span></a>
+              </li>
+              <li>
+                Animator:
+                <a href="https://github.com/bluehexagons/antistatic-animator" target="_blank" rel="noopener noreferrer">antistatic-animator<span class="link__new-tab"> (opens in a new tab)</span></a>
+              </li>
+              <li>
+                Translations:
+                <a href="https://github.com/bluehexagons/antistatic-translations" target="_blank" rel="noopener noreferrer">antistatic-translations<span class="link__new-tab"> (opens in a new tab)</span></a>
+              </li>
+              <li>
+                Easing library:
+                <a href="https://github.com/bluehexagons/easing" target="_blank" rel="noopener noreferrer">@bluehexagons/easing<span class="link__new-tab"> (opens in a new tab)</span></a>
+              </li>
+            </ul>
+          </div>
+        </expandable-section>
+      </article>
+<article id="basaltwater" class="systems_feature">
+        <div class="systems_feature__intro">
+          <p class="systems_feature__eyebrow">Open-source systems engineering</p>
+          <h3 class="section_title">Basaltwater</h3>
+<!-- site:credit:basaltwater -->
+          <p>
+            I designed and maintain Basaltwater, a toolkit for setting up and operating Debian machines,
+            Proxmox guests, web services, and development workstations. It turns repeatable operations into
+            inspectable commands with diagnostics and recovery paths. I use it to manage this website and my
+            internal tools, services, and workstations.
+          </p>
+          <div class="systems_feature__links">
+            <a href="%BASE_URL%basaltwater.html">Read the case study</a>
+            <a href="https://github.com/bluehexagons/basaltwater" target="_blank" rel="noopener noreferrer">Explore the source<span class="link__new-tab"> (opens in a new tab)</span></a>
+            <a href="https://github.com/bluehexagons/basaltwater/blob/main/docs/getting-started/getting-started.md" target="_blank" rel="noopener noreferrer">Getting started<span class="link__new-tab"> (opens in a new tab)</span></a>
+          </div>
+        </div>
+
+        <div class="systems_feature__grid">
+          <section>
+            <h4>Machine setup</h4>
+            <p>
+              Compose server and workstation capabilities, provision Proxmox guests, manage service and network
+              configuration, and diagnose hosts after setup.
+            </p>
+            <span>Linux · Python · Proxmox · systemd</span>
+          </section>
+          <section>
+            <h4>Safe deployments</h4>
+            <p>
+              Stage builds before release, isolate service accounts and writable state, check health at activation,
+              and retain a path to roll back. SQLite services can receive consistent backups.
+            </p>
+            <a href="https://github.com/bluehexagons/basaltwater/blob/main/docs/services/deployment-safety.md" target="_blank" rel="noopener noreferrer">Deployment design<span class="link__new-tab"> (opens in a new tab)</span></a>
+          </section>
+          <section>
+            <h4>Development environments</h4>
+            <p>
+              Prepare coding VMs with managed Git workspaces, browser testing, credentials, and clear privilege
+              boundaries so changes can be developed, reviewed, and checked against running systems.
+            </p>
+            <a href="https://github.com/bluehexagons/basaltwater/blob/main/docs/agents/agentic-vms.md" target="_blank" rel="noopener noreferrer">Coding VM guide<span class="link__new-tab"> (opens in a new tab)</span></a>
+          </section>
+        </div>
+
+        <p class="systems_feature__closing">
+          This work draws on the same skills I bring to a team: designing reliable interfaces, automating operations,
+          testing failure paths, and keeping systems understandable for the next person who has to run them.
+        </p>
+      </article>
+<article id="foodguide">
+        <h3 class="section_title">
+          Don't Starve Food Guide
+          <span class="time_range">Jan 2013 - Present</span>
+        </h3>
+<!-- site:credit:foodguide -->
+
+        <p class="description">
+          The Unofficial Don't Starve Food Guide is a simple static JavaScript-powered app that provides several helpful food-related
+          tools for the Don't Starve series of games.
+        </p>
+
+        <div class="widest center">
+          <image-scroller aria-label="Don't Starve Food Guide">
+            <a href="%BASE_URL%assets/foodguide/Screenshot 2023-11-16 141445.png"><img title="A screenshot of the Don't Starve Food Guide's Discovery tab." src="/assets/thumbs/foodguide/Screenshot 2023-11-16 141445.png"  alt="A screenshot of the Don't Starve Food Guide's Discovery tab." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A screenshot of the Don't Starve Food Guide's Discovery tab.</span></a>
+            <a href="%BASE_URL%assets/foodguide/Screenshot 2023-11-16 141703.png"><img title="Woah! That's a lot of food!" src="/assets/thumbs/foodguide/Screenshot 2023-11-16 141703.png"  alt="Woah! That's a lot of food!" loading="lazy" decoding="async" /><span class="gallery-fallback-caption">Woah! That's a lot of food!</span></a>
+            <a href="%BASE_URL%assets/foodguide/Screenshot 2023-11-16 141519.png"><img title="A screenshot of the statistics analyzer in the Discovery tab." src="/assets/thumbs/foodguide/Screenshot 2023-11-16 141519.png"  alt="A screenshot of the statistics analyzer in the Discovery tab." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A screenshot of the statistics analyzer in the Discovery tab.</span></a>
+          </image-scroller>
+        </div>
+
+        <ul class="flex_list flex_list__background">
+          <li>JavaScript</li>
+          <li>HTML</li>
+          <li>CSS</li>
+          <li>Open-source</li>
+          <li>
+            <a href="https://github.com/bluehexagons/foodguide" target="_blank" rel="noopener noreferrer">100+ stars on GitHub<span class="link__new-tab"> (opens in a new tab)</span></a>
+          </li>
+        </ul>
+
+        <expandable-section aria-label="Show more">
+          <p>
+            The open-source <a href="https://foodguide.bluehexagons.com" target="_blank" rel="noopener noreferrer">Food Guide<span class="link__new-tab"> (opens in a new tab)</span></a> (
+            <a href="https://github.com/bluehexagons/foodguide" target="_blank" rel="noopener noreferrer">on GitHub<span class="link__new-tab"> (opens in a new tab)</span></a>) was created to simulate the in-game
+            crock pot, which crafts different dishes depending on what four ingredients are chosen. It expanded to include more tools,
+            and has been maintained since Don't Starve was in Early Access.
+          </p>
+        </expandable-section>
+      </article>
+<article id="website">
+        <h3 class="section_title">
+          bluehexagons.com
+          <span class="time_range">2015 - Present</span>
+        </h3>
+<!-- site:credit:website -->
+
+        <p class="description">You Are Here. And I appreciate you.</p>
+
+        <ul class="flex_list flex_list__background">
+          <li>TypeScript</li>
+          <li>HTML</li>
+          <li>CSS</li>
+          <li>Web Components</li>
+          <li>Vite</li>
+          <li>Node.js</li>
+          <li>Ubuntu</li>
+          <li>Bash</li>
+          <li>
+            <a href="https://github.com/bluehexagons/bluehexagons" target="_blank" rel="noopener noreferrer">On GitHub<span class="link__new-tab"> (opens in a new tab)</span></a>
+          </li>
+        </ul>
+
+        <expandable-section aria-label="Show more">
+          <p>
+            The main site runs on a Linux server behind nginx. This TypeScript and web components frontend also builds as a static
+            site for GitHub Pages, with the optional shop kept separate from that build.
+          </p>
+        </expandable-section>
+      </article></section>
+<section id="team-work" aria-labelledby="team-heading"><h2 class="collection-heading" id="team-heading">Team &amp; client work</h2><p class="section-intro">Individual contributions within larger products and teams. <a href="%BASE_URL%profile.html#experience">See my full experience, including financial technology contract work.</a></p>
+<article id="zazzle">
+        <h3 class="section_title">
+          Senior UI Engineer @ Zazzle.com
+          <span class="time_range">Jun 2019 - Sep 2023</span>
+        </h3>
+<!-- site:credit:zazzle -->
+
+        <p class="description">I worked on most parts of the Zazzle.com frontend codebase, and built some internal tools.</p>
+
+        <div class="widest center">
+          <image-scroller aria-label="Zazzle web and editing tools">
+            <a href="%BASE_URL%assets/zazzle/Screenshot 2023-11-13 121328.png"><img
+              title="A screenshot showing a few technologies I built and worked on being used on the website. I worked extensively on displaying images, interactive hotspots, and the content management system."
+              src="/assets/thumbs/zazzle/Screenshot 2023-11-13 121328.png"
+             alt="A screenshot showing a few technologies I built and worked on being used on the website. I worked extensively on displaying images, interactive hotspots, and the content management system." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A screenshot showing a few technologies I built and worked on being used on the website. I worked extensively on displaying images, interactive hotspots, and the content management system.</span></a>
+            <a href="%BASE_URL%assets/zazzle/Screenshot 2023-11-13 121946.png"><img title="A screenshot of other examples of rich content and image use I worked on." src="/assets/thumbs/zazzle/Screenshot 2023-11-13 121946.png"  alt="A screenshot of other examples of rich content and image use I worked on." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A screenshot of other examples of rich content and image use I worked on.</span></a>
+            <a href="%BASE_URL%assets/zazzle/Screenshot 2023-11-13 121406.png"><img
+              title="A screenshot of a featured creators spotlight, using a highly-configurable profile photo embedding feature I originally authored."
+              src="/assets/thumbs/zazzle/Screenshot 2023-11-13 121406.png"
+             alt="A screenshot of a featured creators spotlight, using a highly-configurable profile photo embedding feature I originally authored." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A screenshot of a featured creators spotlight, using a highly-configurable profile photo embedding feature I originally authored.</span></a>
+            <a href="%BASE_URL%assets/zazzle/Screenshot 2023-05-16 at 20.26.22.png"><img
+              title="A screenshot of an internal table editing tool built for React that I fully designed and implemented."
+              src="/assets/thumbs/zazzle/Screenshot 2023-05-16 at 20.26.22.png"
+             alt="A screenshot of an internal table editing tool built for React that I fully designed and implemented." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A screenshot of an internal table editing tool built for React that I fully designed and implemented.</span></a>
+            <a href="%BASE_URL%assets/zazzle/Screenshot 2023-11-13 121545.png"><img
+              title="A screenshot of a table rendered in React that was created using the internal table editing tool I authored."
+              src="/assets/thumbs/zazzle/Screenshot 2023-11-13 121545.png"
+             alt="A screenshot of a table rendered in React that was created using the internal table editing tool I authored." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A screenshot of a table rendered in React that was created using the internal table editing tool I authored.</span></a>
+          </image-scroller>
+        </div>
+
+        <ul class="flex_list flex_list__background">
+          <li>TypeScript</li>
+          <li>React</li>
+          <li>SASS</li>
+          <li>C#</li>
+          <li>Redux/Sagas</li>
+          <li>slate</li>
+          <li>SQL</li>
+          <li>Responsive design</li>
+          <li>Accessibility</li>
+          <li>Internationalization</li>
+          <li>Storybook</li>
+          <li>Jira</li>
+          <li>Bitbucket</li>
+        </ul>
+
+        <expandable-section aria-label="Show more">
+          <p>
+            Built and maintained frontend UI infrastructure for public and internal pages. The primary technologies I used were
+            TypeScript, React, Redux/Sagas, and C#.
+          </p>
+        </expandable-section>
+      </article>
+<article id="dexter">
+        <h3 class="section_title">
+          Application Developer @ Dexter Solutions
+          <span class="time_range">Feb 2014 - Jun 2018</span>
+        </h3>
+<!-- site:credit:dexter -->
+
+        <p class="description">
+          For most of the time, I was part of a two-person team responsible for any dev or sysadmin work that came up for the company
+          or clients. Worked on big old systems with a lot of data.
+        </p>
+
+        <ul class="flex_list flex_list__background">
+          <li>TypeScript</li>
+          <li>Go</li>
+          <li>SQL</li>
+          <li>PHP</li>
+          <li>JavaScript</li>
+          <li>HTML</li>
+          <li>CSS</li>
+          <li>OAUTH integration</li>
+          <li>Linux system administration</li>
+        </ul>
+
+        <expandable-section aria-label="Show more">
+          <p>
+            Developed bespoke pages and utilities using Go, SQL Server, and TypeScript. Enhanced legacy PHP, JavaScript, and
+            third-party software. Administered Linux servers.
+          </p>
+        </expandable-section>
+      </article>
+<article id="air-dash-online">
+        <h3 class="section_title">
+          Lead Programmer @ Air Dash Online
+          <span class="time_range">May - Oct 2013</span>
+        </h3>
+<!-- site:credit:air-dash-online -->
+
+        <p class="description">
+          Air Dash Online was an obscenely fast-paced platform fighting game built by a small team of FGC members and artists.
+          After a few months of development, we demoed it at Evo 2013, but did not secure funding to finish the game.
+        </p>
+
+        <div class="widest center">
+          <image-scroller aria-label="Air Dash Online">
+            <a href="%BASE_URL%assets/ado/1157428_391081464351375_1074064025_n.png"><img
+              title="A promotional screenshot showing Tesla using side-special against a stationary Chai."
+              src="/assets/thumbs/ado/1157428_391081464351375_1074064025_n.png"
+             alt="A promotional screenshot showing Tesla using side-special against a stationary Chai." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A promotional screenshot showing Tesla using side-special against a stationary Chai.</span></a>
+            <a href="%BASE_URL%assets/ado/dd0e10cb88d38afeaf6303d24b11521f_large.gif"><img
+              title="A short animation showing Tesla comboing Chai. It ends in an air dash knee used to punish a stun cancel air dash for the KO."
+              src="/assets/ado/dd0e10cb88d38afeaf6303d24b11521f_large.gif"
+             alt="A short animation showing Tesla comboing Chai. It ends in an air dash knee used to punish a stun cancel air dash for the KO." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A short animation showing Tesla comboing Chai. It ends in an air dash knee used to punish a stun cancel air dash for the KO.</span></a>
+            <a href="%BASE_URL%assets/ado/1093871_374154056044116_1718466907_o.png"><img
+              title="A screenshot of progress made after the Evo demo, leading up to the Kickstarter launch."
+              src="/assets/thumbs/ado/1093871_374154056044116_1718466907_o.png"
+             alt="A screenshot of progress made after the Evo demo, leading up to the Kickstarter launch." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A screenshot of progress made after the Evo demo, leading up to the Kickstarter launch.</span></a>
+          </image-scroller>
+        </div>
+
+        <ul class="flex_list flex_list__background">
+          <li>Unity Game Engine</li>
+          <li>Custom physics</li>
+          <li>Custom 2D collision system</li>
+          <li>Technical animation</li>
+          <li>Rapid prototyping</li>
+          <li>git</li>
+        </ul>
+
+        <expandable-section aria-label="Show more">
+          <p>
+            Air Dash Online was a prototype of a fast-paced platform fighting game by JV5 Games. As the sole programmer, I built its custom
+            platform fighter engine inside of Unity. JV5 Games was a global team; I worked most with the founder, animators, and the
+            graphics lead. We had a playable demo after a few months that we demoed at Evo 2013.
+          </p>
+
+          <p>
+            A fun trip down memory lane: <a href="https://www.youtube.com/watch?v=RuP-JQJhP4Q" target="_blank" rel="noopener noreferrer">CLASH Tournament's vod<span class="link__new-tab"> (opens in a new tab)</span></a>
+            is still available from when they let Chris stream his modeling work and some gameplay. I've lost all builds of the game,
+            so if anyone has kept one then please let me know so that I don't need to port it off of Unity Script to relive playing.
+          </p>
+
+          <div class="labeled_list">
+            <div>Custom Tech</div>
+            <ul>
+              <li>2D capsule-based attack collision system based on 3D animations</li>
+              <li>2D stage collision and management system</li>
+              <li>In-game controller remapping tech</li>
+              <li>Automated detection of some controllers for specific remapping</li>
+              <li>Keyboard, controller, and fight stick support</li>
+              <li>YAML parser</li>
+              <li>Animation sequencing, timing, interpolation system</li>
+              <li>Platform fighter mechanics: air dodging, wave dashing, light/heavy attacks, blocking, recovery, etc</li>
+            </ul>
+          </div>
+        </expandable-section>
+      </article></section>
+<article id="work-samples" class="work_overview"><h2 class="section_title">More work samples</h2><p class="work_overview__lede">Browse games, interfaces, creative tools, and photography. Captions describe my work in each sample.</p><div class="widest center">
+          <image-scroller aria-label="Work samples">
+            <a href="https://youtu.be/GtGyPGYhTdE?si=AbhJgwcNC9TpAteq"><img
+              data-link-override="https://youtu.be/GtGyPGYhTdE?si=AbhJgwcNC9TpAteq"
+              title="Antistatic's 0.7 combo trailer. I built its engine, models, animation, sound effects, and music."
+              src="/assets/thumbs/antistatic/eztrailer_4-00.00.01.149.png"
+             alt="Antistatic's 0.7 combo trailer. I built its engine, models, animation, sound effects, and music." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">Antistatic's 0.7 combo trailer. I built its engine, models, animation, sound effects, and music.</span></a>
+            <a href="%BASE_URL%assets/ado/1157428_391081464351375_1074064025_n.png"><img
+              title="Air Dash Online was a short-lived project to create a fast platform fighting game for PC, which I was the programmer for."
+              src="/assets/thumbs/ado/1157428_391081464351375_1074064025_n.png"
+             alt="Air Dash Online was a short-lived project to create a fast platform fighting game for PC, which I was the programmer for." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">Air Dash Online was a short-lived project to create a fast platform fighting game for PC, which I was the programmer for.</span></a>
+            <a href="%BASE_URL%assets/bluehexagons/end_of_blackjack.jpg"><img title="End of Blackjack, a PC game I built in Godot." src="/assets/thumbs/bluehexagons/end_of_blackjack.jpg"  alt="End of Blackjack, a PC game I built in Godot." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">End of Blackjack, a PC game I built in Godot.</span></a>
+            <a href="%BASE_URL%assets/bluehexagons/early_prototype_card_game.png"><img title="A prototype version of End of Blackjack." src="/assets/thumbs/bluehexagons/early_prototype_card_game.png"  alt="A prototype version of End of Blackjack." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A prototype version of End of Blackjack.</span></a>
+            <a href="%BASE_URL%assets/bluehexagons/minimal_clicker.png"><img title="Minimal Clicker was a short project to learn about Ruby on Rails, with a login system and a button that's fun to press." src="/assets/thumbs/bluehexagons/minimal_clicker.png"  alt="Minimal Clicker was a short project to learn about Ruby on Rails, with a login system and a button that's fun to press." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">Minimal Clicker was a short project to learn about Ruby on Rails, with a login system and a button that's fun to press.</span></a>
+            <a href="%BASE_URL%assets/bluehexagons/a_simple_snake_game.png"><img
+              title="A Simple Snake Game, an open-source Godot project."
+              src="/assets/thumbs/bluehexagons/a_simple_snake_game.png"
+             alt="A Simple Snake Game, an open-source Godot project." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A Simple Snake Game, an open-source Godot project.</span></a>
+            <a href="%BASE_URL%assets/zazzle/Screenshot 2023-11-13 121545.png"><img
+              title="A React table created with an internal editing tool I built at Zazzle."
+              src="/assets/thumbs/zazzle/Screenshot 2023-11-13 121545.png"
+             alt="A React table created with an internal editing tool I built at Zazzle." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A React table created with an internal editing tool I built at Zazzle.</span></a>
+            <a href="%BASE_URL%assets/foodguide/Screenshot 2023-11-16 141703.png"><img
+              title="The unofficial Don't Starve Food Guide started as a crockpot simulator early in alpha, and has grown since."
+              src="/assets/thumbs/foodguide/Screenshot 2023-11-16 141703.png"
+             alt="The unofficial Don't Starve Food Guide started as a crockpot simulator early in alpha, and has grown since." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">The unofficial Don't Starve Food Guide started as a crockpot simulator early in alpha, and has grown since.</span></a>
+            <a href="%BASE_URL%assets/bluehexagons/redacted_admin_ui.png"><img title="Part of the admin UI for backend systems built for a client." src="/assets/thumbs/bluehexagons/redacted_admin_ui.png"  alt="Part of the admin UI for backend systems built for a client." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">Part of the admin UI for backend systems built for a client.</span></a>
+            <a href="%BASE_URL%assets/bluehexagons/vector_pose_alpha.png"><img
+              title="vector-pose is an open-source vector-based character posing tool I built for an in-development project."
+              src="/assets/thumbs/bluehexagons/vector_pose_alpha.png"
+             alt="vector-pose is an open-source vector-based character posing tool I built for an in-development project." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">vector-pose is an open-source vector-based character posing tool I built for an in-development project.</span></a>
+            <a href="%BASE_URL%assets/bluehexagons/set_2_5_butterfly.jpg"><img
+              title="A macro photograph I took of a butterfly. I post more photos to Bluesky, and offer higher-quality downloads."
+              src="/assets/thumbs/bluehexagons/set_2_5_butterfly.jpg"
+             alt="A macro photograph I took of a butterfly. I post more photos to Bluesky, and offer higher-quality downloads." loading="lazy" decoding="async" /><span class="gallery-fallback-caption">A macro photograph I took of a butterfly. I post more photos to Bluesky, and offer higher-quality downloads.</span></a>
+          </image-scroller>
+        </div></article>
+    <!-- site:layout-end -->
+  </body>
+</html>

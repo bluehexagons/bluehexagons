@@ -8,6 +8,10 @@ I go by [bluehexagons](https://bluehexagons.com) online and am the solo develope
 of Antistatic. I’ve worked professionally in financial technology, e-commerce, and
 games.
 
+[Games & projects](https://bluehexagons.com/) ·
+[Portfolio](https://bluehexagons.com/portfolio.html) ·
+[Profile & resume](https://bluehexagons.com/profile.html)
+
 ## Released games
 
 ### [Antistatic](https://bluehexagons.com/antistatic.html)
@@ -31,7 +35,8 @@ the game.
 ### [End of Blackjack](https://store.steampowered.com/app/3884650/End_of_Blackjack/)
 
 End of Blackjack is a first-person blackjack game set in a post-apocalyptic
-world, built in Godot.
+world, built in Godot. I handled game development; the music is by
+[kikiala](https://kikiala.bandcamp.com/).
 
 ## Professional experience
 
@@ -40,7 +45,8 @@ rich-text editor using Slate.
 
 The Air Dash Online team hired me as lead programmer after seeing an early
 Antistatic demo, then called Blastzone. We knew each other through the local
-competitive Super Smash Bros. scene.
+competitive Super Smash Bros. scene. I was the sole programmer; other team
+members handled art and design, with some input from me on mechanics and design.
 
 ## Basaltwater
 

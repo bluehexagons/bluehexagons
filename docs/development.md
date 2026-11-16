@@ -92,12 +92,28 @@ the build inputs. `VITE_BASE_PATH` accepts absolute URL paths such as `/` or
 `/bluehexagons/` (a trailing slash is added if omitted). Development and preview
 use Vite's multipage mode: unknown URLs return 404 rather than the homepage.
 
-Keep reusable project records in `src/content/` and detailed page narratives in
-HTML. The homepage's `site:open-source-projects` marker generates the full
-curated project listing at build time. All public pages ship their complete
-content, navigation, and links in HTML. Keep career details aligned with the
-concise [`profile.md`](../public/profile.md); there is no separate homepage
-fallback summary to maintain.
+The homepage (`index.html`) focuses on games, tools, and open-source projects.
+Detailed technical narratives and galleries live in `portfolio.html`; career
+history, skills, contact information, and a printable resume live in
+`profile.html`. The homepage retains the `#open-source` and `#basaltwater` anchors.
+
+Keep project summaries, media, destinations, and contribution credits in
+[`src/content/projects.ts`](../src/content/projects.ts). Shared build renderers
+in [`build/content.ts`](../build/content.ts) generate the homepage project cards,
+credit blocks, and profile content. Use `site:project-cards:games`,
+`site:project-cards:tools`, or `site:project-cards:collaborative` for collections,
+and `site:credit:PROJECT-ID` for a shared contribution credit. Keep detailed
+project narratives authored once in the portfolio or the project's own page.
+The `site:open-source-projects` marker renders the smaller project catalogue
+from `src/content/open-source.ts`.
+
+Edit career details in [`src/content/profile.ts`](../src/content/profile.ts).
+The `site:profile` marker generates the HTML resume, while the same records
+produce `/profile.md` in development and production; do not maintain a copy in
+`public/`. `site:person` generates the profile's structured data. All public
+pages ship complete content, navigation, and links in HTML. The homepage and
+profile require no JavaScript. Resume print styles hide navigation and secondary
+controls, use white paper and dark text, and avoid splitting experience entries.
 
 `portfolio.ts` registers galleries and expandable sections without replacing
 page content. Gallery source images are wrapped in native links with captions,
@@ -121,8 +137,9 @@ which is the primary copy of the site.
 
 For browser smoke checks, serve the site on loopback with
 `npm run dev -- --host 127.0.0.1` (or a production build with
-`npm run preview -- --host 127.0.0.1`). Check the homepage and Antistatic at
-desktop and narrow phone widths, with JavaScript enabled and disabled. Verify
+`npm run preview -- --host 127.0.0.1`). Check the homepage, portfolio, profile,
+and Antistatic at desktop and narrow phone widths, with JavaScript enabled and
+disabled. Check profile print rendering and shared contribution credits. Verify
 the skip link, gallery arrows and enlarged viewer, Escape/focus return, and
 `antistatic.html#refresh`, which must reveal nested expandable sections. Managed
 Chromium covers this workflow; Firefox coverage has not been established.

@@ -3,12 +3,8 @@ import type { Plugin } from 'vite';
 import { navigationLinks, pageFile, pages, resolveSitePath, siteOrigin, type Page } from '../src/site.ts';
 import { openSourceGroups } from '../src/content/open-source.ts';
 import { artworkCredit, copyrightNotice } from '../src/content/footer.ts';
-
-function escapeHtml(value: string): string {
-  return value.replace(/[&<>"']/g, character => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  })[character]!);
-}
+import { escapeHtml } from './html.ts';
+import { renderBlackjackDetail, renderCredit, renderPerson, renderProfile, renderProfileMarkdown, renderProjectCards } from './content.ts';
 
 export function renderHead(page: Page): string {
   // Vite rewrites asset URLs in head links; give it a source-root URL so the
@@ -60,6 +56,7 @@ function renderLayoutEnd(page: Page, base: string): string {
           <a href="${artworkCredit.href}" target="_blank" rel="noopener noreferrer">${artworkCredit.name}<span class="link__new-tab"> (opens in a new tab)</span></a>.
         </div>
         <ul class="links-container">
+          <li><a href="${escapeHtml(resolveSitePath(pages.profile.path, base))}">Profile / resume</a></li>
           <li><a href="${escapeHtml(resolveSitePath('profile.md', base))}">Concise profile</a></li>
           <li><a href="${escapeHtml(resolveSitePath(pages.privacy.path, base))}">Privacy</a></li>
         </ul>
@@ -67,7 +64,9 @@ function renderLayoutEnd(page: Page, base: string): string {
   }
   return `</main>
       <footer class="case-study-footer">
-        <a href="${escapeHtml(resolveSitePath('', base))}">Back to the portfolio</a> ·
+        <a href="${escapeHtml(resolveSitePath('', base))}">Games &amp; projects</a> ·
+        <a href="${escapeHtml(resolveSitePath(pages.portfolio.path, base))}">Portfolio</a> ·
+        <a href="${escapeHtml(resolveSitePath(pages.profile.path, base))}">Profile / resume</a> ·
         <a href="${escapeHtml(resolveSitePath('profile.md', base))}">Concise profile</a> ·
         <a href="${escapeHtml(resolveSitePath(pages.privacy.path, base))}">Privacy</a> ·
         <a href="mailto:loren@bluehexagons.com">Contact Loren</a>
@@ -92,6 +91,7 @@ function renderOpenSourceProjects(): string {
     <ul>${group.projects.map(project => `<li>
       <h4>${projectLink(`https://github.com/bluehexagons/${project.repository}`, project.name, `${project.name} source on GitHub`)}</h4>
       <p>${escapeHtml(project.description)}</p>
+      <p class="open_projects__credit">Solo project · Loren Crain</p>
       ${project.demo ? projectLink(project.demo, project.demoLabel || 'Open demo', `${project.demoLabel || 'Open demo'}: ${project.name}`, 'open_projects__demo') : ''}
     </li>`).join('\n')}</ul>
   </section>`).join('\n');
@@ -119,6 +119,11 @@ export function siteHtmlPlugin(sourceRoot: string, registeredPages: readonly Pag
         }
         const result = html.replace('<!-- site:head -->', () => renderHead(page))
           .replace('<!-- site:open-source-projects -->', renderOpenSourceProjects)
+          .replace(/<!-- site:project-cards:(games|tools|collaborative) -->/g, (_, group: string) => renderProjectCards(group, base))
+          .replace(/<!-- site:credit:([a-z-]+) -->/g, (_, id: string) => renderCredit(id))
+          .replace('<!-- site:profile -->', () => renderProfile(base))
+          .replace('<!-- site:person -->', renderPerson)
+          .replace('<!-- site:project-detail:blackjack -->', () => renderBlackjackDetail(base))
           .replace('<!-- site:layout-start -->', () => renderLayoutStart(page, base))
           .replace('<!-- site:layout-end -->', () => renderLayoutEnd(page, base));
         if (result.includes('<!-- site:')) throw new Error(`Unknown site marker in ${path || 'index.html'}`);
@@ -127,6 +132,7 @@ export function siteHtmlPlugin(sourceRoot: string, registeredPages: readonly Pag
     },
     generateBundle() {
       this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: renderSitemap(registeredPages) });
+      this.emitFile({ type: 'asset', fileName: 'profile.md', source: renderProfileMarkdown() });
     },
     configureServer(server) {
       server.middlewares.use((request, response, next) => {
@@ -143,6 +149,11 @@ export function siteHtmlPlugin(sourceRoot: string, registeredPages: readonly Pag
         if (!includeShop && (entry === 'shop' || entry.startsWith('shop/'))) {
           response.statusCode = 404;
           response.end('Not found');
+          return;
+        }
+        if (path === '/profile.md' || path === resolveSitePath('profile.md', base)) {
+          response.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+          response.end(renderProfileMarkdown());
           return;
         }
         if (path !== '/sitemap.xml' && path !== resolveSitePath('sitemap.xml', base)) return next();

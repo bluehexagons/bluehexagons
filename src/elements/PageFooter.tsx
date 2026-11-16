@@ -20,6 +20,9 @@ export class PageFooter extends BaseElement {
 
         <ul class="links-container">
           <li>
+            <site-link href={sitePath('profile.html')}>Profile / resume</site-link>
+          </li>
+          <li>
             <site-link href={sitePath('profile.md')}>Concise profile</site-link>
           </li>
           <li>

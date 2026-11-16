@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createServer } from 'vite';
+import { pages } from '../src/site.ts';
+import { renderProfileMarkdown } from '../build/content.ts';
 
 for (const base of ['/', '/bluehexagons/']) {
   test(`development HTML and sitemap work at ${base}`, async () => {
@@ -14,12 +16,15 @@ for (const base of ['/', '/bluehexagons/']) {
       const address = server.httpServer!.address();
       assert.ok(address && typeof address === 'object');
       const origin = `http://127.0.0.1:${address.port}`;
-      for (const path of ['', 'antistatic.html', 'basaltwater.html', 'privacy.html', 'sitemap.xml']) {
+      for (const path of [...Object.values(pages).map(page => page.path), 'sitemap.xml', 'profile.md']) {
         const response = await fetch(`${origin}${base}${path}`);
         assert.equal(response.status, 200, path);
         const html = await response.text();
         assert.equal(/<!-- site:|%BASE_URL%/.test(html), false, path);
-        if (path.endsWith('.xml')) {
+        if (path === 'profile.md') {
+          assert.equal(html, renderProfileMarkdown());
+          assert.ok(response.headers.get('content-type')?.includes('text/markdown'));
+        } else if (path.endsWith('.xml')) {
           assert.ok(html.includes('<urlset'), path);
           assert.ok(response.headers.get('content-type')?.includes('application/xml'));
         } else {
