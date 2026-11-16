@@ -70,8 +70,8 @@ npm run check:browser
 
 The suite starts and stops preview on `127.0.0.1:4175`. It checks desktop and phone
 layouts, navigation without JavaScript, gallery keyboard controls and modal
-focus, video activation, fragment links, and expandable content after resizing.
-Match `VITE_BASE_PATH` to the build when checking a project URL. Failure traces
+focus, video activation, fragment links, and expandable content after resizing
+or reattachment. Match `VITE_BASE_PATH` to the build for a project URL. Failure traces
 stay in the ignored `test-results/` directory. Browser tests run separately from
 the fast CI checks; see [Playwright’s browser setup](https://playwright.dev/docs/browsers)
 for platform requirements.

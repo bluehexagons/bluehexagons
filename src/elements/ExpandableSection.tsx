@@ -18,6 +18,22 @@ export class ExpandableSection extends BaseElement {
   connectedCallback() {
     this.collapsedLabel = this.getAttribute('aria-label') || 'Show more';
     this.expandedLabel = this.collapsedLabel.replace(/^Show more/, 'Show less');
+    if (!this.toggleButton) this.renderSection();
+    this.toggle(this.toggleButton?.getAttribute('aria-expanded') === 'true');
+
+    if ('ResizeObserver' in window && this.contentInner) {
+      this.resizeObserver ??= new ResizeObserver(() => {
+        this.updateExpandableState();
+      });
+      this.resizeObserver.observe(this.contentInner);
+    }
+
+    requestAnimationFrame(() => {
+      this.updateExpandableState();
+    });
+  }
+
+  private renderSection() {
     const contentId = `expandable-${++expandableSectionId}`;
 
     let toggleButton: HTMLButtonElement | null = null;
@@ -79,17 +95,6 @@ export class ExpandableSection extends BaseElement {
     this.toggleButton = toggleButton;
     this.contentContainer = contentContainer;
     this.contentInner = contentInner;
-
-    if ('ResizeObserver' in window && this.contentInner) {
-      this.resizeObserver = new ResizeObserver(() => {
-        this.updateExpandableState();
-      });
-      this.resizeObserver.observe(this.contentInner);
-    }
-
-    requestAnimationFrame(() => {
-      this.updateExpandableState();
-    });
   }
 
   toggle(expanded?: boolean) {
@@ -125,7 +130,7 @@ export class ExpandableSection extends BaseElement {
   }
 
   private updateExpandableState() {
-    if (!this.toggleButton || !this.contentContainer || !this.contentInner) return;
+    if (!this.isConnected || !this.toggleButton || !this.contentContainer || !this.contentInner) return;
 
     const hasOverflow = this.getContentHeight() > this.getPreviewHeight() + 1;
     this.contentContainer.classList.toggle('fits-content', !hasOverflow);

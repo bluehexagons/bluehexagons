@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 test.describe('without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
@@ -92,7 +92,7 @@ test('fragment links reveal collapsed destinations, including the current fragme
   await expect(target).toBeInViewport();
 });
 
-test('expandable controls reset their labels when content fits, then overflows again', async ({ page }) => {
+async function expandableFixture(page: Page) {
   await page.goto('portfolio.html');
   await page.evaluate(async () => {
     await customElements.whenDefined('expandable-section');
@@ -107,15 +107,45 @@ test('expandable controls reset their labels when content fits, then overflows a
   });
   const section = page.locator('#resize-fixture');
   const toggle = section.getByRole('button', { includeHidden: true });
+  return { section, toggle, content: page.locator('#resize-content') };
+}
+
+test('expandable controls reset their labels when content fits, then overflows again', async ({ page }) => {
+  const { toggle, content } = await expandableFixture(page);
   await expect(toggle).toBeVisible();
   await toggle.click();
   await expect(toggle).toHaveAccessibleName('Show less test content');
-  await page.locator('#resize-content').evaluate(element => { element.style.height = '20px'; });
+  await content.evaluate(element => { element.style.height = '20px'; });
   await expect(toggle).toBeHidden();
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   await expect(toggle).toHaveAttribute('aria-label', 'Show more test content');
-  await page.locator('#resize-content').evaluate(element => { element.style.height = '400px'; });
+  await content.evaluate(element => { element.style.height = '400px'; });
   await expect(toggle).toBeVisible();
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   await expect(toggle).toHaveAccessibleName('Show more test content');
+});
+
+test('expandable sections preserve controls and keep resizing after reattachment', async ({ page }) => {
+  const { section, toggle, content } = await expandableFixture(page);
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  const controls = await toggle.getAttribute('aria-controls');
+  await section.evaluate(async element => {
+    element.remove();
+    element.setAttribute('aria-label', 'Show more updated content');
+    element.append(document.createTextNode('Updated while detached.'));
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    document.body.append(element);
+  });
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(toggle).toHaveAttribute('aria-controls', controls!);
+  await expect(toggle).toHaveAccessibleName('Show less updated content');
+  await content.evaluate(element => { element.style.height = '650px'; });
+  await expect.poll(() => section.evaluate(element => element.getBoundingClientRect().height)).toBeGreaterThan(650);
+  await content.evaluate(element => { element.style.height = '20px'; });
+  await expect(toggle).toBeHidden();
+  await content.evaluate(element => { element.style.height = '400px'; });
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(toggle).toHaveAccessibleName('Show more updated content');
 });
