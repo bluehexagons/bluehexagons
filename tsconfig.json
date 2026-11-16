@@ -13,9 +13,10 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
 
     "jsx": "preserve"
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts", "build/**/*.ts", "tests/**/*.ts", "vite.config.ts"],
   "exclude": ["node_modules"]
 }

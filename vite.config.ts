@@ -2,6 +2,7 @@ import { defineConfig, type Plugin } from 'vite';
 import { readdirSync } from 'node:fs';
 import { dirname, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { siteHtmlPlugin } from './build/site-html.ts';
 
 const projectRoot = dirname(fileURLToPath(import.meta.url));
 const sourceRoot = resolve(projectRoot, 'src');
@@ -55,7 +56,7 @@ export default defineConfig({
   root: 'src',
   base: process.env.VITE_BASE_PATH || '/',
 
-  plugins: [jsxInjectPlugin],
+  plugins: [siteHtmlPlugin(sourceRoot), jsxInjectPlugin],
 
   // Where to output the built files
   build: {

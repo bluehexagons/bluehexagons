@@ -1,3 +1,5 @@
 import './css.css';
-import './elements/index';
-import './fragment-navigation';
+import './elements/PageHeader';
+import './elements/PageFooter';
+import './elements/ContentArea';
+import './elements/Link';

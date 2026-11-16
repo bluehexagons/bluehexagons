@@ -37,6 +37,58 @@ checks workflow runs these checks and builds the static Go binary on pushes
 to `main` and pull requests. The separate Pages workflow builds the static
 portfolio for the project URL on pushes to `main`.
 
+After each frontend build, run `npm run check:site` to check its generated HTML,
+navigation, sitemap, and shop inclusion. Match the build's settings when checking:
+
+```bash
+npm run build && npm run check:site
+npm run build:shop && VITE_SHOP=1 npm run check:site
+VITE_BASE_PATH=/bluehexagons/ npm run build
+VITE_BASE_PATH=/bluehexagons/ npm run check:site
+```
+
+## Adding pages
+
+The site is a Vite multipage build. Each HTML file under `src/` is discovered
+automatically, with `src/shop/` excluded from production unless `VITE_SHOP=1`.
+Existing `.html` URLs and homepage fragments remain supported. Curated archives
+under `public/etc/` are copied unchanged.
+
+1. Add an HTML entry such as `src/project.html` and register its path, title,
+   description, label, and sitemap eligibility in [`src/site.ts`](../src/site.ts).
+   The homepage's registry path is the empty string; other paths include `.html`.
+2. Put `<!-- site:head -->` after the charset declaration. The build supplies
+   the title, description, viewport, canonical URL, and icons. Page-specific
+   structured data and other head elements stay in the HTML entry.
+3. For an article or case study, copy [`privacy.html`](../src/privacy.html) or
+   [`basaltwater.html`](../src/basaltwater.html). Keep the `site:layout-start` and
+   `site:layout-end` comments around the article and the `/case-study.css` link.
+   These markers supply a shared static header, skip link, main landmark, and
+   footer in both development and production; no page script is required.
+4. Add a primary navigation entry in `src/site.ts` only when useful. Navigation
+   is shared by static layouts and the interactive `page-header` component.
+   Use `sitePath()` for browser-generated internal links and `%BASE_URL%` for
+   internal links in source HTML. Canonical URLs always use the primary domain.
+5. Build and run `check:site` at `/` and `/bluehexagons/`. Add behavior checks
+   when a new page introduces interactions or another layout.
+
+[`build/site-html.ts`](../build/site-html.ts) expands these explicit markers
+before Vite processes HTML and emits `sitemap.xml` from the registry. Do not
+maintain another sitemap in `public/`. Shop entries keep their independent
+metadata and are absent from public navigation and the sitemap.
+
+Keep reusable project records in `src/content/`; detailed page narratives can
+stay in their HTML or TSX file. The homepage's `site:open-source-summary` marker
+uses the same curated project records as its interactive listing. Career
+summaries and `public/profile.md` still need editorial alignment.
+
+Interactive pages import `bootstrap.ts` for common styles and layout components,
+then import only the feature components they use. For example, import
+`elements/ImageScroller` for galleries and `fragment-navigation` for links into
+expandable sections (it also registers `ExpandableSection`). The latter is
+unnecessary on static articles or shop pages. `elements/index.ts` remains an
+explicit all-components entry point; common bootstrapping does not import it.
+
 The homepage includes a short HTML summary that remains readable without
 JavaScript. Keep it aligned with the interactive homepage and the concise
 [`profile.md`](../public/profile.md) when career details change. The static

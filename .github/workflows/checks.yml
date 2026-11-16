@@ -28,8 +28,14 @@ jobs:
         run: npm ci
       - name: Build static site
         run: npm run build
+      - name: Check static site output
+        run: npm run check:site
       - name: Build optional shop
         run: npm run build:shop
+      - name: Check optional shop output
+        run: npm run check:site
+        env:
+          VITE_SHOP: '1'
 
   backend:
     runs-on: ubuntu-latest

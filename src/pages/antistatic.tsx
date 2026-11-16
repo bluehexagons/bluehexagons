@@ -1,4 +1,6 @@
 import '../bootstrap';
+import '../elements/ImageScroller';
+import '../fragment-navigation';
 import { render } from '../render';
 import { sitePath } from '../site-path';
 
