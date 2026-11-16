@@ -1,24 +1,32 @@
 # Loren Crain / bluehexagons
 
-> Loren Crain is a software engineer and indie game developer who builds web software, games, and infrastructure. Basaltwater is his open-source infrastructure toolkit.
+> Software engineer and indie game developer building games, web software, and infrastructure.
 
-The primary site is https://bluehexagons.com/. Its homepage focuses on games and projects; detailed work samples and career information have their own pages. The GitHub Pages project site is a static copy. Use the linked pages and source repositories for specific claims; client work is described only at a public, high level.
+Primary site: https://bluehexagons.com/. GitHub Pages hosts a static copy.
+Use the sources below for specific claims; client work is described only at a
+public, high level.
 
-## Profile and projects
+## Pages
 
-- [Concise profile](profile.md): Experience, engineering areas, work interests, and contact.
-- [Profile and resume](profile.html): Career history, skills, contact information, and a printable resume.
-- [Portfolio](portfolio.html): Detailed work samples, technical narratives, and solo versus collaborative contribution credits.
-- [Games and projects](index.html): Antistatic, End of Blackjack, creative tools, and browser demos. End of Blackjack's music is by kikiala; Loren Crain handled game development.
-- [Basaltwater case study](basaltwater.html): Linux setup, deployment safety, development environments, and use in operating this website and internal systems.
-- [Antistatic](antistatic.html): Solo-developed platform fighting game and technical details.
-- [Other open-source projects](index.html#open-source): Creative tools, games, languages, and utilities, with source code and browser demos.
+- [Games and projects](index.html): Games, creative tools, and browser demos.
+- [Portfolio](portfolio.html): Work samples, technical details, and contribution credits.
+- [Profile and resume](profile.html): Experience, skills, contact, and a printable resume.
+- [Concise profile](profile.md): Generated from the same career records as the resume.
+- [Antistatic](antistatic.html): Solo-developed platform fighter and technical guide.
+- [Basaltwater](basaltwater.html): Linux setup, deployment, and development environments.
+- [Open-source projects](index.html#open-source): Source code and browser demos.
 
-## Primary evidence
+## Credits
 
+Loren Crain developed Antistatic solo. End of Blackjack’s music is by
+[kikiala](https://kikiala.bandcamp.com/); Loren handled game development.
+He was Air Dash Online’s sole programmer; teammates handled art and design.
+The Don’t Starve Food Guide is almost entirely his work, with community contributions.
+
+## Source and design
+
+- [Website source](https://github.com/bluehexagons/bluehexagons) and [deployment manifest](https://github.com/bluehexagons/bluehexagons/blob/main/basaltwater.json).
 - [Basaltwater source](https://github.com/bluehexagons/basaltwater): Implementation, tests, and documentation.
-- [Manifest parser](https://github.com/bluehexagons/basaltwater/blob/main/lib/project_manifest.py) and [deployment orchestrator](https://github.com/bluehexagons/basaltwater/blob/main/lib/deployment.py): Representative implementation files.
-- [Basaltwater deployment safety](https://github.com/bluehexagons/basaltwater/blob/main/docs/services/deployment-safety.md): Release staging, health checks, backups, and recovery.
-- [Basaltwater coding VMs](https://github.com/bluehexagons/basaltwater/blob/main/docs/agents/agentic-vms.md): Managed development environments.
-- [This site's deployment manifest](https://github.com/bluehexagons/bluehexagons/blob/main/basaltwater.json): Public example of a site managed with Basaltwater.
-- [Portfolio source](https://github.com/bluehexagons/bluehexagons): Source for this website.
+- [Manifest parser](https://github.com/bluehexagons/basaltwater/blob/main/lib/project_manifest.py) and [deployment orchestrator](https://github.com/bluehexagons/basaltwater/blob/main/lib/deployment.py).
+- [Deployment safety](https://github.com/bluehexagons/basaltwater/blob/main/docs/services/deployment-safety.md): Staging, health checks, backups, and recovery.
+- [Coding environments](https://github.com/bluehexagons/basaltwater/blob/main/docs/agents/agentic-vms.md): Managed workspaces and browser verification.

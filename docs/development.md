@@ -1,187 +1,158 @@
 # Site development
 
-Use Node.js 24.22.2 or newer in the 24.x line, or 26.13.0 or newer in the
-26.x line. [Node.js downloads](https://nodejs.org/en/download/) provides both
-supported LTS lines; `.nvmrc` pins the 24.x release used by CI.
+Use Node.js 24.22.2+ in the 24.x line or 26.13.0+ in the 26.x line.
+[`.nvmrc`](../.nvmrc) pins the version used by CI.
 
 ```bash
-nvm install && nvm use      # if you use nvm
+nvm install && nvm use       # optional, if using nvm
 npm ci
-npm run dev                 # development server at http://localhost:3000
+npm run dev                 # http://localhost:3000
 npm run build               # production output in dist/
-npm run preview             # inspect the production build locally
+npm run preview             # preview the build
 ```
 
-`npm run build` creates the static site in `dist/` for hosting at `/`.
-The build type-checks the frontend and generates thumbnails from `public/assets/`.
-Thumbnails, `node_modules/`, and `dist/` are generated and are not committed.
-For the GitHub Pages project URL, build with
-`VITE_BASE_PATH=/bluehexagons/ npm run build`. The Pages workflow runs that
-build and publishes `dist/` to
-[bluehexagons.github.io/bluehexagons](https://bluehexagons.github.io/bluehexagons/).
-To preview that build locally, use
-`VITE_BASE_PATH=/bluehexagons/ npm run preview` so the preview uses the same path.
-The shop and account UI is excluded from the default static build and returns
-404 in ordinary development because it requires the separate API service.
+The build type-checks the frontend and generates thumbnails from
+`public/assets/`. Thumbnails, dependencies, and `dist/` are untracked output.
+Preserve source media and the curated archives in `public/etc/`.
 
-Use `npm run dev:shop` for local shop development or `npm run build:shop` to
-include it in a production build. See the [API setup guide](../server/README.md)
-for the Go service, local cookies, payments, and deployment. `VITE_API_BASE`
-can override the API origin; it defaults to `http://localhost:8080` on local
-hosts and the site's own origin in production. Values beginning with `VITE_`
-are public build settings; keep secrets in the API's environment.
+The default build excludes the unfinished shop; its routes return 404 in ordinary
+development. Use `npm run dev:shop` or `npm run build:shop` to enable it, alongside
+the [Go API](../server/README.md). `VITE_API_BASE` defaults to
+`http://localhost:8080` locally and the site’s origin in production. All `VITE_`
+settings are public; keep secrets in the API environment.
 
-Before pushing, run `npm run build`, `npm run build:shop`, and, from `server/`,
-`go mod verify`, `go vet ./...`, and `go test -race ./...`. The repository
-checks workflow runs these checks and builds the static Go binary on pushes
-to `main` and pull requests. The separate Pages workflow builds the static
-portfolio for the project URL on pushes to `main`.
+## Hosting paths
 
-After each frontend build, run `npm run check:site` to check its generated HTML,
-navigation, sitemap, and shop inclusion. Match the build's settings when checking:
+Root-domain builds use `/`. For the
+[GitHub Pages copy](https://bluehexagons.github.io/bluehexagons/), use the same
+base for build, checks, and preview:
+
+```bash
+VITE_BASE_PATH=/bluehexagons/ npm run build
+VITE_BASE_PATH=/bluehexagons/ npm run check:site
+VITE_BASE_PATH=/bluehexagons/ npm run preview
+```
+
+`VITE_BASE_PATH` must be an absolute URL path; a trailing slash is added if
+needed. Canonical URLs and the sitemap always point to `bluehexagons.com`.
+Development and preview return 404 for unknown routes.
+
+## Checks
+
+Before pushing, build and check both frontend modes, then run the backend checks:
 
 ```bash
 npm run build && npm run check:site
 npm run build:shop && VITE_SHOP=1 npm run check:site
-VITE_BASE_PATH=/bluehexagons/ npm run build
-VITE_BASE_PATH=/bluehexagons/ npm run check:site
+cd server
+go mod verify
+go vet ./...
+go test -race ./...
 ```
 
-## Adding pages
+Run `check:site` after each build, before another build replaces `dist/`. Match
+its `VITE_BASE_PATH` and `VITE_SHOP` settings to the build. Check new pages at both
+`/` and `/bluehexagons/`.
 
-The site is a Vite multipage build. Public HTML files under `src/` must match
-the page registry; startup fails for missing, duplicate, or unregistered pages.
-`src/shop/` is excluded unless `VITE_SHOP=1`.
-Existing `.html` URLs and homepage fragments remain supported. Curated archives
-under `public/etc/` are copied unchanged.
+The suite covers metadata, navigation, local links, fragments, gallery fallbacks,
+profile consistency, and shop exclusion. Temporary fixtures also test nested
+pages through development, build, and preview. GitHub Actions checks both
+frontend modes and the API; a separate workflow builds and deploys the Pages copy.
 
-1. Add an HTML entry such as `src/project.html` and register its path, title,
-   description, label, layout (`portfolio` or `article`), and sitemap eligibility
-   in [`src/site.ts`](../src/site.ts).
-   The homepage's registry path is the empty string. Other paths can be HTML
-   files (`projects/example.html`) or directory URLs (`projects/example/`,
-   backed by `src/projects/example/index.html`). Paths are relative to the site
-   base; keep the existing public URLs stable.
-2. Put `<!-- site:head -->` after the charset declaration. The build supplies
-   the title, description, viewport, canonical URL, icons, and social metadata.
-   Page-specific structured data and other head elements stay in the HTML entry.
-3. For an article or case study, copy [`privacy.html`](../src/privacy.html) or
-   [`basaltwater.html`](../src/basaltwater.html). Keep the `site:layout-start` and
-   `site:layout-end` comments around the article and the `/case-study.css` link.
-   These markers supply a shared static header, skip link, main landmark, and
-   footer in both development and production; no page script is required.
-   For a portfolio page, use `layout: 'portfolio'`, link `/portfolio.css`, and
-   add `/portfolio.ts` only if it has galleries or expandable sections. The
-   portfolio layout preserves the wider page shell and project credits.
-4. Add a primary navigation entry in `src/site.ts` only when useful. Navigation
-   is shared by static layouts and the interactive `page-header` component.
-   Use `sitePath()` for browser-generated internal links and `%BASE_URL%` for
-   anchor links in source HTML. Use root-relative source URLs for image `src`
-   and head asset `href` attributes; Vite applies the hosting base to them.
-   Canonical URLs always use the primary domain.
-5. Build and run `check:site` at `/` and `/bluehexagons/`. Add behavior checks
-   when a new page introduces interactions or another layout.
+For browser smoke checks, bind development or preview to loopback with
+`--host 127.0.0.1`. Check the homepage, portfolio, profile, and Antistatic at desktop
+and phone widths, with and without JavaScript. Verify navigation, the skip link,
+contribution credits, profile printing, gallery controls, Escape/focus return,
+and `antistatic.html#refresh`. The browser workflow uses managed Chromium;
+Firefox and native Windows coverage have not been established.
 
-[`build/site-html.ts`](../build/site-html.ts) expands these explicit markers
-before Vite processes HTML and emits `sitemap.xml` from the registry. Do not
-maintain another sitemap in `public/`. Shop entries keep their independent
-metadata and are absent from public navigation and the sitemap.
+## Content and architecture
 
-[`build/entries.ts`](../build/entries.ts) validates the registry and discovers
-the build inputs. `VITE_BASE_PATH` accepts absolute URL paths such as `/` or
-`/bluehexagons/` (a trailing slash is added if omitted). Development and preview
-use Vite's multipage mode: unknown URLs return 404 rather than the homepage.
+The site uses Vite’s multipage mode. All public pages contain their content and
+navigation in static HTML; the homepage and profile need no JavaScript.
 
-The homepage (`index.html`) focuses on games, tools, and open-source projects.
-Detailed technical narratives and galleries live in `portfolio.html`; career
-history, skills, contact information, and a printable resume live in
-`profile.html`. The homepage retains the `#open-source` and `#basaltwater` anchors.
+| Source | Purpose |
+| --- | --- |
+| [`src/index.html`](../src/index.html) | Games and projects homepage; retains `#open-source` and `#basaltwater` |
+| [`src/portfolio.html`](../src/portfolio.html) | Detailed work samples and galleries |
+| [`src/profile.html`](../src/profile.html) | Printable resume and contact information |
+| [`src/site.ts`](../src/site.ts) | Page metadata, navigation, and canonical URLs |
+| [`src/content/projects.ts`](../src/content/projects.ts) | Shared project summaries, media, links, and credits |
+| [`src/content/open-source.ts`](../src/content/open-source.ts) | Smaller project catalogue |
+| [`src/content/profile.ts`](../src/content/profile.ts) | Career records for the HTML resume and generated `/profile.md` |
 
-Keep project summaries, media, destinations, and contribution credits in
-[`src/content/projects.ts`](../src/content/projects.ts). Shared build renderers
-in [`build/content.ts`](../build/content.ts) generate the homepage project cards,
-credit blocks, and profile content. Use `site:project-cards:games`,
-`site:project-cards:tools`, or `site:project-cards:collaborative` for collections,
-and `site:credit:PROJECT-ID` for a shared contribution credit. Keep detailed
-project narratives authored once in the portfolio or the project's own page.
-The `site:open-source-projects` marker renders the smaller project catalogue
-from `src/content/open-source.ts`.
+Keep detailed narratives in one HTML entry. The shared renderers in
+[`build/content.ts`](../build/content.ts) supply project cards, credits, and the
+profile. [`build/site-html.ts`](../build/site-html.ts) expands markers before Vite
+processes HTML and emits `sitemap.xml` and `profile.md`; do not duplicate these in
+`public/`.
 
-Edit career details in [`src/content/profile.ts`](../src/content/profile.ts).
-The `site:profile` marker generates the HTML resume, while the same records
-produce `/profile.md` in development and production; do not maintain a copy in
-`public/`. `site:person` generates the profile's structured data. All public
-pages ship complete content, navigation, and links in HTML. The homepage and
-profile require no JavaScript. Resume print styles hide navigation and secondary
-controls, use white paper and dark text, and avoid splitting experience entries.
+Shared content markers:
 
-`portfolio.ts` registers galleries and expandable sections without replacing
-page content. Gallery source images are wrapped in native links with captions,
-so they remain usable without JavaScript; expandable content remains visible
-until its component upgrades. Keep ordinary links and decorative icons native.
-Common document typography, tokens, and article surfaces live in `base.css`;
-portfolio-specific content classes live in `portfolio-content.css`. Case studies
-load the base and their own stylesheet. `css.css` remains a compatibility entry
-point for the optional shop. Components receive
-only `component.css` (reset and accessibility primitives) plus their own styles.
-`layout.css`, `footer.css`, and `links.css` are shared between document layouts
-and the legacy Web Components retained for the opt-in shop.
+- `site:project-cards:games`, `site:project-cards:tools`,
+  `site:project-cards:collaborative`: homepage collections.
+- `site:credit:PROJECT-ID`: contribution credits.
+- `site:open-source-projects`: the smaller project catalogue.
+- `site:profile` and `site:person`: the resume and its structured data.
 
-The shop continues to use `bootstrap.ts` for its client-rendered shell; it does
-not import the portfolio enhancements. `elements/index.ts` is an explicit
-all-components entry point, unused by common bootstrapping.
+Use these inside HTML comments, for example `<!-- site:credit:antistatic -->`.
+Update [`public/llms.txt`](../public/llms.txt) when public source links change.
+Check new repository links while signed out; use a public project page or
+storefront when source is private.
 
-[`llms.txt`](../public/llms.txt) links public profile and project sources for
-automated readers. Canonical URLs and the sitemap point to bluehexagons.com,
-which is the primary copy of the site.
+## Adding a page
 
-For browser smoke checks, serve the site on loopback with
-`npm run dev -- --host 127.0.0.1` (or a production build with
-`npm run preview -- --host 127.0.0.1`). Check the homepage, portfolio, profile,
-and Antistatic at desktop and narrow phone widths, with JavaScript enabled and
-disabled. Check profile print rendering and shared contribution credits. Verify
-the skip link, gallery arrows and enlarged viewer, Escape/focus return, and
-`antistatic.html#refresh`, which must reveal nested expandable sections. Managed
-Chromium covers this workflow; Firefox coverage has not been established.
-The `check:site` suite runs registry, development HTTP, production preview, and
-build-output checks without a browser dependency. It checks local link targets,
-unique page IDs, fragment destinations, gallery fallbacks, and shop exclusion,
-including encoded development URLs. Temporary nested-page fixtures exercise
-directory URLs, explicit index aliases, metadata, base-aware links, and sitemaps
-through development, production builds, and preview at both hosting bases.
+1. Create an HTML entry and register its path, title, description, label, layout,
+   and sitemap eligibility in `src/site.ts`. Use `''` for the homepage,
+   `projects/example.html` for a file, or `projects/example/` backed by
+   `src/projects/example/index.html`. Paths are relative to the hosting base.
+   Missing, duplicate, and unregistered entries fail validation.
+2. Copy an existing page’s structure. Put `<!-- site:head -->` after the charset
+   declaration, and wrap content with `site:layout-start` and `site:layout-end`
+   comments. These generate metadata, navigation, the skip link, main landmark,
+   and footer. Keep page-specific head elements in the entry.
+3. Choose `article` with `/case-study.css` for a case study, or `portfolio` with
+   `/portfolio.css` for the wider layout. Add `/portfolio.ts` only for galleries
+   or expandable sections. Add primary navigation links when useful.
+4. Use `%BASE_URL%` for internal anchor URLs and `sitePath()` for links created
+   by browser code. Use root-relative image and head asset URLs; Vite applies
+   the hosting base. Keep existing URLs stable.
+5. Build and check both hosting bases. Add behavior checks for new interactions.
 
-Check repository links while signed out of GitHub before adding them to public
-pages or documentation. Link to a public project page or storefront when the
-source repository is private.
+`src/shop/` is exempt from the public registry and included only with
+`VITE_SHOP=1`. Its metadata stays separate, with no public navigation or sitemap
+entries.
 
-## Basaltwater integration
+## Styles and components
 
-See [the integration guide](basaltwater.md) for manifest CI commands,
-portfolio deployment, the opt-in unfinished shop, and cleanup/backup procedures.
-Native development uses the commands above; Basaltwater is optional for local
-builds and tests. Linux deployment uses Bash and the Go build script; native
-Windows runtime testing has not been established.
+`base.css` holds shared typography and tokens. `portfolio-content.css` holds
+portfolio content styles; `page.css` shares introductions and credits. Page
+stylesheets compose these with layout, link, and footer styles. Components load
+`component.css` (reset and accessibility rules) plus their own styles.
+
+`portfolio.ts` adds galleries and expandable sections without replacing page
+content. The optional shop uses `bootstrap.ts` and the `css.css` compatibility
+entry. `elements/index.ts` is an unused, explicit all-components entry point.
 
 ## Image galleries
 
-Use `<image-scroller aria-label="Project screenshots">` with image children.
-Each image's `title` supplies its caption; use `alt` for a distinct visual
-description when useful. Generated `/assets/thumbs/` images appear in the preview
-strip, while the selected image and enlarged viewer use the original asset.
-`data-link-override` preserves video destinations. YouTube watch, short, embed,
-and `youtu.be` links offer an embedded player when selected; choose Play video
-(or click the preview) to load it, and Back to preview to return to the image.
-The enlarged viewer also offers playback for YouTube items. Players use YouTube's
-privacy-enhanced embed host and load only after activation. Switching items,
-returning to the preview, closing the viewer, or removing the gallery stops playback.
-An external watch link remains available, including for other video hosts.
+Wrap thumbnail images in native links with captions so galleries work without
+JavaScript. Set the image’s `title` for its caption and `alt` for a visual
+description. Thumbnails live under `/assets/thumbs/`; the selected image and
+viewer use the original asset. Expandable content remains visible until upgraded.
 
-Browse with the arrows, thumbnails, or horizontal drags and swipes on the selected
-image. Horizontal gestures follow the pointer before switching; vertical touch
-scrolling and pinch zoom remain native. Hovering adds a subtle cursor-centered
-zoom, and images fade in when loaded. Reduced-motion preferences disable these
-animations.
-Left/Right and Home/End work while a gallery has keyboard focus. The enlarged
-viewer keeps focus inside it; Escape, Close, or a backdrop click dismisses it and
-returns focus to the gallery without losing the page position. There is no
-automatic advance, and thumbnail scrolling respects reduced-motion preferences.
+`data-link-override` preserves video destinations. Supported YouTube URLs offer
+an embedded player using the privacy-enhanced host; playback loads only after
+activation. Switching items, returning to the preview, closing the viewer, or
+removing the gallery stops playback. Other video hosts retain external links.
+
+Arrows, thumbnails, Left/Right, Home/End, and horizontal swipes navigate images.
+Vertical touch scrolling and pinch zoom stay native. Escape, Close, or a backdrop
+click dismisses the enlarged viewer and returns focus. Reduced-motion settings
+disable animations; there is no automatic advance.
+
+## Deployment
+
+See [Basaltwater integration](basaltwater.md) for deployment, optional shop setup,
+backups, and cleanup. Basaltwater is optional for local builds and tests;
+Linux deployment uses Bash and the Go build script.
