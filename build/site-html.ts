@@ -1,6 +1,6 @@
 import { relative } from 'node:path';
 import type { Plugin } from 'vite';
-import { navigationLinks, pages, resolveSitePath, siteOrigin, type Page } from '../src/site.ts';
+import { navigationLinks, pageFile, pages, resolveSitePath, siteOrigin, type Page } from '../src/site.ts';
 import { openSourceGroups } from '../src/content/open-source.ts';
 import { artworkCredit, copyrightNotice } from '../src/content/footer.ts';
 
@@ -14,10 +14,19 @@ export function renderHead(page: Page): string {
   // Vite rewrites asset URLs in head links; give it a source-root URL so the
   // hosting base is applied exactly once in development as well as production.
   const icon = '/assets/icon.png';
+  const canonical = escapeHtml(`${siteOrigin}/${page.path}`);
   return `<title>${escapeHtml(page.title)}</title>
     <meta name="description" content="${escapeHtml(page.description)}" />
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-    <link rel="canonical" href="${siteOrigin}/${page.path}" />
+    <link rel="canonical" href="${canonical}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="bluehexagons" />
+    <meta property="og:title" content="${escapeHtml(page.title)}" />
+    <meta property="og:description" content="${escapeHtml(page.description)}" />
+    <meta property="og:url" content="${canonical}" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="${escapeHtml(page.title)}" />
+    <meta name="twitter:description" content="${escapeHtml(page.description)}" />
     <link rel="icon" sizes="362x362" type="image/png" href="${icon}" />
     <link rel="apple-touch-icon" href="${icon}" />`;
 }
@@ -88,7 +97,7 @@ function renderOpenSourceProjects(): string {
   </section>`).join('\n');
 }
 
-export function siteHtmlPlugin(sourceRoot: string): Plugin {
+export function siteHtmlPlugin(sourceRoot: string, includeShop = false): Plugin {
   let base = '/';
   return {
     name: 'site-html',
@@ -96,12 +105,12 @@ export function siteHtmlPlugin(sourceRoot: string): Plugin {
     transformIndexHtml: {
       order: 'pre',
       handler(html, context) {
-        const path = relative(sourceRoot, context.filename).replaceAll('\\', '/').replace(/^index\.html$/, '');
-        const page = Object.values(pages).find(page => page.path === path);
+        const path = relative(sourceRoot, context.filename).replaceAll('\\', '/');
+        const page = Object.values(pages).find(page => pageFile(page.path) === path);
         // Shop entries remain independent and opt-in.
         if (!page) {
-          if (html.includes('<!-- site:')) throw new Error(`Missing page metadata: ${path}`);
-          return html;
+          if (path.startsWith('shop/')) return html;
+          throw new Error(`Missing page metadata: ${path}`);
         }
         for (const marker of ['head', 'layout-start', 'layout-end']) {
           if (html.split(`<!-- site:${marker} -->`).length !== 2) {
@@ -122,6 +131,12 @@ export function siteHtmlPlugin(sourceRoot: string): Plugin {
     configureServer(server) {
       server.middlewares.use((request, response, next) => {
         const path = request.url?.split('?')[0];
+        const entry = path?.startsWith(base) ? path.slice(base.length) : path?.replace(/^\//, '');
+        if (!includeShop && (entry === 'shop' || entry?.startsWith('shop/'))) {
+          response.statusCode = 404;
+          response.end('Not found');
+          return;
+        }
         if (path !== '/sitemap.xml' && path !== resolveSitePath('sitemap.xml', base)) return next();
         response.setHeader('Content-Type', 'application/xml; charset=utf-8');
         response.end(renderSitemap());

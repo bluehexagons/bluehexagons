@@ -61,8 +61,12 @@ export function resolveSitePath(path: string, base: string): string {
   return `${base.replace(/\/*$/, '/')}${path.replace(/^\/+/, '')}`;
 }
 
+export function pageFile(path: string): string {
+  return !path || path.endsWith('/') ? `${path}index.html` : path;
+}
+
 export function navigationLinks(base: string, currentPath: string) {
-  const normalizedPath = currentPath.replace(/index\.html$/, '');
+  const normalizedPath = currentPath.replace(/(^|\/)index\.html$/, '$1');
   return primaryNavigation.map(item => {
     const href = 'path' in item ? resolveSitePath(item.path, base) : item.href;
     return { label: item.label, href, current: !href.includes('#') && href === normalizedPath };

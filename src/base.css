@@ -1,0 +1,150 @@
+@import './reset.css';
+@import './accessibility.css';
+
+@font-face {
+  font-family: 'Fira Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Fira Sans'), local('Fira-Sans'),
+    url(https://fonts.gstatic.com/s/firasans/v17/va9E4kDNxMZdWfMOD5Vvl4jLazX3dA.woff2) format('woff2');
+  font-display: swap;
+}
+
+body {
+  --bg-outer: #20202a;
+  --bg-inner: #18181d;
+  --bg: #29292f;
+
+  --outline: rgb(2, 2, 6);
+  --outline-highlight: rgb(3, 6, 9);
+
+  --dim-highlight: rgb(0, 134, 151);
+  --highlight: rgb(0, 223, 252);
+  --shadow: rgb(0, 20, 22);
+
+  --bluehexagons: rgb(0, 223, 252);
+  --antistatic: rgb(255, 110, 0);
+
+  --content-width: 1100px;
+  --background-width: calc(100% - 200px);
+  --breakpoint: 1100px;
+
+  background: linear-gradient(to bottom, var(--bg-inner), var(--bg-outer));
+  color: #eaeaea;
+  margin: 0;
+  padding: 0;
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 18px;
+  overflow-x: hidden;
+
+}
+
+::-webkit-scrollbar {
+  width: 14px;
+  border-left: 1px solid rgba(57, 71, 75, 0.479);
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgba(14, 17, 19, 0.37);
+  display: none;
+  top: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(93, 109, 122, 0.767);
+  border-radius: 3px;
+  border-left: 1px solid rgba(57, 71, 75, 0.479);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(146, 160, 172, 0.767);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: rgb(203, 214, 226);
+}
+
+h1 {
+  margin: 0;
+  padding: 0;
+  line-height: 40px;
+  font-size: 38px;
+  position: relative;
+  color: var(--highlight);
+  text-shadow: var(--shadow) 1px 0 10px;
+}
+
+h2 {
+  line-height: 30px;
+  text-shadow: var(--shadow) 1px 0 10px;
+}
+
+h3 {
+  line-height: 20px;
+  text-shadow: var(--shadow) 1px 0 10px;
+}
+h4 {
+  line-height: 15px;
+}
+
+a svg:hover {
+  text-decoration: none;
+}
+
+pre {
+  padding: 5px 10px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: auto;
+  background: rgb(27, 21, 15);
+  color: rgb(255, 200, 140);
+  border: 2px solid rgb(128, 100, 71);
+  border-radius: 3px;
+}
+
+kbd, code {
+  color: rgb(255, 200, 140);
+  background: rgb(27, 21, 15);
+  border: 1px solid rgb(128, 100, 71);
+  padding: 0 3px;
+  border-radius: 3px;
+}
+
+kbd {
+  border-color: rgb(128, 128, 128);
+  background: rgb(21, 21, 21);
+}
+
+pre code {
+  font-size: 80%;
+  border: none;
+  padding: 0;
+}
+
+article {
+  width: 100%;
+  min-width: 0;
+  margin-bottom: 20px;
+  padding: 20px;
+  backdrop-filter: blur(20px);
+  border: 2px solid #252a33;
+  border-radius: 6.6px;
+  background: rgba(6, 7, 8, 0.65);
+  box-shadow: 0 20px 30px rgba(6, 7, 8, 0.65);
+
+}
+
+@media (max-width: 1100px) {
+  article {
+    padding: 10px;
+    box-shadow: 0 16px 20px rgba(6, 7, 8, 0.45);
+  }
+}
+
+@media (max-width: 700px) {
+  article {
+    margin: 10px 0;
+    padding: 16px;
+    box-shadow: 0 6px 10px rgba(6, 7, 8, 0.45);
+  }
+}

@@ -1,6 +1,7 @@
 import '../bootstrap';
 import './shop.css';
 import { render } from '../render';
+import { sitePath } from '../site-path';
 import { api, apiURL, ApiError, apiErrorMessage, type Product, type User } from './api';
 import { formatMoney } from './money';
 
@@ -231,7 +232,7 @@ function authPanel(): Node {
           Signed in as <strong>{state.user.email}</strong>
           {state.user.is_admin ? (
             <div class="shop__muted">
-              Need to manage listings? <site-link href="/shop/admin.html">Open shop admin</site-link>
+              Need to manage listings? <site-link href={sitePath('shop/admin.html')}>Open shop admin</site-link>
             </div>
           ) : null}
         </div>

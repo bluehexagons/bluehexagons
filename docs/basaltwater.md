@@ -13,7 +13,9 @@ The root [manifest](../basaltwater.json) declares literal `ci.install`,
 `ci.build`, and `ci.test` commands matching the gates in
 [GitHub Actions](../.github/workflows/checks.yml). Keep both definitions aligned.
 Explicit CI stages avoid falling back to component deployment hooks. CI checks
-both frontend modes and the API; its final `dist/` contains the shop and is not
+both frontend modes and the API. Each frontend build is followed by its matching
+`check:site` gate before the next build replaces `dist/`; the shop gate uses
+`env VITE_SHOP=1` to match that build. The final `dist/` contains the shop and is not
 the portfolio deployment artifact. Deployment builds the selected components
 separately. Race tests need a native Go toolchain with CGO and a C compiler;
 the release binary itself is built with CGO disabled.

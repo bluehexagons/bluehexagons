@@ -30,6 +30,18 @@ for (const base of ['/', '/bluehexagons/']) {
           }
         }
       }
+      for (const path of ['missing-page.html', 'missing-directory/']) {
+        const response = await fetch(`${origin}${base}${path}`);
+        assert.equal(response.status, 404, path);
+      }
+      for (const path of ['shop/', 'shop/admin.html', 'shop/success.html']) {
+        const response = await fetch(`${origin}${base}${path}`);
+        assert.equal(response.status, process.env.VITE_SHOP === '1' ? 200 : 404, path);
+      }
+      await assert.rejects(
+        server.transformIndexHtml('/unregistered.html', '<!doctype html><title>Unregistered</title>'),
+        /Missing page metadata: unregistered.html/,
+      );
     } finally {
       await server.close();
     }

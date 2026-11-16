@@ -1,6 +1,7 @@
 import '../bootstrap';
 import './shop.css';
 import { render } from '../render';
+import { sitePath } from '../site-path';
 import { api, apiURL, ApiError, apiErrorMessage, type OrderDeliverables, type PurchasedItem } from './api';
 
 const app = document.getElementById('app');
@@ -246,7 +247,7 @@ function buildTree(): Node {
           </div>
           {deliveryView()}
           <p>
-            <site-link href="/shop/">Return to the shop</site-link>
+            <site-link href={sitePath('shop/')}>Return to the shop</site-link>
           </p>
         </article>
       </content-area>

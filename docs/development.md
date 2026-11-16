@@ -21,8 +21,8 @@ build and publishes `dist/` to
 [bluehexagons.github.io/bluehexagons](https://bluehexagons.github.io/bluehexagons/).
 To preview that build locally, use
 `VITE_BASE_PATH=/bluehexagons/ npm run preview` so the preview uses the same path.
-The shop and account UI is excluded from the default static build because it
-requires the separate API service.
+The shop and account UI is excluded from the default static build and returns
+404 in ordinary development because it requires the separate API service.
 
 Use `npm run dev:shop` for local shop development or `npm run build:shop` to
 include it in a production build. See the [API setup guide](../server/README.md)
@@ -49,18 +49,22 @@ VITE_BASE_PATH=/bluehexagons/ npm run check:site
 
 ## Adding pages
 
-The site is a Vite multipage build. Each HTML file under `src/` is discovered
-automatically, with `src/shop/` excluded from production unless `VITE_SHOP=1`.
+The site is a Vite multipage build. Public HTML files under `src/` must match
+the page registry; startup fails for missing, duplicate, or unregistered pages.
+`src/shop/` is excluded unless `VITE_SHOP=1`.
 Existing `.html` URLs and homepage fragments remain supported. Curated archives
 under `public/etc/` are copied unchanged.
 
 1. Add an HTML entry such as `src/project.html` and register its path, title,
    description, label, layout (`portfolio` or `article`), and sitemap eligibility
    in [`src/site.ts`](../src/site.ts).
-   The homepage's registry path is the empty string; other paths include `.html`.
+   The homepage's registry path is the empty string. Other paths can be HTML
+   files (`projects/example.html`) or directory URLs (`projects/example/`,
+   backed by `src/projects/example/index.html`). Paths are relative to the site
+   base; keep the existing public URLs stable.
 2. Put `<!-- site:head -->` after the charset declaration. The build supplies
-   the title, description, viewport, canonical URL, and icons. Page-specific
-   structured data and other head elements stay in the HTML entry.
+   the title, description, viewport, canonical URL, icons, and social metadata.
+   Page-specific structured data and other head elements stay in the HTML entry.
 3. For an article or case study, copy [`privacy.html`](../src/privacy.html) or
    [`basaltwater.html`](../src/basaltwater.html). Keep the `site:layout-start` and
    `site:layout-end` comments around the article and the `/case-study.css` link.
@@ -83,6 +87,11 @@ before Vite processes HTML and emits `sitemap.xml` from the registry. Do not
 maintain another sitemap in `public/`. Shop entries keep their independent
 metadata and are absent from public navigation and the sitemap.
 
+[`build/entries.ts`](../build/entries.ts) validates the registry and discovers
+the build inputs. `VITE_BASE_PATH` accepts absolute URL paths such as `/` or
+`/bluehexagons/` (a trailing slash is added if omitted). Development and preview
+use Vite's multipage mode: unknown URLs return 404 rather than the homepage.
+
 Keep reusable project records in `src/content/` and detailed page narratives in
 HTML. The homepage's `site:open-source-projects` marker generates the full
 curated project listing at build time. All public pages ship their complete
@@ -94,7 +103,10 @@ fallback summary to maintain.
 page content. Gallery source images are wrapped in native links with captions,
 so they remain usable without JavaScript; expandable content remains visible
 until its component upgrades. Keep ordinary links and decorative icons native.
-Page-wide layout and content styles live in document CSS. Components receive
+Common document typography, tokens, and article surfaces live in `base.css`;
+portfolio-specific content classes live in `portfolio-content.css`. Case studies
+load the base and their own stylesheet. `css.css` remains a compatibility entry
+point for the optional shop. Components receive
 only `component.css` (reset and accessibility primitives) plus their own styles.
 `layout.css`, `footer.css`, and `links.css` are shared between document layouts
 and the legacy Web Components retained for the opt-in shop.
@@ -114,8 +126,9 @@ desktop and narrow phone widths, with JavaScript enabled and disabled. Verify
 the skip link, gallery arrows and enlarged viewer, Escape/focus return, and
 `antistatic.html#refresh`, which must reveal nested expandable sections. Managed
 Chromium covers this workflow; Firefox coverage has not been established.
-The `check:site` suite runs development HTTP and build-output checks without a
-browser dependency, including gallery fallbacks and retained guide anchors.
+The `check:site` suite runs registry, development HTTP, production preview, and
+build-output checks without a browser dependency. It checks local link targets,
+unique page IDs, fragment destinations, gallery fallbacks, and shop exclusion.
 
 Check repository links while signed out of GitHub before adding them to public
 pages or documentation. Link to a public project page or storefront when the

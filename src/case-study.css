@@ -1,4 +1,5 @@
-@import './css.css';
+@import './base.css';
+@import './links.css';
 
 .case-study-shell {
   width: min(940px, calc(100% - 32px));
@@ -16,12 +17,6 @@
   align-items: center;
   gap: 10px 24px;
   padding: 24px 0;
-}
-
-.case-study-home {
-  font-weight: 700;
-  font-size: 1.25rem;
-  text-decoration: none;
 }
 
 .case-study-header nav {

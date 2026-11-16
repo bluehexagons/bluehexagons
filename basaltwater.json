@@ -20,7 +20,13 @@
         "argv": ["npm", "run", "build"]
       },
       {
+        "argv": ["npm", "run", "check:site"]
+      },
+      {
         "argv": ["npm", "run", "build:shop"]
+      },
+      {
+        "argv": ["env", "VITE_SHOP=1", "npm", "run", "check:site"]
       },
       {
         "argv": ["./deploy/build.sh"],

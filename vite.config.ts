@@ -1,45 +1,19 @@
 import { defineConfig, type Plugin } from 'vite';
-import { readdirSync } from 'node:fs';
-import { dirname, relative, resolve, sep } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { siteHtmlPlugin } from './build/site-html.ts';
+import { htmlEntries, normalizeBasePath } from './build/entries.ts';
+import { pages } from './src/site.ts';
 
 const projectRoot = dirname(fileURLToPath(import.meta.url));
 const sourceRoot = resolve(projectRoot, 'src');
-
-function findHtmlEntries(directory = sourceRoot): Record<string, string> {
-  const entries: Record<string, string> = {};
-
-  for (const entry of readdirSync(directory, { withFileTypes: true })) {
-    const fullPath = resolve(directory, entry.name);
-    if (entry.isDirectory()) {
-      Object.assign(entries, findHtmlEntries(fullPath));
-      continue;
-    }
-    if (!entry.isFile() || !entry.name.endsWith('.html')) continue;
-
-    const entryName = relative(sourceRoot, fullPath)
-      .split(sep)
-      .join('/')
-      .replace(/\.html$/, '');
-    entries[entryName] = fullPath;
-  }
-
-  return entries;
-}
 
 // The shop/account UI is optional: it is only built when VITE_SHOP=1. By
 // default `npm run build` excludes everything under src/shop/, so the static
 // site ships with no store or login UI in the output bundle.
 const includeShop = process.env.VITE_SHOP === '1';
 
-// Find all HTML files in src directory and subdirectories.
-const htmlEntries = findHtmlEntries();
-if (!includeShop) {
-  for (const entryName of Object.keys(htmlEntries)) {
-    if (entryName === 'shop' || entryName.startsWith('shop/')) delete htmlEntries[entryName];
-  }
-}
+const entries = htmlEntries(sourceRoot, Object.values(pages), includeShop);
 
 const jsxInjectPlugin: Plugin = {
   name: 'jsx-inject',
@@ -54,19 +28,17 @@ const jsxInjectPlugin: Plugin = {
 export default defineConfig({
   // Base directory for resolving imports
   root: 'src',
-  base: process.env.VITE_BASE_PATH || '/',
+  appType: 'mpa',
+  base: normalizeBasePath(process.env.VITE_BASE_PATH || '/'),
 
-  plugins: [siteHtmlPlugin(sourceRoot), jsxInjectPlugin],
+  plugins: [siteHtmlPlugin(sourceRoot, includeShop), jsxInjectPlugin],
 
   // Where to output the built files
   build: {
     outDir: '../dist',
     emptyOutDir: true,
     rollupOptions: {
-      input: {
-        // Include all HTML files as entry points
-          ...htmlEntries,
-      }
+      input: entries,
     }
   },
 

@@ -2,10 +2,11 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import test from 'node:test';
-import { navigationLinks, pages, resolveSitePath, siteOrigin } from '../src/site.ts';
+import { navigationLinks, pageFile, pages, resolveSitePath, siteOrigin } from '../src/site.ts';
 import { openSourceGroups } from '../src/content/open-source.ts';
+import { normalizeBasePath } from '../build/entries.ts';
 
-const base = process.env.VITE_BASE_PATH || '/';
+const base = normalizeBasePath(process.env.VITE_BASE_PATH || '/');
 const readOutput = (path: string) => readFileSync(resolve('dist', path), 'utf8');
 
 test('navigation handles project hosting, index aliases, fragments, and external links', () => {
@@ -25,11 +26,13 @@ test('navigation handles project hosting, index aliases, fragments, and external
 
 test('every public page has complete generated metadata and base-aware assets', () => {
   for (const page of Object.values(pages)) {
-    const html = readOutput(page.path || 'index.html');
+    const html = readOutput(pageFile(page.path));
     assert.equal((html.match(/<title>/g) || []).length, 1, page.path);
     assert.ok(html.includes(`<title>${page.title}</title>`), page.path);
     assert.ok(html.includes(`content="${page.description}"`), page.path);
     assert.ok(html.includes(`rel="canonical" href="${siteOrigin}/${page.path}"`), page.path);
+    assert.ok(html.includes(`property="og:url" content="${siteOrigin}/${page.path}"`), page.path);
+    assert.ok(html.includes(`property="og:title" content="${page.title}"`), page.path);
     assert.ok(html.includes(`href="${base}assets/icon.png"`), page.path);
     assert.doesNotMatch(html, /<!-- site:|%BASE_URL%/);
     // Links and assets must resolve to real artifacts, including original media
@@ -42,9 +45,29 @@ test('every public page has complete generated metadata and base-aware assets', 
   }
 });
 
+test('public page IDs are unique and internal fragment links resolve', () => {
+  const output = new Map(Object.values(pages).map(page => [pageFile(page.path), readOutput(pageFile(page.path))]));
+  const idsByFile = new Map<string, Set<string>>();
+  for (const [file, html] of output) {
+    const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
+    assert.equal(new Set(ids).size, ids.length, `${file}: duplicate IDs`);
+    idsByFile.set(file, new Set(ids));
+  }
+  for (const page of Object.values(pages)) {
+    const file = pageFile(page.path);
+    for (const [, href] of output.get(file)!.matchAll(/\bhref="([^"]+)"/g)) {
+      const url = new URL(href, `https://example.test${base}${page.path}`);
+      if (url.origin !== 'https://example.test' || !url.hash || !url.pathname.startsWith(base)) continue;
+      const target = pageFile(decodeURIComponent(url.pathname.slice(base.length)));
+      if (!idsByFile.has(target)) continue;
+      assert.ok(idsByFile.get(target)!.has(decodeURIComponent(url.hash.slice(1))), `${file}: ${href}`);
+    }
+  }
+});
+
 test('all public pages ship content and accessible navigation without JavaScript', () => {
   for (const page of Object.values(pages)) {
-    const html = readOutput(page.path || 'index.html');
+    const html = readOutput(pageFile(page.path));
     assert.equal((html.match(/<main\b/g) || []).length, 1);
     assert.equal((html.match(/<h1\b/g) || []).length, 1);
     assert.match(html, /<main id="main-content"[^>]*tabindex="-1">/);
