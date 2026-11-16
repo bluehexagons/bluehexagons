@@ -54,17 +54,19 @@ Run `check:site` after each build, before another build replaces `dist/`. Match
 its `VITE_BASE_PATH` and `VITE_SHOP` settings to the build. Check new pages at both
 `/` and `/bluehexagons/`.
 
-The suite covers metadata, navigation, local links, fragments, gallery fallbacks,
-profile consistency, and shop exclusion. Temporary fixtures also test nested
-pages through development, build, and preview. GitHub Actions checks both
-frontend modes and the API; a separate workflow builds and deploys the Pages copy.
+The suite covers metadata, navigation, local links and fragments in HTML and
+documentation, gallery fallbacks, profile consistency, and shop exclusion.
+Temporary fixtures test nested pages through development, build, and preview.
+GitHub Actions checks both frontend modes and the API; a separate workflow builds
+and deploys the Pages copy.
 
 For browser smoke checks, bind development or preview to loopback with
 `--host 127.0.0.1`. Check the homepage, portfolio, profile, and Antistatic at desktop
 and phone widths, with and without JavaScript. Verify navigation, the skip link,
 contribution credits, profile printing, gallery controls, Escape/focus return,
-and `antistatic.html#refresh`. The browser workflow uses managed Chromium;
-Firefox and native Windows coverage have not been established.
+expandable sections after resizing, and `antistatic.html#refresh`. The browser
+workflow uses managed Chromium; Firefox and native Windows coverage have not
+been established.
 
 ## Content and architecture
 

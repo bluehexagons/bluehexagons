@@ -132,9 +132,7 @@ export class ExpandableSection extends BaseElement {
     this.toggleButton.hidden = !hasOverflow;
 
     if (!hasOverflow) {
-      this.toggleButton.setAttribute('aria-expanded', 'false');
-      this.contentContainer.classList.remove('expanded');
-      this.contentContainer.style.maxHeight = '';
+      this.toggle(false);
       return;
     }
 
