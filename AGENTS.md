@@ -1,6 +1,7 @@
 # Repository guidance
 
-- Setup and checks: [README](README.md#building-this-site); API details: [server/README](server/README.md).
+- The root README is displayed on the GitHub profile. Keep it focused on the personal profile and portfolio; put setup, implementation, and operational documentation in `docs/` or the relevant component guide.
+- Setup and checks: [development guide](docs/development.md); API details: [server/README](server/README.md).
 - Deployment and cleanup: [Basaltwater integration](docs/basaltwater.md). Use shared Basaltwater skills for environment operations.
 - The shop is unfinished; keep it opt-in. `VITE_` settings are public; keep secrets and operational evidence outside Git.
 - Keep the homepage summaries and `public/profile.md` aligned when career details change. Preserve source media and curated archives.

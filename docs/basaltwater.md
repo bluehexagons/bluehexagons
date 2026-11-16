@@ -2,7 +2,7 @@
 
 ## Development and CI
 
-The [README](../README.md#building-this-site) owns native setup and check
+The [development guide](development.md) owns native setup and check
 commands; [server/README](../server/README.md) covers the Go API. On Basaltwater,
 use `basaltw node doctor --json` to check the project pin and
 `basaltw node exec -- npm run build` to run with that runtime. Install a missing
