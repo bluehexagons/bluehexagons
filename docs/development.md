@@ -72,13 +72,14 @@ The suite starts and stops preview on `127.0.0.1:4175`. It checks desktop and ph
 layouts, navigation without JavaScript, gallery keyboard controls and modal
 focus, video activation, fragment links, and expandable content when resizing,
 reattaching, or printing. Responsive checks cover every public page at phone,
-landscape, tablet, and wide desktop sizes, plus rotating an open gallery.
+landscape, tablet, and wide desktop sizes, larger text, rotating an open gallery,
+and native touch swipes, scrolling, and pinch zoom.
 Match `VITE_BASE_PATH` to the build for a project URL.
 Failure traces stay in the ignored `test-results/` directory. Browser tests run
 separately from the fast CI checks; see [Playwright’s browser setup](https://playwright.dev/docs/browsers)
 for platform requirements.
 
-Also check the skip link, profile printing, and touch gestures manually. Bind
+Also check the skip link, profile printing, and gestures on a physical phone. Bind
 manual preview to loopback with `--host 127.0.0.1`. Firefox and native Windows
 coverage have not been established.
 
@@ -177,6 +178,7 @@ click dismisses the enlarged viewer and returns focus. Reduced-motion settings
 disable animations; there is no automatic advance.
 In short landscape windows, the viewer places its controls beside the image.
 Long captions scroll independently and can receive keyboard focus.
+With larger text or less space, it uses a scrolling layout with Close kept visible.
 
 ## Deployment
 
