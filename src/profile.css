@@ -35,6 +35,12 @@
   overflow-wrap: anywhere;
 }
 
+.profile-contact a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
 .profile-contact span {
   display: block;
   font-size: 0.78rem;
@@ -47,7 +53,7 @@
 }
 
 .resume-section {
-  padding: clamp(22px, 4vw, 38px);
+  padding: clamp(18px, 4vw, 38px);
 }
 
 .resume-section h2 {
@@ -270,6 +276,10 @@
 
   .profile-contact {
     margin-top: 12pt;
+  }
+
+  .profile-contact a {
+    min-height: 0;
   }
 
   .experience-entry,

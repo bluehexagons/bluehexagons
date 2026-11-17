@@ -150,7 +150,7 @@ export class ImageScrollerElement extends BaseElement {
           <span class="gallery__loading" role="status" hidden>Loading image…</span>
         </div>
         <div class="viewer__details">
-          <p class="viewer__caption" aria-live="polite" aria-atomic="true"></p>
+          <p class="viewer__caption" role="region" aria-label="Image description" tabindex="0" aria-live="polite" aria-atomic="true"></p>
           <div class="gallery__navigation" role="group" aria-label="Browse enlarged images">
             <button type="button" class="gallery__arrow" aria-label="Previous image" onClick={() => this.move(-1)}><span aria-hidden="true">←</span></button>
             <span class="viewer__counter" aria-hidden="true"></span>
@@ -306,6 +306,7 @@ export class ImageScrollerElement extends BaseElement {
     this.setImage(this.viewerImage, item);
     this.viewerImage.parentElement!.dataset.video = String(!!item.video);
     this.viewerCaption.textContent = this.caption.textContent;
+    this.viewerCaption.scrollTop = 0;
     this.viewerCounter.textContent = this.counter.textContent;
     this.dialog.querySelector<HTMLButtonElement>('.gallery__mode')!.hidden = !item.video;
     this.originalLink.href = item.link || item.source;
@@ -332,6 +333,7 @@ export class ImageScrollerElement extends BaseElement {
       return;
     }
     if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if (event.target === this.viewerCaption && (event.key === 'Home' || event.key === 'End')) return;
     let index = this.selected;
     if (event.key === 'ArrowLeft') index--;
     else if (event.key === 'ArrowRight') index++;

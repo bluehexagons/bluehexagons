@@ -1,5 +1,6 @@
 @import './base.css';
 @import './links.css';
+@import './navigation.css';
 
 .case-study-shell {
   width: min(940px, calc(100% - 32px));
@@ -19,14 +20,8 @@
   padding: 24px 0;
 }
 
-.case-study-header nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-}
-
 .case-study {
-  padding: clamp(22px, 4vw, 46px);
+  padding: clamp(18px, 4vw, 46px);
 }
 
 .case-study-kicker {

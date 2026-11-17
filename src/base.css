@@ -39,6 +39,14 @@ body {
 
 }
 
+main {
+  overflow-wrap: anywhere;
+}
+
+main :where(ul, ol) {
+  padding-inline-start: clamp(1.25rem, 3vw, 2.5rem);
+}
+
 ::-webkit-scrollbar {
   width: 14px;
   border-left: 1px solid rgba(57, 71, 75, 0.479);

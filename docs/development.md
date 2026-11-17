@@ -71,7 +71,9 @@ npm run check:browser
 The suite starts and stops preview on `127.0.0.1:4175`. It checks desktop and phone
 layouts, navigation without JavaScript, gallery keyboard controls and modal
 focus, video activation, fragment links, and expandable content when resizing,
-reattaching, or printing. Match `VITE_BASE_PATH` to the build for a project URL.
+reattaching, or printing. Responsive checks cover every public page at phone,
+landscape, tablet, and wide desktop sizes, plus rotating an open gallery.
+Match `VITE_BASE_PATH` to the build for a project URL.
 Failure traces stay in the ignored `test-results/` directory. Browser tests run
 separately from the fast CI checks; see [Playwright’s browser setup](https://playwright.dev/docs/browsers)
 for platform requirements.
@@ -143,6 +145,7 @@ entries.
 portfolio content styles; `page.css` shares introductions and credits. Page
 stylesheets compose these with layout, link, and footer styles. Components load
 `component.css` (reset and accessibility rules) plus their own styles.
+Both page shells share `navigation.css` for wrapping and touch target sizes.
 
 `portfolio.ts` adds galleries and expandable sections without replacing page
 content. The optional shop uses `bootstrap.ts` and the `css.css` compatibility
@@ -172,6 +175,8 @@ Arrows, thumbnails, Left/Right, Home/End, and horizontal swipes navigate images.
 Vertical touch scrolling and pinch zoom stay native. Escape, Close, or a backdrop
 click dismisses the enlarged viewer and returns focus. Reduced-motion settings
 disable animations; there is no automatic advance.
+In short landscape windows, the viewer places its controls beside the image.
+Long captions scroll independently and can receive keyboard focus.
 
 ## Deployment
 
